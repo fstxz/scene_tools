@@ -1,0 +1,339 @@
+[gd_scene load_steps=11 format=3 uid="uid://ilgtvpjc8ygg"]
+
+[ext_resource type="Script" path="res://addons/prop_placer/gui_handler.gd" id="1_0j3pr"]
+
+[sub_resource type="Image" id="Image_od57l"]
+data = {
+"data": PackedByteArray(255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 233, 233, 233, 23, 225, 225, 225, 126, 224, 224, 224, 206, 224, 224, 224, 240, 224, 224, 224, 240, 224, 224, 224, 206, 225, 225, 225, 124, 232, 232, 232, 22, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 80, 224, 224, 224, 240, 224, 224, 224, 255, 224, 224, 224, 244, 225, 225, 225, 183, 224, 224, 224, 184, 224, 224, 224, 245, 224, 224, 224, 255, 224, 224, 224, 239, 226, 226, 226, 77, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 226, 226, 226, 78, 224, 224, 224, 254, 224, 224, 224, 255, 224, 224, 224, 165, 227, 227, 227, 9, 255, 255, 255, 0, 255, 255, 255, 0, 232, 232, 232, 11, 224, 224, 224, 189, 224, 224, 224, 255, 224, 224, 224, 254, 225, 225, 225, 75, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 232, 232, 232, 22, 224, 224, 224, 239, 224, 224, 224, 255, 224, 224, 224, 231, 255, 255, 255, 6, 255, 255, 255, 0, 225, 225, 225, 68, 224, 224, 224, 66, 255, 255, 255, 0, 227, 227, 227, 9, 224, 224, 224, 233, 224, 224, 224, 255, 224, 224, 224, 238, 230, 230, 230, 20, 255, 255, 255, 0, 255, 255, 255, 0, 225, 225, 225, 124, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 162, 255, 255, 255, 0, 225, 225, 225, 84, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 82, 255, 255, 255, 0, 224, 224, 224, 162, 224, 224, 224, 255, 224, 224, 224, 255, 225, 225, 225, 119, 255, 255, 255, 0, 255, 255, 255, 0, 225, 225, 225, 207, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 251, 224, 224, 224, 56, 255, 255, 255, 0, 225, 225, 225, 167, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 202, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 242, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 248, 226, 226, 226, 70, 255, 255, 255, 0, 238, 238, 238, 15, 224, 224, 224, 238, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 237, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 242, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 115, 255, 255, 255, 0, 230, 230, 230, 20, 224, 224, 224, 197, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 237, 255, 255, 255, 0, 255, 255, 255, 0, 225, 225, 225, 207, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 33, 255, 255, 255, 0, 225, 225, 225, 199, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 200, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 123, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 225, 225, 225, 116, 255, 255, 255, 0, 255, 255, 255, 0, 232, 232, 232, 22, 224, 224, 224, 238, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 235, 227, 227, 227, 18, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 225, 225, 225, 76, 224, 224, 224, 254, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 253, 226, 226, 226, 70, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 226, 226, 226, 77, 224, 224, 224, 239, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 236, 227, 227, 227, 71, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 231, 231, 231, 21, 224, 224, 224, 122, 224, 224, 224, 203, 224, 224, 224, 238, 224, 224, 224, 238, 224, 224, 224, 202, 225, 225, 225, 119, 230, 230, 230, 20, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0),
+"format": "RGBA8",
+"height": 16,
+"mipmaps": false,
+"width": 16
+}
+
+[sub_resource type="ImageTexture" id="ImageTexture_k2fot"]
+image = SubResource("Image_od57l")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cmt0l"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d1c51"]
+content_margin_left = 6.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.59375, 0.59375, 0.59375, 0.34902)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="LabelSettings" id="LabelSettings_m8f4h"]
+font_size = 18
+outline_size = 1
+
+[sub_resource type="Image" id="Image_gjysj"]
+data = {
+"data": PackedByteArray(255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 255, 224, 224, 224, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 255, 224, 224, 224, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 255, 224, 224, 224, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 255, 224, 224, 224, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 255, 224, 224, 224, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 255, 224, 224, 224, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 224, 224, 224, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 255, 224, 224, 224, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 255, 224, 224, 224, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 255, 224, 224, 224, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 255, 224, 224, 224, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 255, 224, 224, 224, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 224, 224, 224, 255, 224, 224, 224, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0),
+"format": "RGBA8",
+"height": 16,
+"mipmaps": false,
+"width": 16
+}
+
+[sub_resource type="ImageTexture" id="ImageTexture_jmq0l"]
+image = SubResource("Image_gjysj")
+
+[sub_resource type="Environment" id="Environment_k3mtt"]
+ambient_light_source = 2
+ambient_light_color = Color(0.644531, 0.644531, 0.644531, 1)
+
+[sub_resource type="World3D" id="World3D_p21ah"]
+environment = SubResource("Environment_k3mtt")
+
+[node name="PropPlacer" type="Control" node_paths=PackedStringArray("preview_viewport", "preview_camera", "root_node_button", "grid_button", "grid_level", "grid_step", "grid_offset", "new_collection_name", "new_collection_button", "import_button", "align_to_surface_button", "help_button", "help_dialog", "version_label", "icon_size_slider", "collection_tabs")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0j3pr")
+preview_viewport = NodePath("SubViewport")
+preview_camera = NodePath("SubViewport/Camera3D")
+root_node_button = NodePath("HBoxContainer/ScrollContainer/LeftPanel/RootNodeContainer/RootButton")
+grid_button = NodePath("HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer/GridCheckBox")
+grid_level = NodePath("HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer/GridContainer/HBoxContainer2/GridLevel")
+grid_step = NodePath("HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer/GridContainer/HBoxContainer/GridStep")
+grid_offset = NodePath("HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer/GridContainer/HBoxContainer3/GridOffset")
+new_collection_name = NodePath("HBoxContainer/Collections/MarginContainer/VBoxContainer/Control/HBoxContainer/NameLineEdit")
+new_collection_button = NodePath("HBoxContainer/Collections/MarginContainer/VBoxContainer/Control/HBoxContainer/NewButton")
+import_button = NodePath("HBoxContainer/Collections/MarginContainer/VBoxContainer/Control/HBoxContainer/ImportButton")
+align_to_surface_button = NodePath("HBoxContainer/ScrollContainer/LeftPanel/AlignToSurface/MarginContainer/VBoxContainer/AlignToSurfaceCheckbox")
+help_button = NodePath("HBoxContainer/ScrollContainer/LeftPanel/RootNodeContainer/HelpButton")
+help_dialog = NodePath("HelpDialog")
+version_label = NodePath("HelpDialog/VBoxContainer/VersionLabel")
+icon_size_slider = NodePath("HelpDialog/VBoxContainer/IconSize/IconSizeSlider")
+collection_tabs = NodePath("HBoxContainer/Collections/MarginContainer/VBoxContainer/TabContainer")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+
+[node name="LeftPanel" type="VBoxContainer" parent="HBoxContainer/ScrollContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="RootNodeContainer" type="HBoxContainer" parent="HBoxContainer/ScrollContainer/LeftPanel"]
+layout_mode = 2
+
+[node name="RootLabel" type="Label" parent="HBoxContainer/ScrollContainer/LeftPanel/RootNodeContainer"]
+layout_mode = 2
+tooltip_text = "The node under which your objects will be placed."
+mouse_filter = 0
+text = "Root node:"
+
+[node name="RootButton" type="Button" parent="HBoxContainer/ScrollContainer/LeftPanel/RootNodeContainer"]
+layout_mode = 2
+text = "Select"
+
+[node name="HelpButton" type="Button" parent="HBoxContainer/ScrollContainer/LeftPanel/RootNodeContainer"]
+layout_mode = 2
+size_flags_horizontal = 10
+icon = SubResource("ImageTexture_k2fot")
+
+[node name="AlignToSurface" type="PanelContainer" parent="HBoxContainer/ScrollContainer/LeftPanel"]
+auto_translate_mode = 1
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_cmt0l")
+
+[node name="Background" type="Panel" parent="HBoxContainer/ScrollContainer/LeftPanel/AlignToSurface"]
+auto_translate_mode = 1
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/ScrollContainer/LeftPanel/AlignToSurface"]
+auto_translate_mode = 1
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/ScrollContainer/LeftPanel/AlignToSurface/MarginContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+
+[node name="AlignToSurfaceCheckbox" type="CheckBox" parent="HBoxContainer/ScrollContainer/LeftPanel/AlignToSurface/MarginContainer/VBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+text = "Align to surface"
+flat = true
+
+[node name="Grid" type="PanelContainer" parent="HBoxContainer/ScrollContainer/LeftPanel"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_cmt0l")
+
+[node name="Background" type="Panel" parent="HBoxContainer/ScrollContainer/LeftPanel/Grid"]
+clip_contents = true
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/ScrollContainer/LeftPanel/Grid"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer"]
+layout_mode = 2
+
+[node name="GridCheckBox" type="CheckBox" parent="HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Grid"
+flat = true
+
+[node name="GridContainer" type="GridContainer" parent="HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+columns = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer/GridContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Step"
+
+[node name="GridStep" type="LineEdit" parent="HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer/GridContainer/HBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_d1c51")
+text = "1"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer/GridContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer/GridContainer/HBoxContainer3"]
+auto_translate_mode = 1
+layout_mode = 2
+text = "Offset"
+
+[node name="GridOffset" type="LineEdit" parent="HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer/GridContainer/HBoxContainer3"]
+auto_translate_mode = 1
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_d1c51")
+text = "0"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer/GridContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer/GridContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Ground"
+
+[node name="GridLevel" type="LineEdit" parent="HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer/GridContainer/HBoxContainer2"]
+layout_mode = 2
+tooltip_text = "The height at which your objects will be placed."
+theme_override_styles/normal = SubResource("StyleBoxFlat_d1c51")
+text = "0"
+
+[node name="Collections" type="PanelContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_cmt0l")
+
+[node name="Background" type="Panel" parent="HBoxContainer/Collections"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/Collections"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/Collections/MarginContainer"]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="HBoxContainer/Collections/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/Collections/MarginContainer/VBoxContainer/Control"]
+layout_mode = 1
+offset_right = 85.0
+offset_bottom = 24.0
+text = "Collections"
+label_settings = SubResource("LabelSettings_m8f4h")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/Collections/MarginContainer/VBoxContainer/Control"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -195.0
+offset_bottom = 32.0
+grow_horizontal = 0
+alignment = 2
+
+[node name="NameLineEdit" type="LineEdit" parent="HBoxContainer/Collections/MarginContainer/VBoxContainer/Control/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Name of the new collection."
+theme_override_styles/normal = SubResource("StyleBoxFlat_d1c51")
+placeholder_text = "Name.."
+
+[node name="NewButton" type="Button" parent="HBoxContainer/Collections/MarginContainer/VBoxContainer/Control/HBoxContainer"]
+layout_mode = 2
+tooltip_text = "Create collection."
+icon = SubResource("ImageTexture_jmq0l")
+
+[node name="VSeparator" type="VSeparator" parent="HBoxContainer/Collections/MarginContainer/VBoxContainer/Control/HBoxContainer"]
+layout_mode = 2
+
+[node name="ImportButton" type="Button" parent="HBoxContainer/Collections/MarginContainer/VBoxContainer/Control/HBoxContainer"]
+layout_mode = 2
+text = "Import"
+
+[node name="TabContainer" type="TabContainer" parent="HBoxContainer/Collections/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SubViewport" type="SubViewport" parent="."]
+own_world_3d = true
+world_3d = SubResource("World3D_p21ah")
+transparent_bg = true
+scaling_3d_mode = 0
+scaling_3d_scale = 1.0
+fsr_sharpness = 2.0
+size = Vector2i(64, 64)
+render_target_update_mode = 4
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="SubViewport"]
+transform = Transform3D(0.707107, 0.5, -0.5, 0, 0.707107, 0.707107, 0.707107, -0.5, 0.5, 0, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="SubViewport"]
+transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 26.0597, 36.8541, 26.0597)
+projection = 1
+size = 10.0
+
+[node name="HelpDialog" type="AcceptDialog" parent="."]
+title = "About"
+initial_position = 4
+size = Vector2i(200, 266)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HelpDialog"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 192.0
+offset_bottom = 224.0
+
+[node name="VersionLabel" type="Label" parent="HelpDialog/VBoxContainer"]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="Controls" type="Label" parent="HelpDialog/VBoxContainer"]
+layout_mode = 2
+text = "
+Controls:
+LMB - Place
+RMB - Rotate"
+horizontal_alignment = 1
+
+[node name="Label" type="Label" parent="HelpDialog/VBoxContainer"]
+layout_mode = 2
+text = "
+Additional settings:"
+horizontal_alignment = 1
+
+[node name="IconSize" type="HBoxContainer" parent="HelpDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HelpDialog/VBoxContainer/IconSize"]
+layout_mode = 2
+text = "Icon size"
+horizontal_alignment = 1
+
+[node name="IconSizeSlider" type="HSlider" parent="HelpDialog/VBoxContainer/IconSize"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 4.0
+value = 4.0
+rounded = true
+scrollable = false
+tick_count = 4
+ticks_on_borders = true
