@@ -44,13 +44,13 @@ func _ready() -> void:
     collection_tabs.get_tab_bar().tab_close_pressed.connect(remove_collection_tab)
 
 func remove_collection_tab(index: int) -> void:
-    var current_tab = collection_tabs.get_child(index)
-    var uid = current_tab.get_meta("uid")
+    var current_tab := collection_tabs.get_child(index)
+    var uid: String = current_tab.get_meta("uid")
     collection_tabs.get_child(index).free()
     prop_placer_instance.collections.erase(uid)
 
 func _on_icon_size_slider_value_changed(_value: float) -> void:
-    var value = int(_value)
+    var value := int(_value)
     prop_placer_instance.icon_size = value
     set_collection_icon_size()
 
@@ -67,12 +67,12 @@ func _on_align_to_surface_toggled(toggled: bool) -> void:
     prop_placer_instance.set_align_to_surface(toggled)
 
 func _on_new_collection_button_pressed() -> void:
-    var collection_name = new_collection_name.text
+    var collection_name := new_collection_name.text
 
     if collection_name.is_empty():
         collection_name = "[No Name]"
 
-    var save_dialog = EditorFileDialog.new()
+    var save_dialog := EditorFileDialog.new()
     save_dialog.file_mode = EditorFileDialog.FILE_MODE_SAVE_FILE
     save_dialog.add_filter("*.tres", "Collection")
     EditorInterface.popup_dialog_centered(save_dialog)
@@ -80,7 +80,7 @@ func _on_new_collection_button_pressed() -> void:
     save_dialog.file_selected.connect(file_callback.bind(collection_name))
 
 func _on_import_button_pressed() -> void:
-    var load_dialog = EditorFileDialog.new()
+    var load_dialog := EditorFileDialog.new()
     load_dialog.file_mode = EditorFileDialog.FILE_MODE_OPEN_FILES
     load_dialog.add_filter("*.tres", "Collection")
     EditorInterface.popup_dialog_centered(load_dialog)
@@ -115,7 +115,7 @@ func _on_grid_offset_text_changed(text: String) -> void:
     prop_placer_instance.set_grid_offset(float(text))
 
 func file_callback(path: String, collection_name: String) -> void:
-    var collection = Collection.new(collection_name)
+    var collection := Collection.new(collection_name)
     
     if ResourceSaver.save(collection, path) == OK:
         var uid := ResourceUID.id_to_text(ResourceLoader.get_resource_uid(path))
@@ -147,7 +147,7 @@ func spawn_collection_tab(uid: String, collection: Collection) -> void:
 
     collection_tabs.add_child(collection_list)
 
-func _on_asset_clicked(index: int, at_position: Vector2, mouse_button_index: int) -> void:
+func _on_asset_clicked(index: int, _at_position: Vector2, mouse_button_index: int) -> void:
     var current_tab := collection_tabs.get_child(collection_tabs.current_tab) as CollectionList
 
     match mouse_button_index:
@@ -164,14 +164,14 @@ func _on_data_dropped(data: Variant) -> void:
     var current_tab := collection_tabs.current_tab
 
     for filepath: String in data["files"]:
-        var packedscene = ResourceLoader.load(filepath) as PackedScene
+        var packedscene := ResourceLoader.load(filepath) as PackedScene
 
         if packedscene:
             if packedscene.get_state().get_node_count() == 0:
                 return
             
             var root_node_name := packedscene.get_state().get_node_name(0)
-            var node = packedscene.instantiate()
+            var node := packedscene.instantiate()
 
             var preview := await prop_placer_instance.generate_preview(node)
 
@@ -182,8 +182,8 @@ func _on_data_dropped(data: Variant) -> void:
             asset.name = root_node_name
             asset.uid = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(filepath))
 
-            prop_placer_instance.collections[collection_tabs.get_child(current_tab).get_meta("uid")].assets.append(asset)
-            add_asset_to_tab(collection_tabs.get_child(current_tab), asset)
+            prop_placer_instance.collections[tab.get_meta("uid")].assets.append(asset)
+            add_asset_to_tab(tab, asset)
 
 
 func add_asset_to_tab(tab: CollectionList, asset: Dictionary) -> void:

@@ -4,5 +4,5 @@ extends Resource
 @export var name: String = ""
 @export var assets: Array[Dictionary] = []
 
-func _init(name: String = "") -> void:
-    self.name = name
+func _init(_name: String = "") -> void:
+    self.name = _name

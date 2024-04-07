@@ -55,19 +55,19 @@ func _exit_tree() -> void:
 func _enable_plugin() -> void:
 	set_root_node(null)
 
-func _on_scene_changed(scene_root: Node) -> void:
+func _on_scene_changed(_scene_root: Node) -> void:
 	set_root_node(null)
 	if is_instance_valid(self.scene_root):
 		if is_instance_valid(brush):
 			self.scene_root.remove_child(brush)
 	
-	self.scene_root = scene_root
+	self.scene_root = _scene_root
 
 	if is_instance_valid(self.scene_root):
 		if is_instance_valid(brush):
 			self.scene_root.add_child(brush)
 
-func _handles(object: Object) -> bool:
+func _handles(_object: Object) -> bool:
 	return true
 
 func set_root_node(node: Node) -> void:
@@ -89,7 +89,7 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 	if not selected_asset or not root_node:
 		return EditorPlugin.AFTER_GUI_INPUT_PASS
 	
-	var result = raycast(viewport_camera)
+	var result := raycast(viewport_camera)
 
 	if result:
 		brush.rotation = rotation
@@ -120,12 +120,12 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 # TODO: rework
 # taken from https://github.com/godotengine/godot/issues/85903#issuecomment-1846245217
 func align_with_normal(xform: Transform3D, n2: Vector3) -> Transform3D:
-	var n1 = xform.basis.y.normalized()
-	var cosa = n1.dot(n2)
+	var n1 := xform.basis.y.normalized()
+	var cosa := n1.dot(n2)
 	if cosa >= 0.99:
 		return xform
-	var alpha = acos(cosa)
-	var axis = n1.cross(n2).normalized()
+	var alpha := acos(cosa)
+	var axis := n1.cross(n2).normalized()
 	if axis == Vector3.ZERO:
 		axis = Vector3.FORWARD # normals are in opposite directions
 	return xform.rotated(axis, alpha)
@@ -133,17 +133,17 @@ func align_with_normal(xform: Transform3D, n2: Vector3) -> Transform3D:
 func raycast(camera: Camera3D) -> Dictionary:
 	var result := Dictionary()
 	if grid_enabled:
-		var mousepos = EditorInterface.get_editor_viewport_3d().get_mouse_position()
-		var pos = grid_plane.intersects_ray(camera.project_ray_origin(mousepos), camera.project_ray_normal(mousepos) * 1000.0)
+		var mousepos := EditorInterface.get_editor_viewport_3d().get_mouse_position()
+		var pos: Variant = grid_plane.intersects_ray(camera.project_ray_origin(mousepos), camera.project_ray_normal(mousepos) * 1000.0)
 		if pos:
 			result.position = pos
 	else:
-		var space_state = camera.get_world_3d().direct_space_state
-		var mousepos = EditorInterface.get_editor_viewport_3d().get_mouse_position()
+		var space_state := camera.get_world_3d().direct_space_state
+		var mousepos := EditorInterface.get_editor_viewport_3d().get_mouse_position()
 
-		var origin = camera.project_ray_origin(mousepos)
-		var end = origin + camera.project_ray_normal(mousepos) * 1000.0
-		var query = PhysicsRayQueryParameters3D.create(origin, end)
+		var origin := camera.project_ray_origin(mousepos)
+		var end := origin + camera.project_ray_normal(mousepos) * 1000.0
+		var query := PhysicsRayQueryParameters3D.create(origin, end)
 
 		result = space_state.intersect_ray(query)
 
@@ -162,7 +162,7 @@ func set_grid_offset(value: float) -> void:
 	grid_offset = value
 
 func _get_window_layout(configuration: ConfigFile) -> void:
-	var collection_ids: Array[String]
+	var collection_ids: Array[String] = []
 	for uid: String in collections.keys():
 		collection_ids.append(uid)
 	
@@ -176,7 +176,7 @@ func _get_window_layout(configuration: ConfigFile) -> void:
 	configuration.set_value(plugin_name, "icon_size", icon_size)
 
 func _set_window_layout(configuration: ConfigFile) -> void:
-	var collection_ids = configuration.get_value(plugin_name, "collections", [])
+	var collection_ids: Array[String] = configuration.get_value(plugin_name, "collections", [])
 
 	for uid: String in collection_ids:
 		if ResourceUID.has_id(ResourceUID.text_to_id(uid)):
@@ -214,15 +214,15 @@ func generate_preview(node: Node) -> Texture2D:
 	if is_zero_approx(aabb.size.length()):
 		return
 
-	var max_size = max(aabb.size.x, aabb.size.y, aabb.size.z)
+	var max_size := max(aabb.size.x, aabb.size.y, aabb.size.z) as float
 
 	gui_instance.preview_camera.size = max_size * 2.0
 	gui_instance.preview_camera.look_at_from_position(Vector3(max_size, max_size, max_size), aabb.get_center())
 
 	await RenderingServer.frame_post_draw
-	var viewport_image = gui_instance.preview_viewport.get_texture().get_image()
-	var preview = PortableCompressedTexture2D.new()
-	preview.create_from_image(viewport_image, 1)
+	var viewport_image := gui_instance.preview_viewport.get_texture().get_image()
+	var preview := PortableCompressedTexture2D.new()
+	preview.create_from_image(viewport_image, PortableCompressedTexture2D.COMPRESSION_MODE_LOSSY)
 	
 	gui_instance.preview_viewport.remove_child(node)
 	node.queue_free()
@@ -236,11 +236,11 @@ func get_aabb(node: Node) -> AABB:
 	children.append(node)
 
 	while not children.is_empty():
-		var child := children.pop_back()
+		var child := children.pop_back() as Node
 
 		if child is VisualInstance3D:
-			var child_aabb = child.get_aabb().abs()
-			var transformed_aabb = AABB(child_aabb.position + child.global_position, child_aabb.size)
+			var child_aabb := child.get_aabb().abs() as AABB
+			var transformed_aabb := AABB(child_aabb.position + child.global_position, child_aabb.size)
 			aabb = aabb.merge(transformed_aabb)
 		
 		children.append_array(child.get_children())
@@ -248,7 +248,7 @@ func get_aabb(node: Node) -> AABB:
 	return aabb
 
 func _save_external_data() -> void:
-	for collection in collections.values():
+	for collection: Collection in collections.values():
 		ResourceSaver.save(collection)
 
 func change_brush(asset: Dictionary) -> void:
@@ -261,7 +261,7 @@ func change_brush(asset: Dictionary) -> void:
 	var packedscene := ResourceLoader.load(asset.uid) as PackedScene
 
 	if packedscene:
-		var new_brush = packedscene.instantiate()
+		var new_brush := packedscene.instantiate()
 		brush = new_brush
 
 		if scene_root:
@@ -274,9 +274,9 @@ func instantiate_asset(position: Vector3, asset: Dictionary) -> void:
 	var packedscene := ResourceLoader.load(asset.uid) as PackedScene
 
 	if packedscene:
-		var instance = packedscene.instantiate() as Node3D
+		var instance := packedscene.instantiate() as Node3D
 
-		undo_redo.create_action("Instantiate Asset", 0, scene_root)
+		undo_redo.create_action("Instantiate Asset", UndoRedo.MERGE_DISABLE, scene_root)
 		undo_redo.add_do_method(root_node, "add_child", instance)
 		undo_redo.add_do_property(instance, "owner", scene_root)
 		undo_redo.add_do_reference(instance)
