@@ -104,11 +104,6 @@ func _on_root_node_selected(path: NodePath) -> void:
 
 func _on_grid_toggled(toggled: bool) -> void:
     prop_placer_instance.set_grid_enabled(toggled)
-    
-    #prop_placer_instance.collections.clear()
-    # for i: Collection in prop_placer_instance.collections:
-    #     if i.assets.size() != 0:
-    #         print(i.resource_path)
 
 func _on_grid_level_text_changed(text: String) -> void:
     prop_placer_instance.set_grid_level(float(text)) # God forgive me
@@ -176,7 +171,6 @@ func _on_data_dropped(data: Variant) -> void:
                 return
             
             var root_node_name := packedscene.get_state().get_node_name(0)
-            print(root_node_name)
             var node = packedscene.instantiate()
 
             var preview := await prop_placer_instance.generate_preview(node)
