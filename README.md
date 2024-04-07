@@ -6,6 +6,8 @@ Prop Placer supports any PackedScene files (.tscn, .gltf, .blend, etc.)
 ![](screenshot_1.png)
 
 ## Installation
+The plugin is available in the [Asset Library](https://godotengine.org/asset-library/asset/2846)
+
 Follow [Godot documentation](https://docs.godotengine.org/en/stable/tutorials/plugins/editor/installing_plugins.html) on how to install and enable plugins.
 
 ## How to use
