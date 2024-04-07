@@ -40,6 +40,15 @@ func _ready() -> void:
     help_button.pressed.connect(_on_help_button_pressed)
     icon_size_slider.value_changed.connect(_on_icon_size_slider_value_changed)
 
+    collection_tabs.get_tab_bar().tab_close_display_policy = TabBar.CLOSE_BUTTON_SHOW_ACTIVE_ONLY
+    collection_tabs.get_tab_bar().tab_close_pressed.connect(remove_collection_tab)
+
+func remove_collection_tab(index: int) -> void:
+    var current_tab = collection_tabs.get_child(index)
+    var uid = current_tab.get_meta("uid")
+    collection_tabs.get_child(index).free()
+    prop_placer_instance.collections.erase(uid)
+
 func _on_icon_size_slider_value_changed(_value: float) -> void:
     var value = int(_value)
     prop_placer_instance.icon_size = value
@@ -167,6 +176,7 @@ func _on_data_dropped(data: Variant) -> void:
                 return
             
             var root_node_name := packedscene.get_state().get_node_name(0)
+            print(root_node_name)
             var node = packedscene.instantiate()
 
             var preview := await prop_placer_instance.generate_preview(node)
