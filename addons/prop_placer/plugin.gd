@@ -13,7 +13,7 @@ var gui := preload("res://addons/prop_placer/gui.tscn")
 
 var gui_instance: GuiHandler
 
-var root_node: Node3D
+var root_node: Node
 var scene_root: Node
 
 var undo_redo: EditorUndoRedoManager
