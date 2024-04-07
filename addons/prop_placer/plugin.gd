@@ -148,19 +148,15 @@ func raycast(camera: Camera3D) -> Dictionary:
 
 func set_grid_enabled(enabled: bool) -> void:
 	grid_enabled = enabled
-	queue_save_layout()
 
 func set_grid_level(value: float) -> void:
 	grid_plane.d = value
-	queue_save_layout()
 
 func set_grid_step(value: float) -> void:
 	grid_step = value
-	queue_save_layout()
 
 func set_grid_offset(value: float) -> void:
 	grid_offset = value
-	queue_save_layout()
 
 func _get_window_layout(configuration: ConfigFile) -> void:
 	var collection_ids: Array[String]
