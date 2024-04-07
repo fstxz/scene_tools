@@ -52,6 +52,9 @@ func _exit_tree() -> void:
 	if brush:
 		brush.free()
 
+func _enable_plugin() -> void:
+	set_root_node(null)
+
 func _on_scene_changed(scene_root: Node) -> void:
 	set_root_node(null)
 	if is_instance_valid(self.scene_root):
