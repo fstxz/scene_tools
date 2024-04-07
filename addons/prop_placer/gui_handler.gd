@@ -47,6 +47,7 @@ func remove_collection_tab(index: int) -> void:
     var current_tab := collection_tabs.get_child(index)
     var uid: String = current_tab.get_meta("uid")
     collection_tabs.get_child(index).free()
+    ResourceSaver.save(prop_placer_instance.collections[uid])
     prop_placer_instance.collections.erase(uid)
 
 func _on_icon_size_slider_value_changed(_value: float) -> void:
