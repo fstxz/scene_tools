@@ -139,6 +139,7 @@ func spawn_collection_tab(uid: String, collection: Collection) -> void:
     collection_list.fixed_icon_size = Vector2i(prop_placer_instance.preview_size, prop_placer_instance.preview_size)
     collection_list.icon_scale = prop_placer_instance.icon_size / 4.0
     collection_list.icon_mode = ItemList.ICON_MODE_TOP
+    collection_list.same_column_width = true
 
     for asset: Dictionary in collection.assets:
         add_asset_to_tab(collection_list, asset)
