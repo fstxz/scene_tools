@@ -16,6 +16,8 @@ var gui_instance: GuiHandler
 var root_node: Node
 var scene_root: Node
 
+var saved_root_node_path: String
+
 var undo_redo: EditorUndoRedoManager
 
 var grid_enabled := true
@@ -52,11 +54,22 @@ func _exit_tree() -> void:
 	if brush:
 		brush.free()
 
+func _get_plugin_name() -> String:
+	return plugin_name
+
+func _get_state() -> Dictionary:
+	var path: String
+	if root_node:
+		path = root_node.get_path()
+	return { "root_node": path }
+
+func _set_state(state: Dictionary) -> void:
+	saved_root_node_path = state.get("root_node", "")
+
 func _enable_plugin() -> void:
 	set_root_node(null)
 
 func _on_scene_changed(_scene_root: Node) -> void:
-	set_root_node(null)
 	if is_instance_valid(self.scene_root):
 		if is_instance_valid(brush):
 			self.scene_root.remove_child(brush)
@@ -64,8 +77,11 @@ func _on_scene_changed(_scene_root: Node) -> void:
 	self.scene_root = _scene_root
 
 	if is_instance_valid(self.scene_root):
+		set_root_node(scene_root.get_node_or_null(saved_root_node_path))
 		if is_instance_valid(brush):
 			self.scene_root.add_child(brush)
+	else:
+		set_root_node(null)
 
 func _handles(_object: Object) -> bool:
 	return true
