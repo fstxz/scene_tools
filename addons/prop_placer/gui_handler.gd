@@ -147,15 +147,17 @@ func spawn_collection_tab(uid: String, collection: Collection) -> void:
 
     collection_list.data_dropped.connect(_on_data_dropped)
     collection_list.item_clicked.connect(_on_asset_clicked)
+    collection_list.multi_selected.connect(_on_item_selected)
 
     collection_tabs.add_child(collection_list)
+
+func _on_item_selected(index: int, selected: bool) -> void:
+    prop_placer_instance.set_selected_assets(get_selected_asset_uids())
 
 func _on_asset_clicked(index: int, _at_position: Vector2, mouse_button_index: int) -> void:
     var current_tab := collection_tabs.get_child(collection_tabs.current_tab) as CollectionList
 
     match mouse_button_index:
-        1:
-            prop_placer_instance.set_selected_assets(get_selected_asset_uids())
         2:
             current_tab.remove_item(index)
             # TODO: don't rely on index

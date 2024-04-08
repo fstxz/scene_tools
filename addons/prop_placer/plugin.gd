@@ -29,7 +29,7 @@ var icon_size : int = 4
 var collections: Dictionary
 
 var brush: Node3D
-var selected_assets_uid: Array[String]
+var selected_asset_uids: Array[String]
 
 var rotation := Vector3.ZERO
 
@@ -86,7 +86,7 @@ func set_root_node(node: Node) -> void:
 			brush.show()
 
 func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
-	if selected_assets_uid.is_empty() or not root_node:
+	if selected_asset_uids.is_empty() or not root_node:
 		return EditorPlugin.AFTER_GUI_INPUT_PASS
 	
 	var result := raycast(viewport_camera)
@@ -108,7 +108,7 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 			match event.button_index:
 				MOUSE_BUTTON_LEFT:
 					if result:
-						var asset_uid: String = selected_assets_uid.pick_random()
+						var asset_uid: String = selected_asset_uids.pick_random()
 						instantiate_asset(result.position, asset_uid)
 						return EditorPlugin.AFTER_GUI_INPUT_STOP
 				
@@ -288,6 +288,7 @@ func set_align_to_surface(value: bool) -> void:
 	align_to_surface = value
 
 func set_selected_assets(asset_uids: Array[String]) -> void:
-	selected_assets_uid = asset_uids
+	selected_asset_uids = asset_uids
 
-	change_brush(selected_assets_uid[0])
+	if not selected_asset_uids.is_empty():
+		change_brush(selected_asset_uids[0])
