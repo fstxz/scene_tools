@@ -29,7 +29,7 @@ var icon_size : int = 4
 var collections: Dictionary
 
 var brush: Node3D
-var selected_asset: Dictionary
+var selected_assets_uid: Array[String]
 
 var rotation := Vector3.ZERO
 
@@ -86,7 +86,7 @@ func set_root_node(node: Node) -> void:
 			brush.show()
 
 func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
-	if not selected_asset or not root_node:
+	if selected_assets_uid.is_empty() or not root_node:
 		return EditorPlugin.AFTER_GUI_INPUT_PASS
 	
 	var result := raycast(viewport_camera)
@@ -108,7 +108,8 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 			match event.button_index:
 				MOUSE_BUTTON_LEFT:
 					if result:
-						instantiate_asset(result.position, selected_asset)
+						var asset_uid: String = selected_assets_uid.pick_random()
+						instantiate_asset(result.position, asset_uid)
 						return EditorPlugin.AFTER_GUI_INPUT_STOP
 				
 				MOUSE_BUTTON_RIGHT:
@@ -251,14 +252,10 @@ func _save_external_data() -> void:
 	for collection: Collection in collections.values():
 		ResourceSaver.save(collection)
 
-func change_brush(asset: Dictionary) -> void:
-	if asset.is_empty():
-		return
-	selected_asset = asset
-
+func change_brush(asset_uid: String) -> void:
 	if brush:
 		brush.free()
-	var packedscene := ResourceLoader.load(asset.uid) as PackedScene
+	var packedscene := ResourceLoader.load(asset_uid) as PackedScene
 
 	if packedscene:
 		var new_brush := packedscene.instantiate()
@@ -270,8 +267,8 @@ func change_brush(asset: Dictionary) -> void:
 		if not root_node:
 			brush.hide()
 
-func instantiate_asset(position: Vector3, asset: Dictionary) -> void:
-	var packedscene := ResourceLoader.load(asset.uid) as PackedScene
+func instantiate_asset(position: Vector3, asset_uid: String) -> void:
+	var packedscene := ResourceLoader.load(asset_uid) as PackedScene
 
 	if packedscene:
 		var instance := packedscene.instantiate() as Node3D
@@ -289,3 +286,8 @@ func instantiate_asset(position: Vector3, asset: Dictionary) -> void:
 
 func set_align_to_surface(value: bool) -> void:
 	align_to_surface = value
+
+func set_selected_assets(asset_uids: Array[String]) -> void:
+	selected_assets_uid = asset_uids
+
+	change_brush(selected_assets_uid[0])

@@ -140,6 +140,7 @@ func spawn_collection_tab(uid: String, collection: Collection) -> void:
     collection_list.icon_scale = prop_placer_instance.icon_size / 4.0
     collection_list.icon_mode = ItemList.ICON_MODE_TOP
     collection_list.same_column_width = true
+    collection_list.select_mode = ItemList.SELECT_MULTI
 
     for asset: Dictionary in collection.assets:
         add_asset_to_tab(collection_list, asset)
@@ -154,13 +155,24 @@ func _on_asset_clicked(index: int, _at_position: Vector2, mouse_button_index: in
 
     match mouse_button_index:
         1:
-            prop_placer_instance.change_brush(prop_placer_instance.collections[current_tab.get_meta("uid")].assets[index])
+            prop_placer_instance.set_selected_assets(get_selected_asset_uids())
         2:
             current_tab.remove_item(index)
             # TODO: don't rely on index
             prop_placer_instance.collections[current_tab.get_meta("uid")].assets.remove_at(index)
+            prop_placer_instance.set_selected_assets(get_selected_asset_uids())
         _:
             return
+
+func get_selected_asset_uids() -> Array[String]:
+    var current_tab := collection_tabs.get_child(collection_tabs.current_tab) as CollectionList
+
+    var selected_items := current_tab.get_selected_items()
+    var asset_uids: Array[String] = []
+    for i: int in selected_items:
+        asset_uids.append(prop_placer_instance.collections[current_tab.get_meta("uid")].assets[i].uid)
+    
+    return asset_uids
 
 func _on_data_dropped(data: Variant) -> void:
     var current_tab := collection_tabs.current_tab
