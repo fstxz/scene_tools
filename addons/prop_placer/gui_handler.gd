@@ -151,7 +151,7 @@ func spawn_collection_tab(uid: String, collection: Collection) -> void:
 
     collection_tabs.add_child(collection_list)
 
-func _on_item_selected(index: int, selected: bool) -> void:
+func _on_item_selected(_index: int, _selected: bool) -> void:
     prop_placer_instance.set_selected_assets(get_selected_asset_uids())
 
 func _on_asset_clicked(index: int, _at_position: Vector2, mouse_button_index: int) -> void:
