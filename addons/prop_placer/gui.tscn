@@ -202,7 +202,7 @@ layout_mode = 2
 [node name="Label" type="Label" parent="HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer/GridContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Ground"
+text = "Position"
 
 [node name="GridLevel" type="LineEdit" parent="HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer/GridContainer/HBoxContainer2"]
 layout_mode = 2
