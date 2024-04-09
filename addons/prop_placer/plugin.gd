@@ -26,6 +26,7 @@ var grid_step := 1.0
 var grid_offset := 0.0
 var align_to_surface := false
 var icon_size : int = 4
+var base_scale := 1.0
 
 # String (uid), Collection
 var collections: Dictionary
@@ -191,6 +192,7 @@ func _get_window_layout(configuration: ConfigFile) -> void:
 	configuration.set_value(plugin_name, "grid_offset", grid_offset)
 	configuration.set_value(plugin_name, "align_to_surface", align_to_surface)
 	configuration.set_value(plugin_name, "icon_size", icon_size)
+	configuration.set_value(plugin_name, "base_scale", base_scale)
 
 func _set_window_layout(configuration: ConfigFile) -> void:
 	var collection_ids: Array[String] = configuration.get_value(plugin_name, "collections", [])
@@ -221,6 +223,9 @@ func _set_window_layout(configuration: ConfigFile) -> void:
 	icon_size = configuration.get_value(plugin_name, "icon_size", 4)
 	gui_instance.icon_size_slider.set_value_no_signal(float(icon_size))
 	gui_instance.set_collection_icon_size()
+
+	base_scale = configuration.get_value(plugin_name, "base_scale", 1.0)
+	gui_instance.base_scale.text = str(base_scale)
 
 func generate_preview(node: Node) -> Texture2D:
 	gui_instance.preview_viewport.add_child(node)
@@ -276,6 +281,7 @@ func change_brush(asset_uid: String) -> void:
 	if packedscene:
 		var new_brush := packedscene.instantiate()
 		brush = new_brush
+		brush.scale = Vector3(base_scale, base_scale, base_scale)
 
 		if scene_root:
 			scene_root.add_child(brush)
@@ -299,6 +305,7 @@ func instantiate_asset(position: Vector3, asset_uid: String) -> void:
 
 		instance.global_position = position
 		instance.global_rotation = brush.rotation
+		instance.scale = Vector3(base_scale, base_scale, base_scale)
 
 func set_align_to_surface(value: bool) -> void:
 	align_to_surface = value
@@ -308,3 +315,8 @@ func set_selected_assets(asset_uids: Array[String]) -> void:
 
 	if not selected_asset_uids.is_empty():
 		change_brush(selected_asset_uids[0])
+
+func set_base_scale(value: float) -> void:
+	base_scale = value
+	if brush:
+		brush.scale = Vector3(base_scale, base_scale, base_scale)
