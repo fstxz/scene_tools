@@ -27,6 +27,7 @@ var grid_offset := 0.0
 var align_to_surface := false
 var icon_size : int = 4
 var base_scale := 1.0
+var random_scale := 0.0
 
 # String (uid), Collection
 var collections: Dictionary
@@ -193,6 +194,7 @@ func _get_window_layout(configuration: ConfigFile) -> void:
 	configuration.set_value(plugin_name, "align_to_surface", align_to_surface)
 	configuration.set_value(plugin_name, "icon_size", icon_size)
 	configuration.set_value(plugin_name, "base_scale", base_scale)
+	configuration.set_value(plugin_name, "random_scale", random_scale)
 
 func _set_window_layout(configuration: ConfigFile) -> void:
 	var collection_ids: Array[String] = configuration.get_value(plugin_name, "collections", [])
@@ -226,6 +228,9 @@ func _set_window_layout(configuration: ConfigFile) -> void:
 
 	base_scale = configuration.get_value(plugin_name, "base_scale", 1.0)
 	gui_instance.base_scale.text = str(base_scale)
+
+	random_scale = configuration.get_value(plugin_name, "random_scale", 0.0)
+	gui_instance.random_scale.text = str(random_scale)
 
 func generate_preview(node: Node) -> Texture2D:
 	gui_instance.preview_viewport.add_child(node)
@@ -305,7 +310,11 @@ func instantiate_asset(position: Vector3, asset_uid: String) -> void:
 
 		instance.global_position = position
 		instance.global_rotation = brush.rotation
-		instance.scale = Vector3(base_scale, base_scale, base_scale)
+
+		var scale_range := 0.0
+		if not is_zero_approx(random_scale):
+			scale_range = randf_range(-random_scale, random_scale)
+		instance.scale = Vector3(base_scale + scale_range, base_scale + scale_range, base_scale + scale_range)
 
 func set_align_to_surface(value: bool) -> void:
 	align_to_surface = value
@@ -320,3 +329,6 @@ func set_base_scale(value: float) -> void:
 	base_scale = value
 	if brush:
 		brush.scale = Vector3(base_scale, base_scale, base_scale)
+
+func set_random_scale(value: float) -> void:
+	random_scale = value

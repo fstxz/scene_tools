@@ -26,6 +26,7 @@ var prop_placer_instance: PropPlacer
 @export var version_label: Label
 @export var icon_size_slider: HSlider
 @export var base_scale: LineEdit
+@export var random_scale: LineEdit
 
 @export var collection_tabs: TabContainer
 
@@ -41,9 +42,13 @@ func _ready() -> void:
     help_button.pressed.connect(_on_help_button_pressed)
     icon_size_slider.value_changed.connect(_on_icon_size_slider_value_changed)
     base_scale.text_changed.connect(_on_base_scale_text_changed)
+    random_scale.text_changed.connect(_on_random_scale_text_changed)
 
     collection_tabs.get_tab_bar().tab_close_display_policy = TabBar.CLOSE_BUTTON_SHOW_ACTIVE_ONLY
     collection_tabs.get_tab_bar().tab_close_pressed.connect(remove_collection_tab)
+
+func _on_random_scale_text_changed(text: String) -> void:
+    prop_placer_instance.set_random_scale(float(text))
 
 func _on_base_scale_text_changed(text: String) -> void:
     prop_placer_instance.set_base_scale(float(text))
