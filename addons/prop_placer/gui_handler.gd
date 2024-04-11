@@ -27,6 +27,7 @@ var prop_placer_instance: PropPlacer
 @export var icon_size_slider: HSlider
 @export var base_scale: LineEdit
 @export var random_scale: LineEdit
+@export var warning_icon: CompressedTexture2D
 
 @export var collection_tabs: TabContainer
 
@@ -117,7 +118,7 @@ func _on_grid_toggled(toggled: bool) -> void:
     prop_placer_instance.set_grid_enabled(toggled)
 
 func _on_grid_level_text_changed(text: String) -> void:
-    prop_placer_instance.set_grid_level(float(text)) # God forgive me
+    prop_placer_instance.set_grid_level(float(text))
 
 func _on_grid_step_text_changed(text: String) -> void:
     prop_placer_instance.set_grid_step(float(text))

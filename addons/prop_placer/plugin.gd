@@ -2,6 +2,7 @@
 extends EditorPlugin
 
 # TODO: invalidate old collection if a new one overrides it
+# TODO: disable subviewport after generating thumbnails
 
 const plugin_name := "Prop Placer"
 
@@ -93,7 +94,7 @@ func set_root_node(node: Node) -> void:
 
 	if node == null:
 		gui_instance.root_node_button.text = "Select"
-		gui_instance.root_node_button.icon = EditorInterface.get_editor_theme().get_icon("StatusWarning", "EditorIcons")
+		gui_instance.root_node_button.icon = gui_instance.warning_icon
 
 		if brush:
 			brush.hide()
