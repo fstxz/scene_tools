@@ -24,7 +24,7 @@ Follow [Godot documentation](https://docs.godotengine.org/en/stable/tutorials/pl
 5. Select the asset you want to place from the list. Right click if you want to remove it.
 6. In the top left corner, click the button that says "Select" and select a node. Objects will be spawned as children of this node. Click again to select another node.
 
-You should now be able to place the asset. If you don't see it, click on any node in the scene tree.
+You should now be able to place the asset.
 
 > [!TIP]
 > Click the ? button to view keybindings and additional settings.

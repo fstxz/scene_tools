@@ -103,6 +103,8 @@ func set_root_node(node: Node) -> void:
 		gui_instance.root_node_button.icon = EditorInterface.get_editor_theme().get_icon(node.get_class(), "EditorIcons")
 		if brush:
 			brush.show()
+	
+	select_root_node()
 
 func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 	if selected_asset_uids.is_empty() or not root_node:
@@ -325,6 +327,8 @@ func set_selected_assets(asset_uids: Array[String]) -> void:
 
 	if not selected_asset_uids.is_empty():
 		change_brush(selected_asset_uids[0])
+	
+	select_root_node()
 
 func set_base_scale(value: float) -> void:
 	base_scale = value
@@ -333,3 +337,9 @@ func set_base_scale(value: float) -> void:
 
 func set_random_scale(value: float) -> void:
 	random_scale = value
+
+func select_root_node() -> void:
+	if root_node:
+		var selection := EditorInterface.get_selection()
+		selection.clear()
+		selection.add_node(root_node)
