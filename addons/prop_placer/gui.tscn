@@ -27,7 +27,7 @@ ambient_light_color = Color(0.644531, 0.644531, 0.644531, 1)
 environment = SubResource("Environment_k3mtt")
 
 [node name="PropPlacer" type="Control" node_paths=PackedStringArray("preview_viewport", "preview_camera", "root_node_button", "grid_button", "grid_level", "grid_step", "grid_offset", "new_collection_name", "new_collection_button", "import_button", "align_to_surface_button", "help_button", "help_dialog", "version_label", "icon_size_slider", "base_scale", "random_scale", "collection_tabs")]
-custom_minimum_size = Vector2(0, 50)
+custom_minimum_size = Vector2(0, 100)
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
