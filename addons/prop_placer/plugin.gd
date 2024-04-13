@@ -327,6 +327,8 @@ func set_selected_assets(asset_uids: Array[String]) -> void:
 
 	if not selected_asset_uids.is_empty():
 		change_brush(selected_asset_uids[0])
+	elif brush:
+		brush.free()
 	
 	select_root_node()
 
