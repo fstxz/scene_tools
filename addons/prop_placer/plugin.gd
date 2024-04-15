@@ -29,6 +29,7 @@ var align_to_surface := false
 var icon_size : int = 4
 var base_scale := 1.0
 var random_scale := 0.0
+var grid_plane_normal: int = 0
 
 # String (uid), Collection
 var collections: Dictionary
@@ -116,9 +117,18 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 		brush.rotation = rotation
 
 		if grid_enabled:
-			result.position.y = grid_plane.d
-			result.position = result.position.snapped(Vector3(grid_step, 0.0, grid_step))
-			result.position += Vector3(grid_offset, 0.0, grid_offset)
+			result.position = result.position.snapped(Vector3(grid_step, grid_step, grid_step))
+			result.position += Vector3(grid_offset, grid_offset, grid_offset)
+
+			# TODO: maybe use transform instead of just position to avoid this
+			match grid_plane_normal:
+				0:
+					result.position.y = grid_plane.d
+				1:
+					result.position.z = grid_plane.d
+				2:
+					result.position.x = grid_plane.d
+			
 		elif align_to_surface:
 			brush.transform = align_with_normal(brush.transform, result.normal)
 
@@ -198,6 +208,7 @@ func _get_window_layout(configuration: ConfigFile) -> void:
 	configuration.set_value(plugin_name, "icon_size", icon_size)
 	configuration.set_value(plugin_name, "base_scale", base_scale)
 	configuration.set_value(plugin_name, "random_scale", random_scale)
+	configuration.set_value(plugin_name, "grid_plane_normal", grid_plane_normal)
 
 func _set_window_layout(configuration: ConfigFile) -> void:
 	var collection_ids: Array[String] = configuration.get_value(plugin_name, "collections", [])
@@ -234,6 +245,10 @@ func _set_window_layout(configuration: ConfigFile) -> void:
 
 	random_scale = configuration.get_value(plugin_name, "random_scale", 0.0)
 	gui_instance.random_scale.text = str(random_scale)
+
+	grid_plane_normal = configuration.get_value(plugin_name, "grid_plane_normal", 0)
+	gui_instance.grid_plane_option.selected = grid_plane_normal
+	set_grid_plane(grid_plane_normal)
 
 func generate_preview(node: Node) -> Texture2D:
 	gui_instance.preview_viewport.add_child(node)
@@ -345,3 +360,13 @@ func select_root_node() -> void:
 		var selection := EditorInterface.get_selection()
 		selection.clear()
 		selection.add_node(root_node)
+
+func set_grid_plane(plane: int) -> void:
+	grid_plane_normal = plane
+	match plane:
+		0:
+			grid_plane.normal = Vector3.UP
+		1:
+			grid_plane.normal = Vector3.BACK
+		2:
+			grid_plane.normal = Vector3.RIGHT
