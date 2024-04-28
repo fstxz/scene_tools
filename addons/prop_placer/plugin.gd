@@ -64,7 +64,7 @@ func _get_plugin_name() -> String:
 func _get_state() -> Dictionary:
 	var path: String
 	if root_node:
-		path = root_node.get_path()
+		path = scene_root.get_path_to(root_node)
 	return { "root_node": path }
 
 func _set_state(state: Dictionary) -> void:
@@ -209,6 +209,11 @@ func _get_window_layout(configuration: ConfigFile) -> void:
 	configuration.set_value(plugin_name, "base_scale", base_scale)
 	configuration.set_value(plugin_name, "random_scale", random_scale)
 	configuration.set_value(plugin_name, "grid_plane_normal", grid_plane_normal)
+	if scene_root and root_node:
+		saved_root_node_path = scene_root.get_path_to(root_node)
+	else:
+		saved_root_node_path = ""
+	configuration.set_value(plugin_name, "root_node_path", saved_root_node_path)
 
 func _set_window_layout(configuration: ConfigFile) -> void:
 	var collection_ids: Array[String] = configuration.get_value(plugin_name, "collections", [])
@@ -249,6 +254,8 @@ func _set_window_layout(configuration: ConfigFile) -> void:
 	grid_plane_normal = configuration.get_value(plugin_name, "grid_plane_normal", 0)
 	gui_instance.grid_plane_option.selected = grid_plane_normal
 	set_grid_plane(grid_plane_normal)
+
+	saved_root_node_path = configuration.get_value(plugin_name, "root_node_path", "")
 
 func generate_preview(node: Node) -> Texture2D:
 	gui_instance.preview_viewport.add_child(node)
