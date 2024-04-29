@@ -91,8 +91,10 @@ func _handles(_object: Object) -> bool:
 	return true
 
 func set_root_node(node: Node) -> void:
-	root_node = node
-
+	if root_node:
+		if root_node.tree_exiting.is_connected(set_root_node):
+			root_node.tree_exiting.disconnect(set_root_node)
+	
 	if node == null:
 		gui_instance.root_node_button.text = "Select"
 		gui_instance.root_node_button.icon = gui_instance.warning_icon
@@ -100,11 +102,16 @@ func set_root_node(node: Node) -> void:
 		if brush:
 			brush.hide()
 	else:
-		gui_instance.root_node_button.text = root_node.name
+		gui_instance.root_node_button.text = node.name
 		gui_instance.root_node_button.icon = EditorInterface.get_editor_theme().get_icon(node.get_class(), "EditorIcons")
+
+		if not node.tree_exiting.is_connected(set_root_node):
+			node.tree_exiting.connect(set_root_node.bind(null))
+
 		if brush:
 			brush.show()
 	
+	root_node = node
 	select_root_node()
 
 func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
