@@ -1,9 +1,6 @@
 @tool
 extends EditorPlugin
 
-# TODO: invalidate old collection if a new one overrides it
-# TODO: disable subviewport after generating thumbnails
-
 const plugin_name := "Prop Placer"
 
 const preview_size: int = 128

@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://ilgtvpjc8ygg"]
+[gd_scene load_steps=7 format=3 uid="uid://ilgtvpjc8ygg"]
 
 [ext_resource type="Script" path="res://addons/prop_placer/gui_handler.gd" id="1_0j3pr"]
 [ext_resource type="Texture2D" uid="uid://csp0s85b3o2x1" path="res://addons/prop_placer/icons/Info.svg" id="2_h35uc"]
@@ -19,14 +19,7 @@ corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
-[sub_resource type="Environment" id="Environment_k3mtt"]
-ambient_light_source = 2
-ambient_light_color = Color(0.644531, 0.644531, 0.644531, 1)
-
-[sub_resource type="World3D" id="World3D_p21ah"]
-environment = SubResource("Environment_k3mtt")
-
-[node name="PropPlacer" type="Control" node_paths=PackedStringArray("preview_viewport", "preview_camera", "root_node_button", "grid_button", "grid_level", "grid_step", "grid_offset", "new_collection_name", "new_collection_button", "import_button", "align_to_surface_button", "help_button", "help_dialog", "version_label", "icon_size_slider", "base_scale", "random_scale", "grid_plane_option", "collection_tabs")]
+[node name="PropPlacer" type="Control" node_paths=PackedStringArray("root_node_button", "grid_button", "grid_level", "grid_step", "grid_offset", "new_collection_name", "new_collection_button", "import_button", "align_to_surface_button", "help_button", "help_dialog", "version_label", "icon_size_slider", "base_scale", "random_scale", "grid_plane_option", "collection_tabs")]
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 3
 anchors_preset = 15
@@ -35,8 +28,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_0j3pr")
-preview_viewport = NodePath("SubViewport")
-preview_camera = NodePath("SubViewport/Camera3D")
 root_node_button = NodePath("HBoxContainer/ScrollContainer/LeftPanel/RootNodeContainer/RootButton")
 grid_button = NodePath("HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer/GridCheckBox")
 grid_level = NodePath("HBoxContainer/ScrollContainer/LeftPanel/Grid/MarginContainer/VBoxContainer/GridContainer/HBoxContainer2/GridLevel")
@@ -333,22 +324,6 @@ text = "Import"
 [node name="TabContainer" type="TabContainer" parent="HBoxContainer/Collections/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-
-[node name="SubViewport" type="SubViewport" parent="."]
-own_world_3d = true
-world_3d = SubResource("World3D_p21ah")
-transparent_bg = true
-scaling_3d_mode = 0
-size = Vector2i(64, 64)
-render_target_update_mode = 0
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="SubViewport"]
-transform = Transform3D(0.707107, 0.5, -0.5, 0, 0.707107, 0.707107, 0.707107, -0.5, 0.5, 0, 0, 0)
-
-[node name="Camera3D" type="Camera3D" parent="SubViewport"]
-transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 26.0597, 36.8541, 26.0597)
-projection = 1
-size = 10.0
 
 [node name="HelpDialog" type="AcceptDialog" parent="."]
 title = "About"

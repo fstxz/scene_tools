@@ -9,8 +9,8 @@ const CollectionList := preload("res://addons/prop_placer/collection_list.gd")
 
 var prop_placer_instance: PropPlacer
 
-@export var preview_viewport: SubViewport
-@export var preview_camera: Camera3D
+var preview_viewport: SubViewport
+var preview_camera: Camera3D
 
 @export var root_node_button: Button
 @export var grid_button: CheckBox
@@ -49,6 +49,26 @@ func _ready() -> void:
 
     collection_tabs.get_tab_bar().tab_close_display_policy = TabBar.CLOSE_BUTTON_SHOW_ACTIVE_ONLY
     collection_tabs.get_tab_bar().tab_close_pressed.connect(remove_collection_tab)
+
+    setup_preview_viewport()
+
+func setup_preview_viewport() -> void:
+    preview_viewport = SubViewport.new()
+    preview_viewport.size = Vector2i(prop_placer_instance.preview_size, prop_placer_instance.preview_size)
+    preview_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+    preview_viewport.transparent_bg = true
+    preview_viewport.scaling_3d_mode = SubViewport.SCALING_3D_MODE_BILINEAR
+    preview_viewport.own_world_3d = true
+    preview_viewport.world_3d = World3D.new()
+    preview_viewport.world_3d.environment = Environment.new()
+    preview_viewport.world_3d.environment.ambient_light_source = 2
+    preview_viewport.world_3d.environment.ambient_light_color = Color(1.0, 1.0, 1.0, 1.0)
+
+    preview_camera = Camera3D.new()
+    preview_camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+
+    preview_viewport.add_child(preview_camera)
+    add_child(preview_viewport)
 
 func _on_grid_plane_option_button_item_selected(index: int) -> void:
     prop_placer_instance.set_grid_plane(index)
