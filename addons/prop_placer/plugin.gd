@@ -275,6 +275,7 @@ func generate_preview(node: Node) -> Texture2D:
 
 	var max_size := max(aabb.size.x, aabb.size.y, aabb.size.z) as float
 
+	gui_instance.preview_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 	gui_instance.preview_camera.size = max_size * 2.0
 	gui_instance.preview_camera.look_at_from_position(Vector3(max_size, max_size, max_size), aabb.get_center())
 

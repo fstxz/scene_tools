@@ -224,7 +224,6 @@ layout_mode = 2
 selected = 0
 item_count = 3
 popup/item_0/text = "XZ"
-popup/item_0/id = 0
 popup/item_1/text = "XY"
 popup/item_1/id = 1
 popup/item_2/text = "YZ"
@@ -340,10 +339,8 @@ own_world_3d = true
 world_3d = SubResource("World3D_p21ah")
 transparent_bg = true
 scaling_3d_mode = 0
-scaling_3d_scale = 1.0
-fsr_sharpness = 2.0
 size = Vector2i(64, 64)
-render_target_update_mode = 4
+render_target_update_mode = 0
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="SubViewport"]
 transform = Transform3D(0.707107, 0.5, -0.5, 0, 0.707107, 0.707107, 0.707107, -0.5, 0.5, 0, 0, 0)
