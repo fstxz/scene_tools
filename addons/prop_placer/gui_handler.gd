@@ -112,6 +112,7 @@ func _on_new_collection_button_pressed() -> void:
     var save_dialog := EditorFileDialog.new()
     save_dialog.file_mode = EditorFileDialog.FILE_MODE_SAVE_FILE
     save_dialog.add_filter("*.tres", "Collection")
+    save_dialog.size = Vector2(800, 700)
     EditorInterface.popup_dialog_centered(save_dialog)
 
     save_dialog.file_selected.connect(file_callback.bind(collection_name))
@@ -120,6 +121,7 @@ func _on_import_button_pressed() -> void:
     var load_dialog := EditorFileDialog.new()
     load_dialog.file_mode = EditorFileDialog.FILE_MODE_OPEN_FILES
     load_dialog.add_filter("*.tres", "Collection")
+    load_dialog.size = Vector2(800, 700)
     EditorInterface.popup_dialog_centered(load_dialog)
 
     load_dialog.files_selected.connect(import_dialog_callback)
