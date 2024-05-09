@@ -318,6 +318,14 @@ func change_brush(asset_uid: String) -> void:
 		brush = new_brush
 		brush.scale = Vector3(base_scale, base_scale, base_scale)
 
+		var brush_children := [brush]
+
+		while not brush_children.is_empty():
+			var child := brush_children.pop_back() as Node
+			if child is CollisionObject3D or child is CSGShape3D:
+				child.collision_layer = 0
+			brush_children.append_array(child.get_children())
+
 		if scene_root:
 			scene_root.add_child(brush)
 
