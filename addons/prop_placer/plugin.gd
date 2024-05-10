@@ -177,8 +177,10 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 		if event.keycode == KEY_H:
 			if grid_key_pressed != event.pressed:
 				if event.pressed:
+					set_grid_visible(true)
 					grid_mesh.mesh.surface_get_material(0).set_shader_parameter("fill_color", Vector4(1.0, 1.0, 1.0, 0.1))
 				else:
+					set_grid_visible(false)
 					grid_mesh.mesh.surface_get_material(0).set_shader_parameter("fill_color", Vector4(0.0, 0.0, 0.0, 0.0))
 			grid_key_pressed = event.pressed
 			return EditorPlugin.AFTER_GUI_INPUT_STOP
