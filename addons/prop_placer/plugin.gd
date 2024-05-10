@@ -127,17 +127,19 @@ func set_root_node(node: Node) -> void:
 	root_node = node
 	select_root_node()
 
+var grid_key_pressed := false
+
 func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 	if selected_asset_uids.is_empty() or not root_node:
 		return EditorPlugin.AFTER_GUI_INPUT_PASS
-	
+
 	var result := raycast(viewport_camera)
 
 	if result:
 		brush.rotation = rotation
 
 		if grid_enabled:
-			(grid_mesh.mesh.surface_get_material(0) as ShaderMaterial).set_shader_parameter("mouse_world_position", result.position)
+			grid_mesh.mesh.surface_get_material(0).set_shader_parameter("mouse_world_position", result.position)
 
 			result.position = result.position.snapped(Vector3(grid_step, grid_step, grid_step))
 			result.position += Vector3(grid_offset, grid_offset, grid_offset)
@@ -145,11 +147,11 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 			# TODO: maybe use transform instead of just position to avoid this
 			match grid_plane_normal:
 				0:
-					result.position.y = grid_plane.d
+					result.position.y = snappedf(grid_plane.d, grid_step)
 				1:
-					result.position.z = grid_plane.d
+					result.position.z = snappedf(grid_plane.d, grid_step)
 				2:
-					result.position.x = grid_plane.d
+					result.position.x = snappedf(grid_plane.d, grid_step)
 			
 			grid_mesh.position = result.position + Vector3.UP * 0.01
 
@@ -170,6 +172,22 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 				MOUSE_BUTTON_RIGHT:
 					rotation.y = wrapf(rotation.y + (PI/4.0), 0.0, TAU)
 					return EditorPlugin.AFTER_GUI_INPUT_STOP
+
+	if grid_display_enabled:
+		if event is InputEventKey:
+			if event.keycode == KEY_H:
+				if grid_key_pressed != event.pressed:
+					if event.pressed:
+						grid_mesh.mesh.surface_get_material(0).set_shader_parameter("fill_color", Vector4(1.0, 1.0, 1.0, 0.1))
+					else:
+						grid_mesh.mesh.surface_get_material(0).set_shader_parameter("fill_color", Vector4(0.0, 0.0, 0.0, 0.0))
+				grid_key_pressed = event.pressed
+				return EditorPlugin.AFTER_GUI_INPUT_STOP
+
+		if grid_key_pressed:
+			if event is InputEventMouseMotion:
+				grid_plane.d += event.relative.y * -0.1
+				gui_instance.grid_level.text = str(snappedf(grid_plane.d, grid_step))
 
 	return EditorPlugin.AFTER_GUI_INPUT_PASS
 
@@ -223,8 +241,8 @@ func set_grid_level(value: float) -> void:
 
 func set_grid_step(value: float) -> void:
 	grid_step = value
-	grid_mesh.mesh.size = Vector2(grid_step * 8.0, grid_step * 8.0)
-	(grid_mesh.mesh.surface_get_material(0) as ShaderMaterial).set_shader_parameter("grid_step", grid_step)
+	grid_mesh.mesh.size = Vector2(grid_step * 12.0, grid_step * 12.0)
+	grid_mesh.mesh.surface_get_material(0).set_shader_parameter("grid_step", grid_step)
 
 func set_grid_offset(value: float) -> void:
 	grid_offset = value
@@ -237,7 +255,7 @@ func _get_window_layout(configuration: ConfigFile) -> void:
 	configuration.set_value(plugin_name, "collections", collection_ids)
 
 	configuration.set_value(plugin_name, "grid_enabled", grid_enabled)
-	configuration.set_value(plugin_name, "grid_level", grid_plane.d)
+	configuration.set_value(plugin_name, "grid_level", snappedf(grid_plane.d, grid_step))
 	configuration.set_value(plugin_name, "grid_step", grid_step)
 	configuration.set_value(plugin_name, "grid_offset", grid_offset)
 	configuration.set_value(plugin_name, "align_to_surface", align_to_surface)
@@ -426,13 +444,13 @@ func set_grid_plane(plane: int) -> void:
 	match plane:
 		0:
 			grid_plane.normal = Vector3.UP
-			(grid_mesh.mesh.surface_get_material(0) as ShaderMaterial).set_shader_parameter("axis", Vector3i(1, 0, 0))
+			grid_mesh.mesh.surface_get_material(0).set_shader_parameter("axis", Vector3i(1, 0, 0))
 			grid_mesh.rotation = Vector3.ZERO
 		1:
 			grid_plane.normal = Vector3.BACK
-			(grid_mesh.mesh.surface_get_material(0) as ShaderMaterial).set_shader_parameter("axis", Vector3i(0, 1, 0))
+			grid_mesh.mesh.surface_get_material(0).set_shader_parameter("axis", Vector3i(0, 1, 0))
 			grid_mesh.rotation = Vector3(PI/2.0, 0.0, 0.0)
 		2:
 			grid_plane.normal = Vector3.RIGHT
-			(grid_mesh.mesh.surface_get_material(0) as ShaderMaterial).set_shader_parameter("axis", Vector3i(0, 0, 1))
+			grid_mesh.mesh.surface_get_material(0).set_shader_parameter("axis", Vector3i(0, 0, 1))
 			grid_mesh.rotation = Vector3(0.0, 0.0, PI/2.0)

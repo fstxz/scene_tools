@@ -329,13 +329,13 @@ size_flags_vertical = 3
 [node name="HelpDialog" type="AcceptDialog" parent="."]
 title = "About"
 initial_position = 4
-size = Vector2i(200, 294)
+size = Vector2i(365, 321)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HelpDialog"]
 offset_left = 8.0
 offset_top = 8.0
-offset_right = 192.0
-offset_bottom = 252.0
+offset_right = 357.0
+offset_bottom = 279.0
 
 [node name="VersionLabel" type="Label" parent="HelpDialog/VBoxContainer"]
 layout_mode = 2
@@ -346,7 +346,8 @@ layout_mode = 2
 text = "
 Controls:
 LMB - Place
-RMB - Rotate"
+RMB - Rotate
+(Hold) H + Mouse Up/Down - Raise/lower grid"
 horizontal_alignment = 1
 
 [node name="Label" type="Label" parent="HelpDialog/VBoxContainer"]
