@@ -377,4 +377,5 @@ ticks_on_borders = true
 
 [node name="DisplayGrid" type="CheckBox" parent="HelpDialog/VBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 4
 text = "Display grid"
