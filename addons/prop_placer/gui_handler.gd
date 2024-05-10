@@ -29,6 +29,7 @@ var preview_camera: Camera3D
 @export var random_scale: LineEdit
 @export var warning_icon: CompressedTexture2D
 @export var grid_plane_option: OptionButton
+@export var display_grid_checkbox: CheckBox
 
 @export var collection_tabs: TabContainer
 
@@ -46,6 +47,7 @@ func _ready() -> void:
     base_scale.text_changed.connect(_on_base_scale_text_changed)
     random_scale.text_changed.connect(_on_random_scale_text_changed)
     grid_plane_option.item_selected.connect(_on_grid_plane_option_button_item_selected)
+    display_grid_checkbox.toggled.connect(_on_display_grid_checkbox_toggled)
 
     collection_tabs.get_tab_bar().tab_close_display_policy = TabBar.CLOSE_BUTTON_SHOW_ACTIVE_ONLY
     collection_tabs.get_tab_bar().tab_close_pressed.connect(remove_collection_tab)
@@ -61,7 +63,7 @@ func setup_preview_viewport() -> void:
     preview_viewport.own_world_3d = true
     preview_viewport.world_3d = World3D.new()
     preview_viewport.world_3d.environment = Environment.new()
-    preview_viewport.world_3d.environment.ambient_light_source = 2
+    preview_viewport.world_3d.environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
     preview_viewport.world_3d.environment.ambient_light_color = Color(1.0, 1.0, 1.0, 1.0)
 
     preview_camera = Camera3D.new()
@@ -69,6 +71,9 @@ func setup_preview_viewport() -> void:
 
     preview_viewport.add_child(preview_camera)
     add_child(preview_viewport)
+
+func _on_display_grid_checkbox_toggled(toggled: bool) -> void:
+    prop_placer_instance.set_grid_display_enabled(toggled)
 
 func _on_grid_plane_option_button_item_selected(index: int) -> void:
     prop_placer_instance.set_grid_plane(index)

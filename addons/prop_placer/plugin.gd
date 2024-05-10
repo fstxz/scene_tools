@@ -36,6 +36,9 @@ var selected_asset_uids: Array[String]
 
 var rotation := Vector3.ZERO
 
+var grid_mesh: MeshInstance3D
+var grid_display_enabled := true
+
 func _enter_tree() -> void:
 	scene_root = EditorInterface.get_edited_scene_root()
 
@@ -49,11 +52,19 @@ func _enter_tree() -> void:
 
 	undo_redo = get_undo_redo()
 
+	grid_mesh = MeshInstance3D.new()
+	grid_mesh.mesh = PlaneMesh.new()
+	var shader_material := ShaderMaterial.new()
+	shader_material.shader = preload("res://addons/prop_placer/grid.gdshader")
+	grid_mesh.mesh.surface_set_material(0, shader_material)
+	grid_mesh.hide()
+
 func _exit_tree() -> void:
 	remove_control_from_bottom_panel(gui_instance)
 	gui_instance.free()
 	if brush:
 		brush.free()
+	grid_mesh.free()
 
 func _get_plugin_name() -> String:
 	return plugin_name
@@ -74,6 +85,7 @@ func _on_scene_changed(_scene_root: Node) -> void:
 	if is_instance_valid(self.scene_root):
 		if is_instance_valid(brush):
 			self.scene_root.remove_child(brush)
+		self.scene_root.remove_child(grid_mesh)
 	
 	self.scene_root = _scene_root
 
@@ -81,6 +93,7 @@ func _on_scene_changed(_scene_root: Node) -> void:
 		set_root_node(scene_root.get_node_or_null(saved_root_node_path))
 		if is_instance_valid(brush):
 			self.scene_root.add_child(brush)
+		self.scene_root.add_child(grid_mesh)
 	else:
 		set_root_node(null)
 
@@ -96,6 +109,7 @@ func set_root_node(node: Node) -> void:
 		gui_instance.root_node_button.text = "Select"
 		gui_instance.root_node_button.icon = gui_instance.warning_icon
 
+		grid_mesh.hide()
 		if brush:
 			brush.hide()
 	else:
@@ -105,6 +119,8 @@ func set_root_node(node: Node) -> void:
 		if not node.tree_exiting.is_connected(set_root_node):
 			node.tree_exiting.connect(set_root_node.bind(null))
 
+		if not selected_asset_uids.is_empty() and grid_enabled:
+			set_grid_visible(grid_display_enabled)
 		if brush:
 			brush.show()
 	
@@ -121,6 +137,8 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 		brush.rotation = rotation
 
 		if grid_enabled:
+			(grid_mesh.mesh.surface_get_material(0) as ShaderMaterial).set_shader_parameter("mouse_world_position", result.position)
+
 			result.position = result.position.snapped(Vector3(grid_step, grid_step, grid_step))
 			result.position += Vector3(grid_offset, grid_offset, grid_offset)
 
@@ -133,6 +151,8 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 				2:
 					result.position.x = grid_plane.d
 			
+			grid_mesh.position = result.position + Vector3.UP * 0.01
+
 		elif align_to_surface:
 			brush.transform = align_with_normal(brush.transform, result.normal)
 
@@ -187,12 +207,24 @@ func raycast(camera: Camera3D) -> Dictionary:
 
 func set_grid_enabled(enabled: bool) -> void:
 	grid_enabled = enabled
+	if grid_display_enabled:
+		set_grid_visible(enabled)
+
+func set_grid_visible(visible: bool) -> void:
+	if self.scene_root and not selected_asset_uids.is_empty():
+		grid_mesh.set_visible(visible)
+
+func set_grid_display_enabled(enabled: bool) -> void:
+	grid_display_enabled = enabled
+	set_grid_visible(enabled)
 
 func set_grid_level(value: float) -> void:
 	grid_plane.d = value
 
 func set_grid_step(value: float) -> void:
 	grid_step = value
+	grid_mesh.mesh.size = Vector2(grid_step * 8.0, grid_step * 8.0)
+	(grid_mesh.mesh.surface_get_material(0) as ShaderMaterial).set_shader_parameter("grid_step", grid_step)
 
 func set_grid_offset(value: float) -> void:
 	grid_offset = value
@@ -213,6 +245,7 @@ func _get_window_layout(configuration: ConfigFile) -> void:
 	configuration.set_value(plugin_name, "base_scale", base_scale)
 	configuration.set_value(plugin_name, "random_scale", random_scale)
 	configuration.set_value(plugin_name, "grid_plane_normal", grid_plane_normal)
+	configuration.set_value(plugin_name, "grid_display_enabled", grid_display_enabled)
 	if scene_root and root_node:
 		saved_root_node_path = scene_root.get_path_to(root_node)
 	else:
@@ -236,7 +269,7 @@ func _set_window_layout(configuration: ConfigFile) -> void:
 	grid_plane.d = configuration.get_value(plugin_name, "grid_level", 0.0)
 	gui_instance.grid_level.text = str(grid_plane.d)
 
-	grid_step = configuration.get_value(plugin_name, "grid_step", 1.0)
+	set_grid_step(configuration.get_value(plugin_name, "grid_step", 1.0))
 	gui_instance.grid_step.text = str(grid_step)
 
 	grid_offset = configuration.get_value(plugin_name, "grid_offset", 0.0)
@@ -260,6 +293,9 @@ func _set_window_layout(configuration: ConfigFile) -> void:
 	set_grid_plane(grid_plane_normal)
 
 	saved_root_node_path = configuration.get_value(plugin_name, "root_node_path", "")
+
+	grid_display_enabled = configuration.get_value(plugin_name, "grid_display_enabled", true)
+	gui_instance.display_grid_checkbox.set_pressed_no_signal(grid_display_enabled)
 
 func generate_preview(node: Node) -> Texture2D:
 	gui_instance.preview_viewport.add_child(node)
@@ -362,8 +398,12 @@ func set_selected_assets(asset_uids: Array[String]) -> void:
 
 	if not selected_asset_uids.is_empty():
 		change_brush(selected_asset_uids[0])
-	elif brush:
-		brush.free()
+		if grid_enabled and root_node:
+			set_grid_visible(grid_display_enabled)
+	else:
+		grid_mesh.hide()
+		if brush:
+			brush.free()
 	
 	select_root_node()
 
@@ -386,7 +426,13 @@ func set_grid_plane(plane: int) -> void:
 	match plane:
 		0:
 			grid_plane.normal = Vector3.UP
+			(grid_mesh.mesh.surface_get_material(0) as ShaderMaterial).set_shader_parameter("axis", Vector3i(1, 0, 0))
+			grid_mesh.rotation = Vector3.ZERO
 		1:
 			grid_plane.normal = Vector3.BACK
+			(grid_mesh.mesh.surface_get_material(0) as ShaderMaterial).set_shader_parameter("axis", Vector3i(0, 1, 0))
+			grid_mesh.rotation = Vector3(PI/2.0, 0.0, 0.0)
 		2:
 			grid_plane.normal = Vector3.RIGHT
+			(grid_mesh.mesh.surface_get_material(0) as ShaderMaterial).set_shader_parameter("axis", Vector3i(0, 0, 1))
+			grid_mesh.rotation = Vector3(0.0, 0.0, PI/2.0)
