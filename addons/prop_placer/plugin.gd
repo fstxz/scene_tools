@@ -84,8 +84,8 @@ func _on_scene_changed(_scene_root: Node) -> void:
 	else:
 		set_root_node(null)
 
-func _handles(_object: Object) -> bool:
-	return true
+func _handles(object: Object) -> bool:
+	return object is Node
 
 func set_root_node(node: Node) -> void:
 	if root_node:
