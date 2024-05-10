@@ -173,21 +173,21 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 					rotation.y = wrapf(rotation.y + (PI/4.0), 0.0, TAU)
 					return EditorPlugin.AFTER_GUI_INPUT_STOP
 
-	if grid_display_enabled:
-		if event is InputEventKey:
-			if event.keycode == KEY_H:
-				if grid_key_pressed != event.pressed:
-					if event.pressed:
-						grid_mesh.mesh.surface_get_material(0).set_shader_parameter("fill_color", Vector4(1.0, 1.0, 1.0, 0.1))
-					else:
-						grid_mesh.mesh.surface_get_material(0).set_shader_parameter("fill_color", Vector4(0.0, 0.0, 0.0, 0.0))
-				grid_key_pressed = event.pressed
-				return EditorPlugin.AFTER_GUI_INPUT_STOP
+	if event is InputEventKey:
+		if event.keycode == KEY_H:
+			if grid_key_pressed != event.pressed:
+				if event.pressed:
+					grid_mesh.mesh.surface_get_material(0).set_shader_parameter("fill_color", Vector4(1.0, 1.0, 1.0, 0.1))
+				else:
+					grid_mesh.mesh.surface_get_material(0).set_shader_parameter("fill_color", Vector4(0.0, 0.0, 0.0, 0.0))
+			grid_key_pressed = event.pressed
+			return EditorPlugin.AFTER_GUI_INPUT_STOP
 
-		if grid_key_pressed:
-			if event is InputEventMouseMotion:
-				grid_plane.d += event.relative.y * -0.1
-				gui_instance.grid_level.text = str(snappedf(grid_plane.d, grid_step))
+	if grid_key_pressed:
+		if event is InputEventMouseMotion:
+			grid_plane.d += event.relative.y * -0.1
+			gui_instance.grid_level.text = str(snappedf(grid_plane.d, grid_step))
+		return EditorPlugin.AFTER_GUI_INPUT_STOP
 
 	return EditorPlugin.AFTER_GUI_INPUT_PASS
 
