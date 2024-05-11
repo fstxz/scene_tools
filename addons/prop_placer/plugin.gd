@@ -238,7 +238,8 @@ func set_grid_visible(visible: bool) -> void:
 
 func set_grid_display_enabled(enabled: bool) -> void:
 	grid_display_enabled = enabled
-	set_grid_visible(enabled)
+	if grid_enabled:
+		set_grid_visible(enabled)
 
 func set_grid_level(value: float) -> void:
 	grid_plane.d = value
