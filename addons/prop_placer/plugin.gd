@@ -25,7 +25,7 @@ var saved_root_node_path: String
 
 var undo_redo: EditorUndoRedoManager
 
-var snapping_enabled := true
+var snapping_enabled := false
 # TODO: change to Vector3
 var snapping_step := 1.0
 var snapping_offset := 0.0
@@ -321,7 +321,7 @@ func _set_window_layout(configuration: ConfigFile) -> void:
 
 	change_mode(configuration.get_value(plugin_name, "current_mode", current_mode))
 
-	snapping_enabled = configuration.get_value(plugin_name, "snapping_enabled", true)
+	snapping_enabled = configuration.get_value(plugin_name, "snapping_enabled", false)
 	gui_instance.snapping_button.set_pressed_no_signal(snapping_enabled)
 
 	plane.d = configuration.get_value(plugin_name, "plane_level", 0.0)
