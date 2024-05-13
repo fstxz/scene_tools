@@ -13,10 +13,9 @@ var preview_viewport: SubViewport
 var preview_camera: Camera3D
 
 @export var root_node_button: Button
-@export var grid_button: CheckBox
-@export var grid_level: LineEdit
-@export var grid_step: LineEdit
-@export var grid_offset: LineEdit
+@export var snapping_button: CheckBox
+@export var snapping_step: LineEdit
+@export var snapping_offset: LineEdit
 @export var new_collection_name: LineEdit
 @export var new_collection_button: Button
 @export var import_button: Button
@@ -28,17 +27,21 @@ var preview_camera: Camera3D
 @export var base_scale: LineEdit
 @export var random_scale: LineEdit
 @export var warning_icon: CompressedTexture2D
-@export var grid_plane_option: OptionButton
+@export var plane_option: OptionButton
 @export var display_grid_checkbox: CheckBox
+@export var mode_option: OptionButton
+@export var surface_container: Control
+@export var plane_container: Control
+@export var plane_level: LineEdit
 
 @export var collection_tabs: TabContainer
 
 func _ready() -> void:
     root_node_button.pressed.connect(_on_root_node_button_pressed)
-    grid_button.toggled.connect(_on_grid_toggled)
-    grid_level.text_changed.connect(_on_grid_level_text_changed)
-    grid_step.text_changed.connect(_on_grid_step_text_changed)
-    grid_offset.text_changed.connect(_on_grid_offset_text_changed)
+    snapping_button.toggled.connect(_on_snapping_toggled)
+    plane_level.text_changed.connect(_on_plane_level_text_changed)
+    snapping_step.text_changed.connect(_on_snapping_step_text_changed)
+    snapping_offset.text_changed.connect(_on_snapping_offset_text_changed)
     new_collection_button.pressed.connect(_on_new_collection_button_pressed)
     import_button.pressed.connect(_on_import_button_pressed)
     align_to_surface_button.toggled.connect(_on_align_to_surface_toggled)
@@ -46,13 +49,18 @@ func _ready() -> void:
     icon_size_slider.value_changed.connect(_on_icon_size_slider_value_changed)
     base_scale.text_changed.connect(_on_base_scale_text_changed)
     random_scale.text_changed.connect(_on_random_scale_text_changed)
-    grid_plane_option.item_selected.connect(_on_grid_plane_option_button_item_selected)
+    plane_option.item_selected.connect(_on_plane_option_button_item_selected)
     display_grid_checkbox.toggled.connect(_on_display_grid_checkbox_toggled)
+    mode_option.item_selected.connect(_on_mode_option_button_item_selected)
 
     collection_tabs.get_tab_bar().tab_close_display_policy = TabBar.CLOSE_BUTTON_SHOW_ACTIVE_ONLY
     collection_tabs.get_tab_bar().tab_close_pressed.connect(remove_collection_tab)
 
     setup_preview_viewport()
+
+    # Hide mode specific containers
+    surface_container.hide()
+    plane_container.hide()
 
 func setup_preview_viewport() -> void:
     preview_viewport = SubViewport.new()
@@ -72,11 +80,14 @@ func setup_preview_viewport() -> void:
     preview_viewport.add_child(preview_camera)
     add_child(preview_viewport)
 
+func _on_mode_option_button_item_selected(index: int) -> void:
+    prop_placer_instance.change_mode(index)
+
 func _on_display_grid_checkbox_toggled(toggled: bool) -> void:
     prop_placer_instance.set_grid_display_enabled(toggled)
 
-func _on_grid_plane_option_button_item_selected(index: int) -> void:
-    prop_placer_instance.set_grid_plane(index)
+func _on_plane_option_button_item_selected(index: int) -> void:
+    prop_placer_instance.set_plane_normal(index)
 
 func _on_random_scale_text_changed(text: String) -> void:
     prop_placer_instance.set_random_scale(float(text))
@@ -146,17 +157,17 @@ func _on_root_node_selected(path: NodePath) -> void:
     if not path.is_empty():
         prop_placer_instance.set_root_node(prop_placer_instance.scene_root.get_node(path))
 
-func _on_grid_toggled(toggled: bool) -> void:
-    prop_placer_instance.set_grid_enabled(toggled)
+func _on_snapping_toggled(toggled: bool) -> void:
+    prop_placer_instance.set_snapping_enabled(toggled)
 
-func _on_grid_level_text_changed(text: String) -> void:
-    prop_placer_instance.set_grid_level(float(text))
+func _on_plane_level_text_changed(text: String) -> void:
+    prop_placer_instance.set_plane_level(float(text))
 
-func _on_grid_step_text_changed(text: String) -> void:
-    prop_placer_instance.set_grid_step(float(text))
+func _on_snapping_step_text_changed(text: String) -> void:
+    prop_placer_instance.set_snapping_step(float(text))
 
-func _on_grid_offset_text_changed(text: String) -> void:
-    prop_placer_instance.set_grid_offset(float(text))
+func _on_snapping_offset_text_changed(text: String) -> void:
+    prop_placer_instance.set_snapping_offset(float(text))
 
 func file_callback(path: String, collection_name: String) -> void:
     var collection := Collection.new(collection_name)

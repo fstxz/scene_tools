@@ -11,6 +11,13 @@ var gui := preload("res://addons/prop_placer/gui.tscn")
 
 var gui_instance: GuiHandler
 
+enum Mode {
+	FREE,
+	PLANE,
+}
+
+var current_mode := Mode.FREE
+
 var root_node: Node
 var scene_root: Node
 
@@ -18,15 +25,16 @@ var saved_root_node_path: String
 
 var undo_redo: EditorUndoRedoManager
 
-var grid_enabled := true
-var grid_plane := Plane(Vector3.UP, 0.0)
-var grid_step := 1.0
-var grid_offset := 0.0
+var snapping_enabled := true
+# TODO: change to Vector3
+var snapping_step := 1.0
+var snapping_offset := 0.0
+var plane := Plane(Vector3.UP, 0.0)
+var plane_normal: int = 0
 var align_to_surface := false
 var icon_size : int = 4
 var base_scale := 1.0
 var random_scale := 0.0
-var grid_plane_normal: int = 0
 
 # String (uid), Collection
 var collections: Dictionary
@@ -52,6 +60,9 @@ func _enter_tree() -> void:
 
 	undo_redo = get_undo_redo()
 
+	setup_grid_mesh()
+
+func setup_grid_mesh() -> void:
 	grid_mesh = MeshInstance3D.new()
 	grid_mesh.mesh = PlaneMesh.new()
 	var shader_material := ShaderMaterial.new()
@@ -119,7 +130,7 @@ func set_root_node(node: Node) -> void:
 		if not node.tree_exiting.is_connected(set_root_node):
 			node.tree_exiting.connect(set_root_node.bind(null))
 
-		if not selected_asset_uids.is_empty() and grid_enabled:
+		if not selected_asset_uids.is_empty() and snapping_enabled:
 			set_grid_visible(grid_display_enabled)
 		if brush:
 			brush.show()
@@ -127,71 +138,98 @@ func set_root_node(node: Node) -> void:
 	root_node = node
 	select_root_node()
 
-var grid_key_pressed := false
+func change_mode(new_mode: Mode) -> void:
+	# Mode exiting logic
+	match current_mode:
+		Mode.FREE:
+			gui_instance.surface_container.hide()
+		Mode.PLANE:
+			gui_instance.plane_container.hide()
+			set_grid_visible(false)
+
+	current_mode = new_mode
+	gui_instance.mode_option.selected = current_mode
+
+	# Mode entering logic
+	match current_mode:
+		Mode.FREE:
+			gui_instance.surface_container.show()
+		Mode.PLANE:
+			gui_instance.plane_container.show()
+			if snapping_enabled:
+				set_grid_visible(grid_display_enabled)
 
 func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 	if selected_asset_uids.is_empty() or not root_node:
 		return EditorPlugin.AFTER_GUI_INPUT_PASS
 
-	var result := raycast(viewport_camera)
+	brush.rotation = rotation
 
-	if result:
-		brush.rotation = rotation
+	match current_mode:
+		Mode.FREE:
+			var result := raycast(viewport_camera)
+			if not result.is_empty():
+				if snapping_enabled:
+					result.position = result.position.snapped(Vector3(snapping_step, snapping_step, snapping_step))
+				if align_to_surface:
+					brush.transform = align_with_normal(brush.transform, result.normal)
 
-		if grid_enabled:
-			grid_mesh.mesh.surface_get_material(0).set_shader_parameter("mouse_world_position", result.position)
+				brush.position = result.position
+		
+		Mode.PLANE:
+			brush.rotation = rotation
+			var result: Variant = raycast_plane(viewport_camera)
+			if result != null:
+				result = result as Vector3
 
-			result.position = result.position.snapped(Vector3(grid_step, grid_step, grid_step))
-			result.position += Vector3(grid_offset, grid_offset, grid_offset)
+				grid_mesh.mesh.surface_get_material(0).set_shader_parameter("mouse_world_position", result)
 
-			# TODO: maybe use transform instead of just position to avoid this
-			match grid_plane_normal:
-				0:
-					result.position.y = snappedf(grid_plane.d, grid_step)
-				1:
-					result.position.z = snappedf(grid_plane.d, grid_step)
-				2:
-					result.position.x = snappedf(grid_plane.d, grid_step)
-			
-			grid_mesh.position = result.position + Vector3.UP * 0.01
+				if snapping_enabled:
+					result = result.snapped(Vector3(snapping_step, snapping_step, snapping_step))
+					result += Vector3(snapping_offset, snapping_offset, snapping_offset)
+					grid_mesh.position = result
 
-		elif align_to_surface:
-			brush.transform = align_with_normal(brush.transform, result.normal)
 
-		brush.position = result.position
+				# TODO: maybe use transform instead of just position to avoid this
+				match plane_normal:
+					0:
+						result.y = plane.d
+						grid_mesh.position.y = plane.d + 0.01
+					1:
+						result.z = plane.d
+						grid_mesh.position.z = plane.d + 0.01
+					2:
+						result.x = plane.d
+						grid_mesh.position.x = plane.d + 0.01
+				
+				brush.position = result
 
 	if event is InputEventMouseButton:
-		if event.is_pressed():
-			match event.button_index:
-				MOUSE_BUTTON_LEFT:
-					if result:
-						var asset_uid: String = selected_asset_uids.pick_random()
-						instantiate_asset(result.position, asset_uid)
-						return EditorPlugin.AFTER_GUI_INPUT_STOP
-				
-				MOUSE_BUTTON_RIGHT:
+		match event.button_index:
+			MOUSE_BUTTON_LEFT:
+				if event.is_pressed():
+					var asset_uid: String = selected_asset_uids.pick_random()
+					instantiate_asset(asset_uid)
+					return EditorPlugin.AFTER_GUI_INPUT_STOP
+			
+			MOUSE_BUTTON_RIGHT:
+				if event.is_pressed():
 					rotation.y = wrapf(rotation.y + (PI/4.0), 0.0, TAU)
 					return EditorPlugin.AFTER_GUI_INPUT_STOP
-
-	if grid_enabled:
-		if event is InputEventKey:
-			if event.keycode == KEY_H:
-				if grid_key_pressed != event.pressed:
-					if event.pressed:
-						set_grid_visible(true)
-						grid_mesh.mesh.surface_get_material(0).set_shader_parameter("fill_color", Vector4(1.0, 1.0, 1.0, 0.1))
-					else:
-						if not grid_display_enabled:
-							set_grid_visible(false)
-						grid_mesh.mesh.surface_get_material(0).set_shader_parameter("fill_color", Vector4(0.0, 0.0, 0.0, 0.0))
-				grid_key_pressed = event.pressed
-				return EditorPlugin.AFTER_GUI_INPUT_STOP
-
-		if grid_key_pressed:
-			if event is InputEventMouseMotion:
-				grid_plane.d += event.relative.y * -0.1
-				gui_instance.grid_level.text = str(snappedf(grid_plane.d, grid_step))
-			return EditorPlugin.AFTER_GUI_INPUT_STOP
+			
+			MOUSE_BUTTON_WHEEL_DOWN:
+				if Input.is_key_pressed(KEY_CTRL):
+					if event.is_pressed():
+						plane.d -= snapping_step
+						gui_instance.plane_level.text = str(plane.d)
+					return EditorPlugin.AFTER_GUI_INPUT_STOP
+			
+			MOUSE_BUTTON_WHEEL_UP:
+				if Input.is_key_pressed(KEY_CTRL):
+					if event.is_pressed():
+						plane.d += snapping_step
+						gui_instance.plane_level.text = str(plane.d)
+					return EditorPlugin.AFTER_GUI_INPUT_STOP
 
 	return EditorPlugin.AFTER_GUI_INPUT_PASS
 
@@ -208,48 +246,43 @@ func align_with_normal(xform: Transform3D, n2: Vector3) -> Transform3D:
 		axis = Vector3.FORWARD # normals are in opposite directions
 	return xform.rotated(axis, alpha)
 
+func raycast_plane(camera: Camera3D) -> Variant:
+	var mousepos := EditorInterface.get_editor_viewport_3d().get_mouse_position()
+	return plane.intersects_ray(camera.project_ray_origin(mousepos), camera.project_ray_normal(mousepos) * 1000.0)
+
 func raycast(camera: Camera3D) -> Dictionary:
-	var result := Dictionary()
-	if grid_enabled:
-		var mousepos := EditorInterface.get_editor_viewport_3d().get_mouse_position()
-		var pos: Variant = grid_plane.intersects_ray(camera.project_ray_origin(mousepos), camera.project_ray_normal(mousepos) * 1000.0)
-		if pos:
-			result.position = pos
-	else:
-		var space_state := camera.get_world_3d().direct_space_state
-		var mousepos := EditorInterface.get_editor_viewport_3d().get_mouse_position()
+	var space_state := camera.get_world_3d().direct_space_state
+	var mousepos := EditorInterface.get_editor_viewport_3d().get_mouse_position()
 
-		var origin := camera.project_ray_origin(mousepos)
-		var end := origin + camera.project_ray_normal(mousepos) * 1000.0
-		var query := PhysicsRayQueryParameters3D.create(origin, end)
+	var origin := camera.project_ray_origin(mousepos)
+	var end := origin + camera.project_ray_normal(mousepos) * 1000.0
+	var query := PhysicsRayQueryParameters3D.create(origin, end)
 
-		result = space_state.intersect_ray(query)
+	return space_state.intersect_ray(query)
 
-	return result
-
-func set_grid_enabled(enabled: bool) -> void:
-	grid_enabled = enabled
+func set_snapping_enabled(enabled: bool) -> void:
+	snapping_enabled = enabled
 	if grid_display_enabled:
 		set_grid_visible(enabled)
 
 func set_grid_visible(visible: bool) -> void:
-	if self.scene_root and not selected_asset_uids.is_empty():
+	if self.scene_root and not selected_asset_uids.is_empty() and current_mode == Mode.PLANE:
 		grid_mesh.set_visible(visible)
 
 func set_grid_display_enabled(enabled: bool) -> void:
 	grid_display_enabled = enabled
-	if grid_enabled:
+	if snapping_enabled:
 		set_grid_visible(enabled)
 
-func set_grid_level(value: float) -> void:
-	grid_plane.d = value
+func set_plane_level(value: float) -> void:
+	plane.d = value
 
-func set_grid_step(value: float) -> void:
-	grid_step = value
-	grid_mesh.mesh.surface_get_material(0).set_shader_parameter("grid_step", grid_step)
+func set_snapping_step(value: float) -> void:
+	snapping_step = value
+	grid_mesh.mesh.surface_get_material(0).set_shader_parameter("grid_step", snapping_step)
 
-func set_grid_offset(value: float) -> void:
-	grid_offset = value
+func set_snapping_offset(value: float) -> void:
+	snapping_offset = value
 
 func _get_window_layout(configuration: ConfigFile) -> void:
 	var collection_ids: Array[String] = []
@@ -258,16 +291,17 @@ func _get_window_layout(configuration: ConfigFile) -> void:
 	
 	configuration.set_value(plugin_name, "collections", collection_ids)
 
-	configuration.set_value(plugin_name, "grid_enabled", grid_enabled)
-	configuration.set_value(plugin_name, "grid_level", snappedf(grid_plane.d, grid_step))
-	configuration.set_value(plugin_name, "grid_step", grid_step)
-	configuration.set_value(plugin_name, "grid_offset", grid_offset)
+	configuration.set_value(plugin_name, "snapping_enabled", snapping_enabled)
+	configuration.set_value(plugin_name, "plane_level", snappedf(plane.d, snapping_step))
+	configuration.set_value(plugin_name, "snapping_step", snapping_step)
+	configuration.set_value(plugin_name, "snapping_offset", snapping_offset)
 	configuration.set_value(plugin_name, "align_to_surface", align_to_surface)
 	configuration.set_value(plugin_name, "icon_size", icon_size)
 	configuration.set_value(plugin_name, "base_scale", base_scale)
 	configuration.set_value(plugin_name, "random_scale", random_scale)
-	configuration.set_value(plugin_name, "grid_plane_normal", grid_plane_normal)
+	configuration.set_value(plugin_name, "plane_normal", plane_normal)
 	configuration.set_value(plugin_name, "grid_display_enabled", grid_display_enabled)
+	configuration.set_value(plugin_name, "current_mode", current_mode)
 	if scene_root and root_node:
 		saved_root_node_path = scene_root.get_path_to(root_node)
 	else:
@@ -285,17 +319,19 @@ func _set_window_layout(configuration: ConfigFile) -> void:
 
 				gui_instance.spawn_collection_tab(uid, res)
 
-	grid_enabled = configuration.get_value(plugin_name, "grid_enabled", false)
-	gui_instance.grid_button.set_pressed_no_signal(grid_enabled)
+	change_mode(configuration.get_value(plugin_name, "current_mode", current_mode))
 
-	grid_plane.d = configuration.get_value(plugin_name, "grid_level", 0.0)
-	gui_instance.grid_level.text = str(grid_plane.d)
+	snapping_enabled = configuration.get_value(plugin_name, "snapping_enabled", true)
+	gui_instance.snapping_button.set_pressed_no_signal(snapping_enabled)
 
-	set_grid_step(configuration.get_value(plugin_name, "grid_step", 1.0))
-	gui_instance.grid_step.text = str(grid_step)
+	plane.d = configuration.get_value(plugin_name, "plane_level", 0.0)
+	gui_instance.plane_level.text = str(plane.d)
 
-	grid_offset = configuration.get_value(plugin_name, "grid_offset", 0.0)
-	gui_instance.grid_offset.text = str(grid_offset)
+	set_snapping_step(configuration.get_value(plugin_name, "snapping_step", 1.0))
+	gui_instance.snapping_step.text = str(snapping_step)
+
+	snapping_offset = configuration.get_value(plugin_name, "snapping_offset", 0.0)
+	gui_instance.snapping_offset.text = str(snapping_offset)
 
 	align_to_surface = configuration.get_value(plugin_name, "align_to_surface", false)
 	gui_instance.align_to_surface_button.set_pressed_no_signal(align_to_surface)
@@ -310,9 +346,9 @@ func _set_window_layout(configuration: ConfigFile) -> void:
 	random_scale = configuration.get_value(plugin_name, "random_scale", 0.0)
 	gui_instance.random_scale.text = str(random_scale)
 
-	grid_plane_normal = configuration.get_value(plugin_name, "grid_plane_normal", 0)
-	gui_instance.grid_plane_option.selected = grid_plane_normal
-	set_grid_plane(grid_plane_normal)
+	plane_normal = configuration.get_value(plugin_name, "plane_normal", 0)
+	gui_instance.plane_option.selected = plane_normal
+	set_plane_normal(plane_normal)
 
 	saved_root_node_path = configuration.get_value(plugin_name, "root_node_path", "")
 
@@ -390,7 +426,7 @@ func change_brush(asset_uid: String) -> void:
 		if not root_node:
 			brush.hide()
 
-func instantiate_asset(position: Vector3, asset_uid: String) -> void:
+func instantiate_asset(asset_uid: String) -> void:
 	var packedscene := ResourceLoader.load(asset_uid) as PackedScene
 
 	if packedscene:
@@ -404,7 +440,7 @@ func instantiate_asset(position: Vector3, asset_uid: String) -> void:
 		undo_redo.add_undo_method(root_node, "remove_child", instance)
 		undo_redo.commit_action()
 
-		instance.global_position = position
+		instance.global_position = brush.position
 		instance.global_rotation = brush.rotation
 
 		var scale_range := 0.0
@@ -420,7 +456,7 @@ func set_selected_assets(asset_uids: Array[String]) -> void:
 
 	if not selected_asset_uids.is_empty():
 		change_brush(selected_asset_uids[0])
-		if grid_enabled and root_node:
+		if snapping_enabled and root_node:
 			set_grid_visible(grid_display_enabled)
 	else:
 		grid_mesh.hide()
@@ -443,15 +479,15 @@ func select_root_node() -> void:
 		selection.clear()
 		selection.add_node(root_node)
 
-func set_grid_plane(plane: int) -> void:
-	grid_plane_normal = plane
-	match plane:
+func set_plane_normal(normal: int) -> void:
+	plane_normal = normal
+	match plane_normal:
 		0:
-			grid_plane.normal = Vector3.UP
+			plane.normal = Vector3.UP
 			grid_mesh.rotation = Vector3.ZERO
 		1:
-			grid_plane.normal = Vector3.BACK
+			plane.normal = Vector3.BACK
 			grid_mesh.rotation = Vector3(PI/2.0, 0.0, 0.0)
 		2:
-			grid_plane.normal = Vector3.RIGHT
+			plane.normal = Vector3.RIGHT
 			grid_mesh.rotation = Vector3(0.0, 0.0, PI/2.0)
