@@ -278,7 +278,7 @@ func set_plane_level(value: float) -> void:
 	plane.d = value
 
 func set_snapping_step(value: float) -> void:
-	snapping_step = value
+	snapping_step = maxf(0.1, value)
 	grid_mesh.mesh.surface_get_material(0).set_shader_parameter("grid_step", snapping_step)
 
 func set_snapping_offset(value: float) -> void:
