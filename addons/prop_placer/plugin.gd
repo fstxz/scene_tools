@@ -292,7 +292,7 @@ func _get_window_layout(configuration: ConfigFile) -> void:
 	configuration.set_value(plugin_name, "collections", collection_ids)
 
 	configuration.set_value(plugin_name, "snapping_enabled", snapping_enabled)
-	configuration.set_value(plugin_name, "plane_level", snappedf(plane.d, snapping_step))
+	configuration.set_value(plugin_name, "plane_level", plane.d)
 	configuration.set_value(plugin_name, "snapping_step", snapping_step)
 	configuration.set_value(plugin_name, "snapping_offset", snapping_offset)
 	configuration.set_value(plugin_name, "align_to_surface", align_to_surface)
