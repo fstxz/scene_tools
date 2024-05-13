@@ -246,10 +246,7 @@ func set_grid_level(value: float) -> void:
 
 func set_grid_step(value: float) -> void:
 	grid_step = value
-	var mesh_size := Vector2(grid_step * 16.0, grid_step * 16.0)
-	grid_mesh.mesh.size = mesh_size
 	grid_mesh.mesh.surface_get_material(0).set_shader_parameter("grid_step", grid_step)
-	grid_mesh.mesh.surface_get_material(0).set_shader_parameter("grid_size", mesh_size * 0.5)
 
 func set_grid_offset(value: float) -> void:
 	grid_offset = value

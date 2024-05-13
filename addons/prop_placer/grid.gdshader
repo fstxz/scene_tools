@@ -3,13 +3,17 @@ render_mode cull_disabled;
 
 uniform float line_width = 0.01;
 uniform float grid_step = 1.0;
-uniform vec2 grid_size = vec2(1.0);
+const float grid_size = 16.0;
 uniform vec4 line_color = vec4(1.0, 1.0, 1.0, 1.0);
 uniform vec4 fill_color = vec4(0.0, 0.0, 0.0, 0.0);
 uniform vec3 mouse_world_position;
 
+void vertex() {
+    VERTEX = VERTEX * grid_step * grid_size;
+}
+
 void fragment() {
-    vec2 centered_uv = ((UV * 2.0) - 1.0) * grid_size;
+    vec2 centered_uv = ((UV * 2.0) - 1.0) * grid_step * grid_size;
 	vec2 lineUV = abs(mod(centered_uv + grid_step, grid_step) / grid_step - 0.5) * 2.0;
     vec2 line = smoothstep(line_width, line_width, lineUV);
     float grid = line.x * line.y;
