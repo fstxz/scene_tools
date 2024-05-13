@@ -246,8 +246,10 @@ func set_grid_level(value: float) -> void:
 
 func set_grid_step(value: float) -> void:
 	grid_step = value
-	grid_mesh.mesh.size = Vector2(grid_step * 12.0, grid_step * 12.0)
+	var mesh_size := Vector2(grid_step * 16.0, grid_step * 16.0)
+	grid_mesh.mesh.size = mesh_size
 	grid_mesh.mesh.surface_get_material(0).set_shader_parameter("grid_step", grid_step)
+	grid_mesh.mesh.surface_get_material(0).set_shader_parameter("grid_size", mesh_size * 0.5)
 
 func set_grid_offset(value: float) -> void:
 	grid_offset = value
@@ -449,13 +451,10 @@ func set_grid_plane(plane: int) -> void:
 	match plane:
 		0:
 			grid_plane.normal = Vector3.UP
-			grid_mesh.mesh.surface_get_material(0).set_shader_parameter("axis", Vector3i(1, 0, 0))
 			grid_mesh.rotation = Vector3.ZERO
 		1:
 			grid_plane.normal = Vector3.BACK
-			grid_mesh.mesh.surface_get_material(0).set_shader_parameter("axis", Vector3i(0, 1, 0))
 			grid_mesh.rotation = Vector3(PI/2.0, 0.0, 0.0)
 		2:
 			grid_plane.normal = Vector3.RIGHT
-			grid_mesh.mesh.surface_get_material(0).set_shader_parameter("axis", Vector3i(0, 0, 1))
 			grid_mesh.rotation = Vector3(0.0, 0.0, PI/2.0)
