@@ -164,6 +164,7 @@ auto_translate_mode = 1
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_d1c51")
 text = "0"
+max_length = 5
 
 [node name="SurfaceContainer" type="CheckBox" parent="HBoxContainer/ScrollContainer/LeftPanel/Modes/MarginContainer/VBoxContainer"]
 auto_translate_mode = 1
@@ -185,6 +186,7 @@ auto_translate_mode = 1
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_d1c51")
 text = "100"
+max_length = 3
 
 [node name="Label2" type="Label" parent="HBoxContainer/ScrollContainer/LeftPanel/Modes/MarginContainer/VBoxContainer/ChanceToSpawnContainer"]
 layout_mode = 2
@@ -234,6 +236,7 @@ auto_translate_mode = 1
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_d1c51")
 text = "1"
+max_length = 5
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="HBoxContainer/ScrollContainer/LeftPanel/Scale/MarginContainer/VBoxContainer/GridContainer"]
 auto_translate_mode = 1
@@ -250,6 +253,7 @@ auto_translate_mode = 1
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_d1c51")
 text = "0"
+max_length = 5
 
 [node name="Snapping" type="PanelContainer" parent="HBoxContainer/ScrollContainer/LeftPanel"]
 layout_mode = 2
@@ -292,6 +296,7 @@ auto_translate_mode = 1
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_d1c51")
 text = "0"
+max_length = 5
 
 [node name="HBoxContainer3" type="HBoxContainer" parent="HBoxContainer/ScrollContainer/LeftPanel/Snapping/MarginContainer/VBoxContainer/GridContainer"]
 auto_translate_mode = 1
@@ -307,6 +312,7 @@ auto_translate_mode = 1
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_d1c51")
 text = "0"
+max_length = 5
 
 [node name="Collections" type="PanelContainer" parent="HBoxContainer"]
 layout_mode = 2
