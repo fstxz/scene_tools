@@ -521,8 +521,8 @@ func fill(bounding_box: AABB) -> void:
 		for y in range(steps_y):
 			for z in range(steps_z):
 				var random_number := randf_range(0.0, 100.0)
-				
-				if chance_to_spawn > random_number:
+
+				if chance_to_spawn >= random_number:
 					var asset_uid: String = selected_asset_uids.pick_random()
 					var instance_position := Vector3(
 						bounding_box.position.x + x * snapping_step,
