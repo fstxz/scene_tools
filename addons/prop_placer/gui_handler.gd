@@ -64,6 +64,7 @@ func _ready() -> void:
     # Hide mode specific containers
     surface_container.hide()
     plane_container.hide()
+    chance_to_spawn_container.hide()
 
 func setup_preview_viewport() -> void:
     preview_viewport = SubViewport.new()
