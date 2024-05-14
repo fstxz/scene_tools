@@ -511,9 +511,9 @@ func place_asset(asset_uid: String, position: Vector3) -> void:
 
 func fill(bounding_box: AABB) -> void:
 	bounding_box = bounding_box.abs()
-	var steps_x := ceili(bounding_box.size.x / snapping_step) + 1
-	var steps_y := ceili(bounding_box.size.y / snapping_step) + 1
-	var steps_z := ceili(bounding_box.size.z / snapping_step) + 1
+	var steps_x := roundi(bounding_box.size.x / snapping_step) + 1
+	var steps_y := roundi(bounding_box.size.y / snapping_step) + 1
+	var steps_z := roundi(bounding_box.size.z / snapping_step) + 1
 
 	var asset_instances: Array[Node3D]
 
