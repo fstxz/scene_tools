@@ -118,13 +118,16 @@ text = "Mode:"
 [node name="OptionButton" type="OptionButton" parent="HBoxContainer/ScrollContainer/LeftPanel/Modes/MarginContainer/VBoxContainer/ModesContainer"]
 layout_mode = 2
 selected = 0
-item_count = 2
+item_count = 3
 popup/item_0/text = "Free"
 popup/item_1/text = "Plane"
 popup/item_1/id = 1
+popup/item_2/text = "Fill"
+popup/item_2/id = 2
 
 [node name="PlaneContainer" type="GridContainer" parent="HBoxContainer/ScrollContainer/LeftPanel/Modes/MarginContainer/VBoxContainer"]
 auto_translate_mode = 1
+visible = false
 layout_mode = 2
 theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4
@@ -162,6 +165,7 @@ text = "0"
 
 [node name="SurfaceContainer" type="CheckBox" parent="HBoxContainer/ScrollContainer/LeftPanel/Modes/MarginContainer/VBoxContainer"]
 auto_translate_mode = 1
+visible = false
 layout_mode = 2
 text = "Align to surface"
 flat = true

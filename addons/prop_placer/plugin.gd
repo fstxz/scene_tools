@@ -14,6 +14,7 @@ var gui_instance: GuiHandler
 enum Mode {
 	FREE,
 	PLANE,
+	FILL,
 }
 
 var current_mode := Mode.FREE
@@ -47,6 +48,8 @@ var rotation := Vector3.ZERO
 var grid_mesh: MeshInstance3D
 var grid_display_enabled := true
 
+var fill_mesh: MeshInstance3D
+
 func _enter_tree() -> void:
 	scene_root = EditorInterface.get_edited_scene_root()
 
@@ -61,6 +64,7 @@ func _enter_tree() -> void:
 	undo_redo = get_undo_redo()
 
 	setup_grid_mesh()
+	setup_fill_mesh()
 
 func setup_grid_mesh() -> void:
 	grid_mesh = MeshInstance3D.new()
@@ -70,12 +74,23 @@ func setup_grid_mesh() -> void:
 	grid_mesh.mesh.surface_set_material(0, shader_material)
 	grid_mesh.hide()
 
+func setup_fill_mesh() -> void:
+	fill_mesh = MeshInstance3D.new()
+	fill_mesh.mesh = BoxMesh.new()
+	var material := StandardMaterial3D.new()
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_DEPTH_PRE_PASS
+	material.albedo_color.a = 0.1
+	fill_mesh.mesh.surface_set_material(0, material)
+	fill_mesh.hide()
+	add_child(fill_mesh)
+
 func _exit_tree() -> void:
 	remove_control_from_bottom_panel(gui_instance)
 	gui_instance.free()
 	if brush:
 		brush.free()
 	grid_mesh.free()
+	fill_mesh.free()
 
 func _get_plugin_name() -> String:
 	return plugin_name
@@ -146,6 +161,9 @@ func change_mode(new_mode: Mode) -> void:
 		Mode.PLANE:
 			gui_instance.plane_container.hide()
 			set_grid_visible(false)
+		Mode.FILL:
+			gui_instance.plane_container.hide()
+			set_grid_visible(false)
 
 	current_mode = new_mode
 	gui_instance.mode_option.selected = current_mode
@@ -158,6 +176,12 @@ func change_mode(new_mode: Mode) -> void:
 			gui_instance.plane_container.show()
 			if snapping_enabled:
 				set_grid_visible(grid_display_enabled)
+		Mode.FILL:
+			gui_instance.plane_container.show()
+			if snapping_enabled:
+				set_grid_visible(grid_display_enabled)
+
+var fill_bounding_box: AABB
 
 func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 	if selected_asset_uids.is_empty() or not root_node:
@@ -176,8 +200,7 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 
 				brush.position = result.position
 		
-		Mode.PLANE:
-			brush.rotation = rotation
+		Mode.PLANE, Mode.FILL:
 			var result: Variant = raycast_plane(viewport_camera)
 			if result != null:
 				result = result as Vector3
@@ -204,12 +227,32 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 				
 				brush.position = result
 
+				if current_mode == Mode.FILL:
+					fill_bounding_box.size = brush.position - fill_bounding_box.position
+					fill_mesh.position = fill_bounding_box.get_center()
+					fill_mesh.position.y += snapping_step * 0.5
+					fill_mesh.mesh.size = fill_bounding_box.size.abs() + Vector3.ONE * snapping_step
+
 	if event is InputEventMouseButton:
 		match event.button_index:
 			MOUSE_BUTTON_LEFT:
-				if event.is_pressed():
-					var asset_uid: String = selected_asset_uids.pick_random()
-					instantiate_asset(asset_uid)
+				if current_mode != Mode.FILL:
+					if event.is_pressed():
+						var asset_uid: String = selected_asset_uids.pick_random()
+						place_asset(asset_uid, brush.position)
+						return EditorPlugin.AFTER_GUI_INPUT_STOP
+				elif snapping_enabled:
+					if event.is_pressed():
+						fill_bounding_box.position = brush.position
+						fill_bounding_box.size = brush.position - fill_bounding_box.position
+						fill_mesh.position = fill_bounding_box.get_center()
+						fill_mesh.position.y += snapping_step * 0.5
+						fill_mesh.mesh.size = fill_bounding_box.size.abs() + Vector3.ONE * snapping_step
+						fill_mesh.show()
+					else:
+						fill_mesh.hide()
+						fill_bounding_box.size = brush.position - fill_bounding_box.position
+						fill(fill_bounding_box)
 					return EditorPlugin.AFTER_GUI_INPUT_STOP
 			
 			MOUSE_BUTTON_RIGHT:
@@ -266,8 +309,9 @@ func set_snapping_enabled(enabled: bool) -> void:
 		set_grid_visible(enabled)
 
 func set_grid_visible(visible: bool) -> void:
-	if self.scene_root and not selected_asset_uids.is_empty() and current_mode == Mode.PLANE:
-		grid_mesh.set_visible(visible)
+	if self.scene_root and not selected_asset_uids.is_empty():
+		if current_mode == Mode.PLANE or current_mode == Mode.FILL:
+			grid_mesh.set_visible(visible)
 
 func set_grid_display_enabled(enabled: bool) -> void:
 	grid_display_enabled = enabled
@@ -426,27 +470,76 @@ func change_brush(asset_uid: String) -> void:
 		if not root_node:
 			brush.hide()
 
-func instantiate_asset(asset_uid: String) -> void:
+func instantiate_asset(asset_uid: String) -> Node3D:
 	var packedscene := ResourceLoader.load(asset_uid) as PackedScene
 
 	if packedscene:
 		var instance := packedscene.instantiate() as Node3D
 
-		undo_redo.create_action("Instantiate Asset", UndoRedo.MERGE_DISABLE, scene_root)
-		undo_redo.add_do_method(root_node, "add_child", instance)
-		undo_redo.add_do_property(instance, "owner", scene_root)
-		undo_redo.add_do_reference(instance)
-		# does it leak? it should be freed automatically but i'm not sure
-		undo_redo.add_undo_method(root_node, "remove_child", instance)
-		undo_redo.commit_action()
-
-		instance.global_position = brush.position
-		instance.global_rotation = brush.rotation
+		if not instance:
+			return null
 
 		var scale_range := 0.0
 		if not is_zero_approx(random_scale):
 			scale_range = randf_range(-random_scale, random_scale)
 		instance.scale = Vector3(base_scale + scale_range, base_scale + scale_range, base_scale + scale_range)
+
+		return instance
+	return null
+
+func place_asset(asset_uid: String, position: Vector3) -> void:
+	var asset_instance := instantiate_asset(asset_uid)
+
+	if asset_instance:
+		undo_redo.create_action("Place Asset", UndoRedo.MERGE_DISABLE, scene_root)
+		undo_redo.add_do_method(root_node, "add_child", asset_instance)
+		undo_redo.add_do_property(asset_instance, "owner", scene_root)
+		undo_redo.add_do_reference(asset_instance)
+		undo_redo.add_undo_method(root_node, "remove_child", asset_instance)
+		undo_redo.commit_action()
+
+		asset_instance.global_position = position
+		asset_instance.global_rotation = brush.rotation
+
+func fill(bounding_box: AABB) -> void:
+	bounding_box = bounding_box.abs()
+	var steps_x := int(bounding_box.size.x / snapping_step) + 1
+	var steps_y := int(bounding_box.size.y / snapping_step) + 1
+	var steps_z := int(bounding_box.size.z / snapping_step) + 1
+
+	var asset_instances: Array[Node3D]
+
+	for x in range(steps_x):
+		for y in range(steps_y):
+			for z in range(steps_z):
+				var asset_uid: String = selected_asset_uids.pick_random()
+				var instance_position := Vector3(
+					bounding_box.position.x + x * snapping_step,
+					bounding_box.position.y + y * snapping_step,
+					bounding_box.position.z + z * snapping_step
+					)
+				var asset_instance := instantiate_asset(asset_uid)
+				asset_instance.position = instance_position
+				asset_instance.rotation = brush.rotation
+				asset_instances.append(asset_instance)
+	
+	if not asset_instances.is_empty():
+		undo_redo.create_action("Fill Assets", UndoRedo.MERGE_DISABLE, scene_root)
+		for asset_instance in asset_instances:
+			if asset_instance:
+				undo_redo.add_do_method(root_node, "add_child", asset_instance)
+				undo_redo.add_do_property(asset_instance, "owner", scene_root)
+				undo_redo.add_do_reference(asset_instance)
+				undo_redo.add_undo_method(root_node, "remove_child", asset_instance)
+		
+		undo_redo.commit_action()
+
+		# We can't apply global position before committing action, so we do it here instead.
+		for asset_instance in asset_instances:
+			if asset_instance:
+				asset_instance.global_position = asset_instance.position
+				asset_instance.global_rotation = asset_instance.rotation
+
 
 func set_align_to_surface(value: bool) -> void:
 	align_to_surface = value
