@@ -32,6 +32,8 @@ var preview_camera: Camera3D
 @export var mode_option: OptionButton
 @export var surface_container: Control
 @export var plane_container: Control
+@export var chance_to_spawn_container: Control
+@export var chance_to_spawn: LineEdit
 @export var plane_level: LineEdit
 
 @export var collection_tabs: TabContainer
@@ -52,6 +54,7 @@ func _ready() -> void:
     plane_option.item_selected.connect(_on_plane_option_button_item_selected)
     display_grid_checkbox.toggled.connect(_on_display_grid_checkbox_toggled)
     mode_option.item_selected.connect(_on_mode_option_button_item_selected)
+    chance_to_spawn.text_changed.connect(_on_chance_to_spawn_text_changed)
 
     collection_tabs.get_tab_bar().tab_close_display_policy = TabBar.CLOSE_BUTTON_SHOW_ACTIVE_ONLY
     collection_tabs.get_tab_bar().tab_close_pressed.connect(remove_collection_tab)
@@ -168,6 +171,9 @@ func _on_snapping_step_text_changed(text: String) -> void:
 
 func _on_snapping_offset_text_changed(text: String) -> void:
     prop_placer_instance.set_snapping_offset(float(text))
+
+func _on_chance_to_spawn_text_changed(text: String) -> void:
+    prop_placer_instance.set_chance_to_spawn(float(text))
 
 func file_callback(path: String, collection_name: String) -> void:
     var collection := Collection.new(collection_name)

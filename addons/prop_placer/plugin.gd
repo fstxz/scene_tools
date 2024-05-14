@@ -36,6 +36,7 @@ var align_to_surface := false
 var icon_size : int = 4
 var base_scale := 1.0
 var random_scale := 0.0
+var chance_to_spawn := 100.0
 
 # String (uid), Collection
 var collections: Dictionary
@@ -163,6 +164,7 @@ func change_mode(new_mode: Mode) -> void:
 			set_grid_visible(false)
 		Mode.FILL:
 			gui_instance.plane_container.hide()
+			gui_instance.chance_to_spawn_container.hide()
 			set_grid_visible(false)
 
 	current_mode = new_mode
@@ -178,6 +180,7 @@ func change_mode(new_mode: Mode) -> void:
 				set_grid_visible(grid_display_enabled)
 		Mode.FILL:
 			gui_instance.plane_container.show()
+			gui_instance.chance_to_spawn_container.show()
 			if snapping_enabled:
 				set_grid_visible(grid_display_enabled)
 
@@ -346,6 +349,8 @@ func _get_window_layout(configuration: ConfigFile) -> void:
 	configuration.set_value(plugin_name, "plane_normal", plane_normal)
 	configuration.set_value(plugin_name, "grid_display_enabled", grid_display_enabled)
 	configuration.set_value(plugin_name, "current_mode", current_mode)
+	configuration.set_value(plugin_name, "chance_to_spawn", chance_to_spawn)
+
 	if scene_root and root_node:
 		saved_root_node_path = scene_root.get_path_to(root_node)
 	else:
@@ -398,6 +403,9 @@ func _set_window_layout(configuration: ConfigFile) -> void:
 
 	grid_display_enabled = configuration.get_value(plugin_name, "grid_display_enabled", true)
 	gui_instance.display_grid_checkbox.set_pressed_no_signal(grid_display_enabled)
+
+	chance_to_spawn = configuration.get_value(plugin_name, "chance_to_spawn", chance_to_spawn)
+	gui_instance.chance_to_spawn.text = str(chance_to_spawn)
 
 func generate_preview(node: Node) -> Texture2D:
 	gui_instance.preview_viewport.add_child(node)
@@ -512,16 +520,20 @@ func fill(bounding_box: AABB) -> void:
 	for x in range(steps_x):
 		for y in range(steps_y):
 			for z in range(steps_z):
-				var asset_uid: String = selected_asset_uids.pick_random()
-				var instance_position := Vector3(
-					bounding_box.position.x + x * snapping_step,
-					bounding_box.position.y + y * snapping_step,
-					bounding_box.position.z + z * snapping_step
-					)
-				var asset_instance := instantiate_asset(asset_uid)
-				asset_instance.position = instance_position
-				asset_instance.rotation = brush.rotation
-				asset_instances.append(asset_instance)
+				var random_number := randf_range(0.0, 100.0)
+				
+				if chance_to_spawn > random_number:
+					var asset_uid: String = selected_asset_uids.pick_random()
+					var instance_position := Vector3(
+						bounding_box.position.x + x * snapping_step,
+						bounding_box.position.y + y * snapping_step,
+						bounding_box.position.z + z * snapping_step
+						)
+					
+					var asset_instance := instantiate_asset(asset_uid)
+					asset_instance.position = instance_position
+					asset_instance.rotation = brush.rotation
+					asset_instances.append(asset_instance)
 	
 	if not asset_instances.is_empty():
 		undo_redo.create_action("Fill Assets", UndoRedo.MERGE_DISABLE, scene_root)
@@ -584,3 +596,6 @@ func set_plane_normal(normal: int) -> void:
 		2:
 			plane.normal = Vector3.RIGHT
 			grid_mesh.rotation = Vector3(0.0, 0.0, PI/2.0)
+
+func set_chance_to_spawn(value: float) -> void:
+	chance_to_spawn = clampf(value, 0.0, 100.0)

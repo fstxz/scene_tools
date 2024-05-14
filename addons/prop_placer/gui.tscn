@@ -19,7 +19,7 @@ corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
-[node name="PropPlacer" type="Control" node_paths=PackedStringArray("root_node_button", "snapping_button", "snapping_step", "snapping_offset", "new_collection_name", "new_collection_button", "import_button", "align_to_surface_button", "help_button", "help_dialog", "version_label", "icon_size_slider", "base_scale", "random_scale", "plane_option", "display_grid_checkbox", "mode_option", "surface_container", "plane_container", "plane_level", "collection_tabs")]
+[node name="PropPlacer" type="Control" node_paths=PackedStringArray("root_node_button", "snapping_button", "snapping_step", "snapping_offset", "new_collection_name", "new_collection_button", "import_button", "align_to_surface_button", "help_button", "help_dialog", "version_label", "icon_size_slider", "base_scale", "random_scale", "plane_option", "display_grid_checkbox", "mode_option", "surface_container", "plane_container", "chance_to_spawn_container", "chance_to_spawn", "plane_level", "collection_tabs")]
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 3
 anchors_preset = 15
@@ -48,6 +48,8 @@ display_grid_checkbox = NodePath("HelpDialog/VBoxContainer/DisplayGrid")
 mode_option = NodePath("HBoxContainer/ScrollContainer/LeftPanel/Modes/MarginContainer/VBoxContainer/ModesContainer/OptionButton")
 surface_container = NodePath("HBoxContainer/ScrollContainer/LeftPanel/Modes/MarginContainer/VBoxContainer/SurfaceContainer")
 plane_container = NodePath("HBoxContainer/ScrollContainer/LeftPanel/Modes/MarginContainer/VBoxContainer/PlaneContainer")
+chance_to_spawn_container = NodePath("HBoxContainer/ScrollContainer/LeftPanel/Modes/MarginContainer/VBoxContainer/ChanceToSpawnContainer")
+chance_to_spawn = NodePath("HBoxContainer/ScrollContainer/LeftPanel/Modes/MarginContainer/VBoxContainer/ChanceToSpawnContainer/ChanceToSpawn")
 plane_level = NodePath("HBoxContainer/ScrollContainer/LeftPanel/Modes/MarginContainer/VBoxContainer/PlaneContainer/HBoxContainer/PlaneLevel")
 collection_tabs = NodePath("HBoxContainer/Collections/MarginContainer/VBoxContainer/TabContainer")
 
@@ -169,6 +171,24 @@ visible = false
 layout_mode = 2
 text = "Align to surface"
 flat = true
+
+[node name="ChanceToSpawnContainer" type="HBoxContainer" parent="HBoxContainer/ScrollContainer/LeftPanel/Modes/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/ScrollContainer/LeftPanel/Modes/MarginContainer/VBoxContainer/ChanceToSpawnContainer"]
+layout_mode = 2
+text = "Chance to spawn"
+
+[node name="ChanceToSpawn" type="LineEdit" parent="HBoxContainer/ScrollContainer/LeftPanel/Modes/MarginContainer/VBoxContainer/ChanceToSpawnContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_d1c51")
+text = "100"
+
+[node name="Label2" type="Label" parent="HBoxContainer/ScrollContainer/LeftPanel/Modes/MarginContainer/VBoxContainer/ChanceToSpawnContainer"]
+layout_mode = 2
+text = "%"
 
 [node name="Scale" type="PanelContainer" parent="HBoxContainer/ScrollContainer/LeftPanel"]
 auto_translate_mode = 1
