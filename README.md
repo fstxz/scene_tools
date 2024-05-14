@@ -6,10 +6,11 @@ Prop Placer supports any PackedScene files (.tscn, .gltf, .blend, etc.)
 ![](screenshot_1.png)
 
 ## Currently implemented features
-* Grid support
+* Snapping support
 * Align to surface
 * Multiple assets selection (by holding Ctrl or Shift). When placing, random asset will be picked from the selection
 * Scale randomization
+* Area fill
 
 ## Installation
 The plugin is available in the [Asset Library](https://godotengine.org/asset-library/asset/2846).
