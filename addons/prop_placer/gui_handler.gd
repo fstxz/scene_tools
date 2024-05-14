@@ -173,7 +173,7 @@ func _on_snapping_offset_text_changed(text: String) -> void:
     prop_placer_instance.set_snapping_offset(float(text))
 
 func _on_chance_to_spawn_text_changed(text: String) -> void:
-    prop_placer_instance.set_chance_to_spawn(float(text))
+    prop_placer_instance.set_chance_to_spawn(int(text))
 
 func file_callback(path: String, collection_name: String) -> void:
     var collection := Collection.new(collection_name)

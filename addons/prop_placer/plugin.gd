@@ -36,7 +36,7 @@ var align_to_surface := false
 var icon_size : int = 4
 var base_scale := 1.0
 var random_scale := 0.0
-var chance_to_spawn := 100.0
+var chance_to_spawn: int = 100
 
 # String (uid), Collection
 var collections: Dictionary
@@ -520,9 +520,9 @@ func fill(bounding_box: AABB) -> void:
 	for x in range(steps_x):
 		for y in range(steps_y):
 			for z in range(steps_z):
-				var random_number := randf_range(0.0, 100.0)
+				var random_number := randi_range(0, 100)
 
-				if chance_to_spawn >= random_number:
+				if chance_to_spawn == 100 or chance_to_spawn > random_number:
 					var asset_uid: String = selected_asset_uids.pick_random()
 					var instance_position := Vector3(
 						bounding_box.position.x + x * snapping_step,
@@ -597,5 +597,5 @@ func set_plane_normal(normal: int) -> void:
 			plane.normal = Vector3.RIGHT
 			grid_mesh.rotation = Vector3(0.0, 0.0, PI/2.0)
 
-func set_chance_to_spawn(value: float) -> void:
-	chance_to_spawn = clampf(value, 0.0, 100.0)
+func set_chance_to_spawn(value: int) -> void:
+	chance_to_spawn = clampi(value, 0, 100)
