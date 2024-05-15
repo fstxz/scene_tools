@@ -131,10 +131,11 @@ func set_root_node(node: Node) -> void:
 		if brush:
 			brush.hide()
 	else:
-		if not selected_asset_uids.is_empty() and snapping_enabled:
-			set_grid_visible(grid_display_enabled)
-		if brush:
-			brush.show()
+		if not selected_asset_uids.is_empty():
+			if snapping_enabled:
+				set_grid_visible(grid_display_enabled)
+			if brush:
+				brush.show()
 	
 	root_node = node
 
@@ -298,9 +299,10 @@ func set_snapping_enabled(enabled: bool) -> void:
 		set_grid_visible(enabled)
 
 func set_grid_visible(visible: bool) -> void:
-	if self.scene_root and not selected_asset_uids.is_empty():
-		if current_mode == Mode.PLANE or current_mode == Mode.FILL:
-			grid_mesh.set_visible(visible)
+	if plugin_enabled:
+		if self.root_node and not selected_asset_uids.is_empty():
+			if current_mode == Mode.PLANE or current_mode == Mode.FILL:
+				grid_mesh.set_visible(visible)
 
 func set_grid_display_enabled(enabled: bool) -> void:
 	grid_display_enabled = enabled
