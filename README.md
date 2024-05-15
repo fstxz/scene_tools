@@ -17,6 +17,9 @@ The plugin is available in the [Asset Library](https://godotengine.org/asset-lib
 
 Follow [Godot documentation](https://docs.godotengine.org/en/stable/tutorials/plugins/editor/installing_plugins.html) on how to install and enable plugins.
 
+> [!WARNING]
+If you are using Godot 4.2, make sure to reload the editor after installing the plugin.
+
 ## How to use
 1. After enabling the plugin, open the "Prop Placer" tab at the bottom of the window.
 2. First, you will have to create a collection. Enter its name and click the + button in the top right corner.
