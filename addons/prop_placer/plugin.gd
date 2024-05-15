@@ -54,6 +54,7 @@ func _enter_tree() -> void:
 	scene_root = EditorInterface.get_edited_scene_root()
 
 	scene_changed.connect(_on_scene_changed)
+	scene_closed.connect(_on_scene_closed)
 
 	gui_instance = gui.instantiate() as GuiHandler
 	gui_instance.prop_placer_instance = self
@@ -112,6 +113,13 @@ func _on_scene_changed(_scene_root: Node) -> void:
 			self.scene_root.add_child(brush)
 		if is_instance_valid(grid_mesh):
 			self.scene_root.add_child(grid_mesh)
+
+func _on_scene_closed(path: String) -> void:
+	if scene_root and scene_root.scene_file_path == path:
+		if is_instance_valid(brush):
+			self.scene_root.remove_child(brush)
+		if is_instance_valid(grid_mesh):
+			self.scene_root.remove_child(grid_mesh)
 
 func _handles(object: Object) -> bool:
 	return object is Node
