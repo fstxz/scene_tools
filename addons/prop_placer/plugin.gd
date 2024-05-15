@@ -545,7 +545,7 @@ func set_selected_assets(asset_uids: Array[String]) -> void:
 
 	if not selected_asset_uids.is_empty():
 		change_brush(selected_asset_uids[0])
-		if snapping_enabled and root_node:
+		if snapping_enabled:
 			set_grid_visible(grid_display_enabled)
 	else:
 		grid_mesh.hide()
