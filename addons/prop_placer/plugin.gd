@@ -102,21 +102,24 @@ func _on_scene_changed(_scene_root: Node) -> void:
 	if is_instance_valid(self.scene_root):
 		if is_instance_valid(brush):
 			self.scene_root.remove_child(brush)
-		self.scene_root.remove_child(grid_mesh)
+		if is_instance_valid(grid_mesh):
+			self.scene_root.remove_child(grid_mesh)
 	
 	self.scene_root = _scene_root
 
 	if is_instance_valid(self.scene_root):
 		if is_instance_valid(brush):
 			self.scene_root.add_child(brush)
-		self.scene_root.add_child(grid_mesh)
+		if is_instance_valid(grid_mesh):
+			self.scene_root.add_child(grid_mesh)
 
 func _handles(object: Object) -> bool:
 	return object is Node
 
 func set_root_node(node: Node) -> void:
 	if node == null or not plugin_enabled:
-		grid_mesh.hide()
+		if grid_mesh:
+			grid_mesh.hide()
 		if brush:
 			brush.hide()
 	else:
