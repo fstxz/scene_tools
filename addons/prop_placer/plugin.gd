@@ -22,10 +22,9 @@ var current_mode := Mode.FREE
 var root_node: Node
 var scene_root: Node
 
-var saved_root_node_path: String
-
 var undo_redo: EditorUndoRedoManager
 
+var plugin_enabled := true
 var snapping_enabled := false
 # TODO: change to Vector3
 var snapping_step := 1.0
@@ -96,17 +95,8 @@ func _exit_tree() -> void:
 func _get_plugin_name() -> String:
 	return plugin_name
 
-func _get_state() -> Dictionary:
-	var path: String
-	if root_node:
-		path = scene_root.get_path_to(root_node)
-	return { "root_node": path }
-
-func _set_state(state: Dictionary) -> void:
-	saved_root_node_path = state.get("root_node", "")
-
-func _enable_plugin() -> void:
-	set_root_node(null)
+func _edit(object: Object) -> void:
+	set_root_node(object)
 
 func _on_scene_changed(_scene_root: Node) -> void:
 	if is_instance_valid(self.scene_root):
@@ -117,42 +107,25 @@ func _on_scene_changed(_scene_root: Node) -> void:
 	self.scene_root = _scene_root
 
 	if is_instance_valid(self.scene_root):
-		set_root_node(scene_root.get_node_or_null(saved_root_node_path))
 		if is_instance_valid(brush):
 			self.scene_root.add_child(brush)
 		self.scene_root.add_child(grid_mesh)
-	else:
-		set_root_node(null)
 
 func _handles(object: Object) -> bool:
 	return object is Node
 
 func set_root_node(node: Node) -> void:
-	if root_node:
-		if root_node.tree_exiting.is_connected(set_root_node):
-			root_node.tree_exiting.disconnect(set_root_node)
-	
-	if node == null:
-		gui_instance.root_node_button.text = "Select"
-		gui_instance.root_node_button.icon = gui_instance.warning_icon
-
+	if node == null or not plugin_enabled:
 		grid_mesh.hide()
 		if brush:
 			brush.hide()
 	else:
-		gui_instance.root_node_button.text = node.name
-		gui_instance.root_node_button.icon = EditorInterface.get_editor_theme().get_icon(node.get_class(), "EditorIcons")
-
-		if not node.tree_exiting.is_connected(set_root_node):
-			node.tree_exiting.connect(set_root_node.bind(null))
-
 		if not selected_asset_uids.is_empty() and snapping_enabled:
 			set_grid_visible(grid_display_enabled)
 		if brush:
 			brush.show()
 	
 	root_node = node
-	select_root_node()
 
 func change_mode(new_mode: Mode) -> void:
 	# Mode exiting logic
@@ -187,6 +160,8 @@ func change_mode(new_mode: Mode) -> void:
 var fill_bounding_box: AABB
 
 func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
+	if not plugin_enabled:
+		return EditorPlugin.AFTER_GUI_INPUT_PASS
 	if selected_asset_uids.is_empty() or not root_node:
 		return EditorPlugin.AFTER_GUI_INPUT_PASS
 
@@ -338,6 +313,7 @@ func _get_window_layout(configuration: ConfigFile) -> void:
 	
 	configuration.set_value(plugin_name, "collections", collection_ids)
 
+	configuration.set_value(plugin_name, "plugin_enabled", plugin_enabled)
 	configuration.set_value(plugin_name, "snapping_enabled", snapping_enabled)
 	configuration.set_value(plugin_name, "plane_level", plane.d)
 	configuration.set_value(plugin_name, "snapping_step", snapping_step)
@@ -351,12 +327,6 @@ func _get_window_layout(configuration: ConfigFile) -> void:
 	configuration.set_value(plugin_name, "current_mode", current_mode)
 	configuration.set_value(plugin_name, "chance_to_spawn", chance_to_spawn)
 
-	if scene_root and root_node:
-		saved_root_node_path = scene_root.get_path_to(root_node)
-	else:
-		saved_root_node_path = ""
-	configuration.set_value(plugin_name, "root_node_path", saved_root_node_path)
-
 func _set_window_layout(configuration: ConfigFile) -> void:
 	var collection_ids: Array[String] = configuration.get_value(plugin_name, "collections", [])
 
@@ -367,6 +337,9 @@ func _set_window_layout(configuration: ConfigFile) -> void:
 				collections[uid] = res
 
 				gui_instance.spawn_collection_tab(uid, res)
+
+	plugin_enabled = configuration.get_value(plugin_name, "plugin_enabled", plugin_enabled)
+	gui_instance.enable_plugin_button.set_pressed_no_signal(plugin_enabled)
 
 	change_mode(configuration.get_value(plugin_name, "current_mode", current_mode))
 
@@ -398,8 +371,6 @@ func _set_window_layout(configuration: ConfigFile) -> void:
 	plane_normal = configuration.get_value(plugin_name, "plane_normal", 0)
 	gui_instance.plane_option.selected = plane_normal
 	set_plane_normal(plane_normal)
-
-	saved_root_node_path = configuration.get_value(plugin_name, "root_node_path", "")
 
 	grid_display_enabled = configuration.get_value(plugin_name, "grid_display_enabled", true)
 	gui_instance.display_grid_checkbox.set_pressed_no_signal(grid_display_enabled)
@@ -475,7 +446,7 @@ func change_brush(asset_uid: String) -> void:
 		if scene_root:
 			scene_root.add_child(brush)
 
-		if not root_node:
+		if not root_node or not plugin_enabled:
 			brush.hide()
 
 func instantiate_asset(asset_uid: String) -> Node3D:
@@ -567,8 +538,6 @@ func set_selected_assets(asset_uids: Array[String]) -> void:
 		grid_mesh.hide()
 		if brush:
 			brush.free()
-	
-	select_root_node()
 
 func set_base_scale(value: float) -> void:
 	base_scale = value
@@ -577,12 +546,6 @@ func set_base_scale(value: float) -> void:
 
 func set_random_scale(value: float) -> void:
 	random_scale = value
-
-func select_root_node() -> void:
-	if root_node:
-		var selection := EditorInterface.get_selection()
-		selection.clear()
-		selection.add_node(root_node)
 
 func set_plane_normal(normal: int) -> void:
 	plane_normal = normal
@@ -599,3 +562,7 @@ func set_plane_normal(normal: int) -> void:
 
 func set_chance_to_spawn(value: int) -> void:
 	chance_to_spawn = clampi(value, 0, 100)
+
+func set_plugin_enabled(enabled: bool) -> void:
+	plugin_enabled = enabled
+	set_root_node(root_node)

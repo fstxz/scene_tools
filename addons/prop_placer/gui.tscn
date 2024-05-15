@@ -19,7 +19,7 @@ corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
-[node name="PropPlacer" type="Control" node_paths=PackedStringArray("root_node_button", "snapping_button", "snapping_step", "snapping_offset", "new_collection_name", "new_collection_button", "import_button", "align_to_surface_button", "help_button", "help_dialog", "version_label", "icon_size_slider", "base_scale", "random_scale", "plane_option", "display_grid_checkbox", "mode_option", "surface_container", "plane_container", "chance_to_spawn_container", "chance_to_spawn", "plane_level", "collection_tabs")]
+[node name="PropPlacer" type="Control" node_paths=PackedStringArray("enable_plugin_button", "snapping_button", "snapping_step", "snapping_offset", "new_collection_name", "new_collection_button", "import_button", "align_to_surface_button", "help_button", "help_dialog", "version_label", "icon_size_slider", "base_scale", "random_scale", "plane_option", "display_grid_checkbox", "mode_option", "surface_container", "plane_container", "chance_to_spawn_container", "chance_to_spawn", "plane_level", "collection_tabs")]
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 3
 anchors_preset = 15
@@ -28,7 +28,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_0j3pr")
-root_node_button = NodePath("HBoxContainer/ScrollContainer/LeftPanel/RootNodeContainer/RootButton")
+enable_plugin_button = NodePath("HBoxContainer/ScrollContainer/LeftPanel/EnablePluginContainer/EnablePlugin")
 snapping_button = NodePath("HBoxContainer/ScrollContainer/LeftPanel/Snapping/MarginContainer/VBoxContainer/SnappingCheckBox")
 snapping_step = NodePath("HBoxContainer/ScrollContainer/LeftPanel/Snapping/MarginContainer/VBoxContainer/GridContainer/HBoxContainer/SnappingStep")
 snapping_offset = NodePath("HBoxContainer/ScrollContainer/LeftPanel/Snapping/MarginContainer/VBoxContainer/GridContainer/HBoxContainer3/SnappingOffset")
@@ -36,7 +36,7 @@ new_collection_name = NodePath("HBoxContainer/Collections/MarginContainer/VBoxCo
 new_collection_button = NodePath("HBoxContainer/Collections/MarginContainer/VBoxContainer/Control/HBoxContainer/NewButton")
 import_button = NodePath("HBoxContainer/Collections/MarginContainer/VBoxContainer/Control/HBoxContainer/ImportButton")
 align_to_surface_button = NodePath("HBoxContainer/ScrollContainer/LeftPanel/Modes/MarginContainer/VBoxContainer/SurfaceContainer")
-help_button = NodePath("HBoxContainer/ScrollContainer/LeftPanel/RootNodeContainer/HelpButton")
+help_button = NodePath("HBoxContainer/ScrollContainer/LeftPanel/EnablePluginContainer/HelpButton")
 help_dialog = NodePath("HelpDialog")
 version_label = NodePath("HelpDialog/VBoxContainer/VersionLabel")
 icon_size_slider = NodePath("HelpDialog/VBoxContainer/IconSize/IconSizeSlider")
@@ -70,21 +70,15 @@ custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="RootNodeContainer" type="HBoxContainer" parent="HBoxContainer/ScrollContainer/LeftPanel"]
+[node name="EnablePluginContainer" type="HBoxContainer" parent="HBoxContainer/ScrollContainer/LeftPanel"]
 layout_mode = 2
 
-[node name="RootLabel" type="Label" parent="HBoxContainer/ScrollContainer/LeftPanel/RootNodeContainer"]
+[node name="EnablePlugin" type="CheckButton" parent="HBoxContainer/ScrollContainer/LeftPanel/EnablePluginContainer"]
 layout_mode = 2
-tooltip_text = "The node under which your objects will be placed."
-mouse_filter = 0
-text = "Root node:"
+button_pressed = true
+text = "Plugin enabled"
 
-[node name="RootButton" type="Button" parent="HBoxContainer/ScrollContainer/LeftPanel/RootNodeContainer"]
-layout_mode = 2
-text = "Select"
-icon = ExtResource("2_xtyb2")
-
-[node name="HelpButton" type="Button" parent="HBoxContainer/ScrollContainer/LeftPanel/RootNodeContainer"]
+[node name="HelpButton" type="Button" parent="HBoxContainer/ScrollContainer/LeftPanel/EnablePluginContainer"]
 layout_mode = 2
 size_flags_horizontal = 10
 icon = ExtResource("2_h35uc")

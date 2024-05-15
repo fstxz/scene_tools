@@ -1,8 +1,6 @@
 @tool
 extends Control
 
-# TODO: fix root button text overflow
-
 const PropPlacer = preload("res://addons/prop_placer/plugin.gd")
 const Collection := preload("res://addons/prop_placer/collection.gd")
 const CollectionList := preload("res://addons/prop_placer/collection_list.gd")
@@ -12,7 +10,7 @@ var prop_placer_instance: PropPlacer
 var preview_viewport: SubViewport
 var preview_camera: Camera3D
 
-@export var root_node_button: Button
+@export var enable_plugin_button: CheckButton
 @export var snapping_button: CheckBox
 @export var snapping_step: LineEdit
 @export var snapping_offset: LineEdit
@@ -39,7 +37,7 @@ var preview_camera: Camera3D
 @export var collection_tabs: TabContainer
 
 func _ready() -> void:
-    root_node_button.pressed.connect(_on_root_node_button_pressed)
+    enable_plugin_button.toggled.connect(_on_enable_plugin_button_toggled)
     snapping_button.toggled.connect(_on_snapping_toggled)
     plane_level.text_changed.connect(_on_plane_level_text_changed)
     snapping_step.text_changed.connect(_on_snapping_step_text_changed)
@@ -84,6 +82,9 @@ func setup_preview_viewport() -> void:
     preview_viewport.add_child(preview_camera)
     add_child(preview_viewport)
 
+func _on_enable_plugin_button_toggled(toggled: bool) -> void:
+    prop_placer_instance.set_plugin_enabled(toggled)
+
 func _on_mode_option_button_item_selected(index: int) -> void:
     prop_placer_instance.change_mode(index)
 
@@ -110,12 +111,6 @@ func _on_icon_size_slider_value_changed(_value: float) -> void:
     var value := int(_value)
     prop_placer_instance.icon_size = value
     set_collection_icon_size()
-
-func _on_root_node_button_pressed() -> void:
-    if prop_placer_instance.root_node:
-        prop_placer_instance.set_root_node(null)
-        return
-    EditorInterface.popup_node_selector(_on_root_node_selected)
 
 func _on_help_button_pressed() -> void:
     help_dialog.visible = true
@@ -156,10 +151,6 @@ func import_dialog_callback(paths: PackedStringArray) -> void:
             if not prop_placer_instance.collections.has(uid):
                 prop_placer_instance.collections[uid] = collection
                 spawn_collection_tab(uid, collection)
-
-func _on_root_node_selected(path: NodePath) -> void:
-    if not path.is_empty():
-        prop_placer_instance.set_root_node(prop_placer_instance.scene_root.get_node(path))
 
 func _on_snapping_toggled(toggled: bool) -> void:
     prop_placer_instance.set_snapping_enabled(toggled)

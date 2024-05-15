@@ -1,5 +1,5 @@
 # Prop Placer
-Prop Placer is an editor plugin for Godot 4.3+ to help you organize and place assets in your 3D world.
+Prop Placer is an editor plugin for Godot 4.2+ to help you organize and place assets in your 3D world.
 
 Prop Placer supports any PackedScene files (.tscn, .gltf, .blend, etc.)
 
