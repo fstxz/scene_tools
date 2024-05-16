@@ -1,9 +1,9 @@
 [gd_scene load_steps=7 format=3 uid="uid://ilgtvpjc8ygg"]
 
-[ext_resource type="Script" path="res://addons/prop_placer/gui_handler.gd" id="1_0j3pr"]
-[ext_resource type="Texture2D" uid="uid://csp0s85b3o2x1" path="res://addons/prop_placer/icons/Info.svg" id="2_h35uc"]
-[ext_resource type="Texture2D" uid="uid://bylockm7ekafs" path="res://addons/prop_placer/icons/StatusWarning.svg" id="2_xtyb2"]
-[ext_resource type="Texture2D" uid="uid://b00qb24jy1d0f" path="res://addons/prop_placer/icons/Add.svg" id="2_ybthf"]
+[ext_resource type="Script" path="res://addons/scene_tools/gui_handler.gd" id="1_0j3pr"]
+[ext_resource type="Texture2D" uid="uid://csp0s85b3o2x1" path="res://addons/scene_tools/icons/Info.svg" id="2_h35uc"]
+[ext_resource type="Texture2D" uid="uid://bylockm7ekafs" path="res://addons/scene_tools/icons/StatusWarning.svg" id="2_xtyb2"]
+[ext_resource type="Texture2D" uid="uid://b00qb24jy1d0f" path="res://addons/scene_tools/icons/Add.svg" id="2_ybthf"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cmt0l"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -19,7 +19,7 @@ corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
-[node name="PropPlacer" type="Control" node_paths=PackedStringArray("enable_plugin_button", "snapping_button", "snapping_step", "snapping_offset", "new_collection_name", "new_collection_button", "import_button", "align_to_surface_button", "help_button", "help_dialog", "version_label", "icon_size_slider", "base_scale", "random_scale", "plane_option", "display_grid_checkbox", "mode_option", "surface_container", "plane_container", "chance_to_spawn_container", "chance_to_spawn", "plane_level", "collection_tabs")]
+[node name="SceneTools" type="Control" node_paths=PackedStringArray("enable_plugin_button", "snapping_button", "snapping_step", "snapping_offset", "new_collection_name", "new_collection_button", "import_button", "align_to_surface_button", "help_button", "help_dialog", "version_label", "icon_size_slider", "base_scale", "random_scale", "plane_option", "display_grid_checkbox", "mode_option", "surface_container", "plane_container", "chance_to_spawn_container", "chance_to_spawn", "plane_level", "collection_tabs")]
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 3
 anchors_preset = 15

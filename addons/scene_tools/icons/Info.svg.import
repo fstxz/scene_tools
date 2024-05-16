@@ -11,7 +11,7 @@ metadata={
 
 [deps]
 
-source_file="res://addons/prop_placer/icons/Info.svg"
+source_file="res://addons/scene_tools/icons/Info.svg"
 dest_files=["res://.godot/imported/Info.svg-b47890b61318a689fcc4eaec3a63e528.ctex"]
 
 [params]

@@ -1,13 +1,13 @@
 @tool
 extends EditorPlugin
 
-const plugin_name := "Prop Placer"
+const plugin_name := "Scene Tools"
 
 const preview_size: int = 128
 
-const GuiHandler := preload("res://addons/prop_placer/gui_handler.gd")
-const Collection := preload("res://addons/prop_placer/collection.gd")
-var gui := preload("res://addons/prop_placer/gui.tscn")
+const GuiHandler := preload("res://addons/scene_tools/gui_handler.gd")
+const Collection := preload("res://addons/scene_tools/collection.gd")
+var gui := preload("res://addons/scene_tools/gui.tscn")
 
 var gui_instance: GuiHandler
 
@@ -57,7 +57,7 @@ func _enter_tree() -> void:
 	scene_closed.connect(_on_scene_closed)
 
 	gui_instance = gui.instantiate() as GuiHandler
-	gui_instance.prop_placer_instance = self
+	gui_instance.plugin_instance = self
 	
 	gui_instance.version_label.text = plugin_name + " v" + get_plugin_version()
 	add_control_to_bottom_panel(gui_instance, plugin_name)
@@ -71,7 +71,7 @@ func setup_grid_mesh() -> void:
 	grid_mesh = MeshInstance3D.new()
 	grid_mesh.mesh = PlaneMesh.new()
 	var shader_material := ShaderMaterial.new()
-	shader_material.shader = preload("res://addons/prop_placer/grid.gdshader")
+	shader_material.shader = preload("res://addons/scene_tools/grid.gdshader")
 	grid_mesh.mesh.surface_set_material(0, shader_material)
 	grid_mesh.hide()
 

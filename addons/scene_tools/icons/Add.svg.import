@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bylockm7ekafs"
-path="res://.godot/imported/StatusWarning.svg-d5b9dae48d304ca8470acf8256c30602.ctex"
+uid="uid://b00qb24jy1d0f"
+path="res://.godot/imported/Add.svg-0367fb69d8cc273e7b000f294af250ab.ctex"
 metadata={
 "has_editor_variant": true,
 "vram_texture": false
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://addons/prop_placer/icons/StatusWarning.svg"
-dest_files=["res://.godot/imported/StatusWarning.svg-d5b9dae48d304ca8470acf8256c30602.ctex"]
+source_file="res://addons/scene_tools/icons/Add.svg"
+dest_files=["res://.godot/imported/Add.svg-0367fb69d8cc273e7b000f294af250ab.ctex"]
 
 [params]
 

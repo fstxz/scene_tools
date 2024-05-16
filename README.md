@@ -1,16 +1,17 @@
-# Prop Placer
-Prop Placer is an editor plugin for Godot 4.2+ to help you organize and place assets in your 3D world.
+# Scene Tools
+Scene Tools is an editor plugin for Godot 4.2+ to help you with designing your levels and quick prototyping. It currently only supports asset placement.
 
-Prop Placer supports any PackedScene files (.tscn, .gltf, .blend, etc.)
+The plugin supports any PackedScene files (.tscn, .gltf, .blend, etc).
 
 ![](screenshot_1.png)
 
 ## Currently implemented features
-* Snapping support
-* Align to surface
-* Multiple assets selection (by holding Ctrl or Shift). When placing, random asset will be picked from the selection
-* Scale randomization
-* Area fill
+* Asset placement
+  * Snapping support
+  * Align to surface
+  * Multiple assets selection (by holding Ctrl or Shift). When placing, random asset will be picked from the selection
+  * Scale randomization
+  * Area fill
 
 ## Installation
 The plugin is available in the [Asset Library](https://godotengine.org/asset-library/asset/2846).
@@ -18,14 +19,14 @@ The plugin is available in the [Asset Library](https://godotengine.org/asset-lib
 Follow [Godot documentation](https://docs.godotengine.org/en/stable/tutorials/plugins/editor/installing_plugins.html) on how to install and enable plugins.
 
 > [!WARNING]
-If you are using Godot 4.2, make sure to reload the editor after installing the plugin.
+If you are using Godot 4.2, make sure to restart the editor after installing the plugin.
 
 ## How to use
-1. After enabling the plugin, open the "Prop Placer" tab at the bottom of the window.
+1. After enabling the plugin, open the "Scene Tools" tab at the bottom of the window.
 2. First, you will have to create a collection. Enter its name and click the + button in the top right corner.
 3. Save the file somewhere in your project.
 4. Drag and drop your assets into empty space on the right. 
-5. Select the asset you want to place from the list. Right click if you want to remove it.
+5. Select the asset you want to place from the list. Right click if you want to remove it from the collection.
 6. Select any node in the scene tree. Objects will be spawned as children of this node.
 
 You should now be able to place the asset.
@@ -34,4 +35,4 @@ You should now be able to place the asset.
 > Click the ? button to view keybindings and additional settings.
 
 ## License
-This plugin is licensed under the [MIT License](https://github.com/fstxz/prop_placer/blob/master/LICENSE.txt).
+This plugin is licensed under the [MIT License](https://github.com/fstxz/scene_tools/blob/master/LICENSE.txt).

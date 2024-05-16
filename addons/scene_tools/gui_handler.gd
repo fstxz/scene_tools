@@ -1,11 +1,11 @@
 @tool
 extends Control
 
-const PropPlacer = preload("res://addons/prop_placer/plugin.gd")
-const Collection := preload("res://addons/prop_placer/collection.gd")
-const CollectionList := preload("res://addons/prop_placer/collection_list.gd")
+const SceneTools = preload("res://addons/scene_tools/plugin.gd")
+const Collection := preload("res://addons/scene_tools/collection.gd")
+const CollectionList := preload("res://addons/scene_tools/collection_list.gd")
 
-var prop_placer_instance: PropPlacer
+var plugin_instance: SceneTools
 
 var preview_viewport: SubViewport
 var preview_camera: Camera3D
@@ -66,7 +66,7 @@ func _ready() -> void:
 
 func setup_preview_viewport() -> void:
     preview_viewport = SubViewport.new()
-    preview_viewport.size = Vector2i(prop_placer_instance.preview_size, prop_placer_instance.preview_size)
+    preview_viewport.size = Vector2i(plugin_instance.preview_size, plugin_instance.preview_size)
     preview_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
     preview_viewport.transparent_bg = true
     preview_viewport.scaling_3d_mode = SubViewport.SCALING_3D_MODE_BILINEAR
@@ -83,40 +83,40 @@ func setup_preview_viewport() -> void:
     add_child(preview_viewport)
 
 func _on_enable_plugin_button_toggled(toggled: bool) -> void:
-    prop_placer_instance.set_plugin_enabled(toggled)
+    plugin_instance.set_plugin_enabled(toggled)
 
 func _on_mode_option_button_item_selected(index: int) -> void:
-    prop_placer_instance.change_mode(index)
+    plugin_instance.change_mode(index)
 
 func _on_display_grid_checkbox_toggled(toggled: bool) -> void:
-    prop_placer_instance.set_grid_display_enabled(toggled)
+    plugin_instance.set_grid_display_enabled(toggled)
 
 func _on_plane_option_button_item_selected(index: int) -> void:
-    prop_placer_instance.set_plane_normal(index)
+    plugin_instance.set_plane_normal(index)
 
 func _on_random_scale_text_changed(text: String) -> void:
-    prop_placer_instance.set_random_scale(float(text))
+    plugin_instance.set_random_scale(float(text))
 
 func _on_base_scale_text_changed(text: String) -> void:
-    prop_placer_instance.set_base_scale(float(text))
+    plugin_instance.set_base_scale(float(text))
 
 func remove_collection_tab(index: int) -> void:
     var current_tab := collection_tabs.get_child(index)
     var uid: String = current_tab.get_meta("uid")
     collection_tabs.get_child(index).free()
-    ResourceSaver.save(prop_placer_instance.collections[uid])
-    prop_placer_instance.collections.erase(uid)
+    ResourceSaver.save(plugin_instance.collections[uid])
+    plugin_instance.collections.erase(uid)
 
 func _on_icon_size_slider_value_changed(_value: float) -> void:
     var value := int(_value)
-    prop_placer_instance.icon_size = value
+    plugin_instance.icon_size = value
     set_collection_icon_size()
 
 func _on_help_button_pressed() -> void:
     help_dialog.visible = true
 
 func _on_align_to_surface_toggled(toggled: bool) -> void:
-    prop_placer_instance.set_align_to_surface(toggled)
+    plugin_instance.set_align_to_surface(toggled)
 
 func _on_new_collection_button_pressed() -> void:
     var collection_name := new_collection_name.text
@@ -148,31 +148,31 @@ func import_dialog_callback(paths: PackedStringArray) -> void:
         if collection:
             var uid := ResourceUID.id_to_text(ResourceLoader.get_resource_uid(path))
 
-            if not prop_placer_instance.collections.has(uid):
-                prop_placer_instance.collections[uid] = collection
+            if not plugin_instance.collections.has(uid):
+                plugin_instance.collections[uid] = collection
                 spawn_collection_tab(uid, collection)
 
 func _on_snapping_toggled(toggled: bool) -> void:
-    prop_placer_instance.set_snapping_enabled(toggled)
+    plugin_instance.set_snapping_enabled(toggled)
 
 func _on_plane_level_text_changed(text: String) -> void:
-    prop_placer_instance.set_plane_level(float(text))
+    plugin_instance.set_plane_level(float(text))
 
 func _on_snapping_step_text_changed(text: String) -> void:
-    prop_placer_instance.set_snapping_step(float(text))
+    plugin_instance.set_snapping_step(float(text))
 
 func _on_snapping_offset_text_changed(text: String) -> void:
-    prop_placer_instance.set_snapping_offset(float(text))
+    plugin_instance.set_snapping_offset(float(text))
 
 func _on_chance_to_spawn_text_changed(text: String) -> void:
-    prop_placer_instance.set_chance_to_spawn(int(text))
+    plugin_instance.set_chance_to_spawn(int(text))
 
 func file_callback(path: String, collection_name: String) -> void:
     var collection := Collection.new(collection_name)
     
     if ResourceSaver.save(collection, path) == OK:
         var uid := ResourceUID.id_to_text(ResourceLoader.get_resource_uid(path))
-        prop_placer_instance.collections[uid] = collection
+        plugin_instance.collections[uid] = collection
         collection.take_over_path(path)
 
         spawn_collection_tab(uid, collection)
@@ -181,15 +181,15 @@ func file_callback(path: String, collection_name: String) -> void:
 
 func set_collection_icon_size() -> void:
     for collection_list: CollectionList in collection_tabs.get_children():
-        collection_list.icon_scale = prop_placer_instance.icon_size / 4.0
+        collection_list.icon_scale = plugin_instance.icon_size / 4.0
 
 func spawn_collection_tab(uid: String, collection: Collection) -> void:
     var collection_list := CollectionList.new()
     collection_list.set_meta("uid", uid)
     collection_list.name = collection.name
     collection_list.max_columns = 0
-    collection_list.fixed_icon_size = Vector2i(prop_placer_instance.preview_size, prop_placer_instance.preview_size)
-    collection_list.icon_scale = prop_placer_instance.icon_size / 4.0
+    collection_list.fixed_icon_size = Vector2i(plugin_instance.preview_size, plugin_instance.preview_size)
+    collection_list.icon_scale = plugin_instance.icon_size / 4.0
     collection_list.icon_mode = ItemList.ICON_MODE_TOP
     collection_list.same_column_width = true
     collection_list.select_mode = ItemList.SELECT_MULTI
@@ -204,7 +204,7 @@ func spawn_collection_tab(uid: String, collection: Collection) -> void:
     collection_tabs.add_child(collection_list)
 
 func _on_item_selected(_index: int, _selected: bool) -> void:
-    prop_placer_instance.set_selected_assets(get_selected_asset_uids())
+    plugin_instance.set_selected_assets(get_selected_asset_uids())
 
 func _on_asset_clicked(index: int, _at_position: Vector2, mouse_button_index: int) -> void:
     var current_tab := collection_tabs.get_child(collection_tabs.current_tab) as CollectionList
@@ -213,8 +213,8 @@ func _on_asset_clicked(index: int, _at_position: Vector2, mouse_button_index: in
         2:
             current_tab.remove_item(index)
             # TODO: don't rely on index
-            prop_placer_instance.collections[current_tab.get_meta("uid")].assets.remove_at(index)
-            prop_placer_instance.set_selected_assets(get_selected_asset_uids())
+            plugin_instance.collections[current_tab.get_meta("uid")].assets.remove_at(index)
+            plugin_instance.set_selected_assets(get_selected_asset_uids())
         _:
             return
 
@@ -224,7 +224,7 @@ func get_selected_asset_uids() -> Array[String]:
     var selected_items := current_tab.get_selected_items()
     var asset_uids: Array[String] = []
     for i: int in selected_items:
-        asset_uids.append(prop_placer_instance.collections[current_tab.get_meta("uid")].assets[i].uid)
+        asset_uids.append(plugin_instance.collections[current_tab.get_meta("uid")].assets[i].uid)
     
     return asset_uids
 
@@ -241,7 +241,7 @@ func _on_data_dropped(data: Variant) -> void:
             var root_node_name := packedscene.get_state().get_node_name(0)
             var node := packedscene.instantiate()
 
-            var preview := await prop_placer_instance.generate_preview(node)
+            var preview := await plugin_instance.generate_preview(node)
 
             var tab := collection_tabs.get_child(current_tab) as CollectionList
 
@@ -250,7 +250,7 @@ func _on_data_dropped(data: Variant) -> void:
             asset.name = root_node_name
             asset.uid = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(filepath))
 
-            prop_placer_instance.collections[tab.get_meta("uid")].assets.append(asset)
+            plugin_instance.collections[tab.get_meta("uid")].assets.append(asset)
             add_asset_to_tab(tab, asset)
 
 
