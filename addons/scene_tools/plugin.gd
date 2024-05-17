@@ -51,8 +51,6 @@ var grid_display_enabled := true
 var fill_mesh: MeshInstance3D
 
 func _enter_tree() -> void:
-	scene_root = EditorInterface.get_edited_scene_root()
-
 	scene_changed.connect(_on_scene_changed)
 	scene_closed.connect(_on_scene_closed)
 
@@ -508,6 +506,8 @@ func change_brush(asset_uid: String) -> void:
 
 		if scene_root:
 			scene_root.add_child(brush)
+		else:
+			_on_scene_changed(EditorInterface.get_edited_scene_root())
 
 		if not root_node or not plugin_enabled:
 			brush.hide()
