@@ -314,7 +314,7 @@ func visual_raycast(camera: Camera3D) -> Node:
 		var closest_distance := 1000.0
 		for id: int in result:
 			var instance := instance_from_id(id)
-			if instance.owner != brush:
+			if instance.owner and instance.owner != brush:
 				if (instance is MeshInstance3D
 				or instance is CSGShape3D
 				or instance is MultiMeshInstance3D
