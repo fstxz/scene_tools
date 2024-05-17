@@ -223,6 +223,11 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 					fill_mesh.position.y += snapping_step * 0.5
 					fill_mesh.mesh.size = fill_bounding_box.size.abs() + Vector3.ONE * snapping_step
 
+	if event is InputEventKey:
+		if event.keycode == KEY_R and event.is_pressed():
+			rotation.y = wrapf(rotation.y + (PI/4.0), 0.0, TAU)
+			return EditorPlugin.AFTER_GUI_INPUT_STOP
+
 	if event is InputEventMouseButton:
 		match event.button_index:
 			MOUSE_BUTTON_LEFT:
@@ -247,8 +252,10 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 			
 			MOUSE_BUTTON_RIGHT:
 				if event.is_pressed():
-					rotation.y = wrapf(rotation.y + (PI/4.0), 0.0, TAU)
-					return EditorPlugin.AFTER_GUI_INPUT_STOP
+					var node_to_erase := visual_raycast(viewport_camera)
+					if node_to_erase:
+						erase(node_to_erase)
+						return EditorPlugin.AFTER_GUI_INPUT_STOP
 			
 			MOUSE_BUTTON_WHEEL_DOWN:
 				if Input.is_key_pressed(KEY_CTRL):
@@ -292,6 +299,49 @@ func raycast(camera: Camera3D) -> Dictionary:
 	var query := PhysicsRayQueryParameters3D.create(origin, end)
 
 	return space_state.intersect_ray(query)
+
+func visual_raycast(camera: Camera3D) -> Node:
+	var mousepos := EditorInterface.get_editor_viewport_3d().get_mouse_position()
+
+	var origin := camera.project_ray_origin(mousepos)
+	var end := origin + camera.project_ray_normal(mousepos) * 1000.0
+
+	var result := RenderingServer.instances_cull_ray(origin, end, camera.get_world_3d().scenario)
+	
+	if not result.is_empty():
+		# instances_cull_ray returns nodes in random order, so we have to find closest to the camera
+		var closest_node: Node3D
+		var closest_distance := 1000.0
+		for id: int in result:
+			var instance := instance_from_id(id)
+			if instance.owner != brush:
+				if (instance is MeshInstance3D
+				or instance is CSGShape3D
+				or instance is MultiMeshInstance3D
+				or instance is Label3D
+				or instance is SpriteBase3D
+				or instance is Decal):
+					if instance.owner != scene_root:
+						var distance: float = instance.global_position.distance_to(camera.global_position)
+						if instance.global_position.distance_to(camera.global_position) < closest_distance:
+							closest_node = instance.owner
+							closest_distance = distance
+					elif not instance.scene_file_path.is_empty():
+						var distance: float = instance.global_position.distance_to(camera.global_position)
+						if instance.global_position.distance_to(camera.global_position) < closest_distance:
+							closest_node = instance
+							closest_distance = distance
+		return closest_node
+	return null
+
+func erase(node: Node) -> void:
+	var parent := node.get_parent()
+	undo_redo.create_action("Erase node", UndoRedo.MERGE_DISABLE, scene_root)
+	undo_redo.add_do_method(parent, "remove_child", node)
+	undo_redo.add_undo_method(parent, "add_child", node)
+	undo_redo.add_undo_property(node, "owner", scene_root)
+	undo_redo.add_undo_reference(node)
+	undo_redo.commit_action()
 
 func set_snapping_enabled(enabled: bool) -> void:
 	snapping_enabled = enabled
