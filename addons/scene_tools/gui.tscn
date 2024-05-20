@@ -1,8 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://ilgtvpjc8ygg"]
+[gd_scene load_steps=7 format=3 uid="uid://ilgtvpjc8ygg"]
 
 [ext_resource type="Script" path="res://addons/scene_tools/gui_handler.gd" id="1_0j3pr"]
-[ext_resource type="Texture2D" uid="uid://csp0s85b3o2x1" path="res://addons/scene_tools/icons/Info.svg" id="2_h35uc"]
-[ext_resource type="Texture2D" uid="uid://bylockm7ekafs" path="res://addons/scene_tools/icons/StatusWarning.svg" id="2_xtyb2"]
+[ext_resource type="Texture2D" uid="uid://kw0yfcs32f2v" path="res://addons/scene_tools/icons/GuiOptionArrow.svg" id="2_55bu5"]
 [ext_resource type="Texture2D" uid="uid://b00qb24jy1d0f" path="res://addons/scene_tools/icons/Add.svg" id="2_ybthf"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q0501"]
@@ -26,80 +25,138 @@ corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
-[node name="SceneTools" type="Button" node_paths=PackedStringArray("enable_plugin_button", "snapping_button", "snapping_step", "snapping_offset", "new_collection_name", "new_collection_button", "import_button", "align_to_surface_button", "help_button", "help_dialog", "version_label", "icon_size_slider", "base_scale", "random_scale", "plane_option", "display_grid_checkbox", "mode_option", "surface_container", "plane_container", "chance_to_spawn_container", "chance_to_spawn", "plane_level", "side_panel", "collections_container", "collection_tabs")]
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="SceneTools" type="HBoxContainer" parent="." node_paths=PackedStringArray("snapping_button", "snapping_step", "snapping_offset", "new_collection_name", "new_collection_button", "import_button", "align_to_surface_button", "help_dialog", "version_label", "icon_size_slider", "base_scale", "random_scale", "plane_option", "display_grid_checkbox", "mode_option", "surface_container", "plane_container", "chance_to_spawn_container", "chance_to_spawn", "plane_level", "side_panel", "collections_container", "collection_tabs", "scene_tools_button", "scene_tools_menu_button")]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-text = "Scene Tools"
-flat = true
 script = ExtResource("1_0j3pr")
-enable_plugin_button = NodePath("SidePanel/LeftPanel/EnablePluginContainer/EnablePlugin")
-snapping_button = NodePath("SidePanel/LeftPanel/Snapping/MarginContainer/VBoxContainer/SnappingCheckBox")
-snapping_step = NodePath("SidePanel/LeftPanel/Snapping/MarginContainer/VBoxContainer/GridContainer/HBoxContainer/SnappingStep")
-snapping_offset = NodePath("SidePanel/LeftPanel/Snapping/MarginContainer/VBoxContainer/GridContainer/HBoxContainer3/SnappingOffset")
-new_collection_name = NodePath("Collections/MarginContainer/VBoxContainer/Control/HBoxContainer/NameLineEdit")
-new_collection_button = NodePath("Collections/MarginContainer/VBoxContainer/Control/HBoxContainer/NewButton")
-import_button = NodePath("Collections/MarginContainer/VBoxContainer/Control/HBoxContainer/ImportButton")
-align_to_surface_button = NodePath("SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/SurfaceContainer")
-help_button = NodePath("SidePanel/LeftPanel/EnablePluginContainer/HelpButton")
+snapping_button = NodePath("../SidePanel/Container/Snapping/MarginContainer/VBoxContainer/SnappingCheckBox")
+snapping_step = NodePath("../SidePanel/Container/Snapping/MarginContainer/VBoxContainer/GridContainer/HBoxContainer/SnappingStep")
+snapping_offset = NodePath("../SidePanel/Container/Snapping/MarginContainer/VBoxContainer/GridContainer/HBoxContainer3/SnappingOffset")
+new_collection_name = NodePath("../Collections/MarginContainer/VBoxContainer/Control/HBoxContainer/NameLineEdit")
+new_collection_button = NodePath("../Collections/MarginContainer/VBoxContainer/Control/HBoxContainer/NewButton")
+import_button = NodePath("../Collections/MarginContainer/VBoxContainer/Control/HBoxContainer/ImportButton")
+align_to_surface_button = NodePath("../SidePanel/Container/Modes/MarginContainer/VBoxContainer/SurfaceContainer")
 help_dialog = NodePath("HelpDialog")
 version_label = NodePath("HelpDialog/VBoxContainer/VersionLabel")
 icon_size_slider = NodePath("HelpDialog/VBoxContainer/IconSize/IconSizeSlider")
-base_scale = NodePath("SidePanel/LeftPanel/Scale/MarginContainer/VBoxContainer/GridContainer/HBoxContainer/BaseScale")
-random_scale = NodePath("SidePanel/LeftPanel/Scale/MarginContainer/VBoxContainer/GridContainer/HBoxContainer2/RandomScale")
-warning_icon = ExtResource("2_xtyb2")
-plane_option = NodePath("SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/PlaneContainer/HBoxContainer2/PlaneOption")
+base_scale = NodePath("../SidePanel/Container/Scale/MarginContainer/VBoxContainer/GridContainer/HBoxContainer/BaseScale")
+random_scale = NodePath("../SidePanel/Container/Scale/MarginContainer/VBoxContainer/GridContainer/HBoxContainer2/RandomScale")
+plane_option = NodePath("../SidePanel/Container/Modes/MarginContainer/VBoxContainer/PlaneContainer/HBoxContainer2/PlaneOption")
 display_grid_checkbox = NodePath("HelpDialog/VBoxContainer/DisplayGrid")
-mode_option = NodePath("SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/ModesContainer/OptionButton")
-surface_container = NodePath("SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/SurfaceContainer")
-plane_container = NodePath("SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/PlaneContainer")
-chance_to_spawn_container = NodePath("SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/ChanceToSpawnContainer")
-chance_to_spawn = NodePath("SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/ChanceToSpawnContainer/ChanceToSpawn")
-plane_level = NodePath("SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/PlaneContainer/HBoxContainer/PlaneLevel")
-side_panel = NodePath("SidePanel")
-collections_container = NodePath("Collections")
-collection_tabs = NodePath("Collections/MarginContainer/VBoxContainer/TabContainer")
+mode_option = NodePath("../SidePanel/Container/Modes/MarginContainer/VBoxContainer/ModesContainer/OptionButton")
+surface_container = NodePath("../SidePanel/Container/Modes/MarginContainer/VBoxContainer/SurfaceContainer")
+plane_container = NodePath("../SidePanel/Container/Modes/MarginContainer/VBoxContainer/PlaneContainer")
+chance_to_spawn_container = NodePath("../SidePanel/Container/Modes/MarginContainer/VBoxContainer/ChanceToSpawnContainer")
+chance_to_spawn = NodePath("../SidePanel/Container/Modes/MarginContainer/VBoxContainer/ChanceToSpawnContainer/ChanceToSpawn")
+plane_level = NodePath("../SidePanel/Container/Modes/MarginContainer/VBoxContainer/PlaneContainer/HBoxContainer/PlaneLevel")
+side_panel = NodePath("../SidePanel")
+collections_container = NodePath("../Collections")
+collection_tabs = NodePath("../Collections/MarginContainer/VBoxContainer/TabContainer")
+scene_tools_button = NodePath("SceneToolsButton")
+scene_tools_menu_button = NodePath("MenuButton")
+
+[node name="SceneToolsButton" type="Button" parent="SceneTools"]
+layout_mode = 2
+text = "Scene Tools"
+flat = true
+
+[node name="MenuButton" type="MenuButton" parent="SceneTools"]
+layout_mode = 2
+icon = ExtResource("2_55bu5")
+item_count = 1
+popup/item_0/text = "Settings"
+
+[node name="HelpDialog" type="AcceptDialog" parent="SceneTools"]
+title = "About"
+initial_position = 4
+size = Vector2i(304, 348)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SceneTools/HelpDialog"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 296.0
+offset_bottom = 306.0
+
+[node name="VersionLabel" type="Label" parent="SceneTools/HelpDialog/VBoxContainer"]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="Controls" type="Label" parent="SceneTools/HelpDialog/VBoxContainer"]
+layout_mode = 2
+text = "
+Controls:
+LMB - Place
+RMB - Erase
+R - Rotate
+Ctrl + Mouse Wheel - Raise/lower grid"
+horizontal_alignment = 1
+
+[node name="Label" type="Label" parent="SceneTools/HelpDialog/VBoxContainer"]
+layout_mode = 2
+text = "
+Additional settings:"
+horizontal_alignment = 1
+
+[node name="IconSize" type="HBoxContainer" parent="SceneTools/HelpDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SceneTools/HelpDialog/VBoxContainer/IconSize"]
+layout_mode = 2
+text = "Icon size"
+horizontal_alignment = 1
+
+[node name="IconSizeSlider" type="HSlider" parent="SceneTools/HelpDialog/VBoxContainer/IconSize"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 4.0
+value = 4.0
+rounded = true
+scrollable = false
+tick_count = 4
+ticks_on_borders = true
+
+[node name="DisplayGrid" type="CheckBox" parent="SceneTools/HelpDialog/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Display grid"
 
 [node name="SidePanel" type="ScrollContainer" parent="."]
+visible = false
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 1
 anchors_preset = 9
 anchor_bottom = 1.0
-offset_right = 8.0
+offset_right = 250.0
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_q0501")
 
-[node name="LeftPanel" type="VBoxContainer" parent="SidePanel"]
+[node name="Container" type="VBoxContainer" parent="SidePanel"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 8
 
-[node name="EnablePluginContainer" type="HBoxContainer" parent="SidePanel/LeftPanel"]
-layout_mode = 2
-
-[node name="EnablePlugin" type="CheckButton" parent="SidePanel/LeftPanel/EnablePluginContainer"]
-layout_mode = 2
-button_pressed = true
-text = "Plugin enabled"
-
-[node name="HelpButton" type="Button" parent="SidePanel/LeftPanel/EnablePluginContainer"]
-layout_mode = 2
-size_flags_horizontal = 10
-icon = ExtResource("2_h35uc")
-
-[node name="Modes" type="PanelContainer" parent="SidePanel/LeftPanel"]
+[node name="Modes" type="PanelContainer" parent="SidePanel/Container"]
 auto_translate_mode = 1
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_cmt0l")
 
-[node name="Background" type="Panel" parent="SidePanel/LeftPanel/Modes"]
+[node name="Background" type="Panel" parent="SidePanel/Container/Modes"]
 auto_translate_mode = 1
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="SidePanel/LeftPanel/Modes"]
+[node name="MarginContainer" type="MarginContainer" parent="SidePanel/Container/Modes"]
 auto_translate_mode = 1
 layout_mode = 2
 theme_override_constants/margin_left = 4
@@ -107,18 +164,18 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="SidePanel/LeftPanel/Modes/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="SidePanel/Container/Modes/MarginContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 
-[node name="ModesContainer" type="HBoxContainer" parent="SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer"]
+[node name="ModesContainer" type="HBoxContainer" parent="SidePanel/Container/Modes/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/ModesContainer"]
+[node name="Label" type="Label" parent="SidePanel/Container/Modes/MarginContainer/VBoxContainer/ModesContainer"]
 layout_mode = 2
 text = "Mode:"
 
-[node name="OptionButton" type="OptionButton" parent="SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/ModesContainer"]
+[node name="OptionButton" type="OptionButton" parent="SidePanel/Container/Modes/MarginContainer/VBoxContainer/ModesContainer"]
 layout_mode = 2
 selected = 0
 item_count = 3
@@ -128,7 +185,7 @@ popup/item_1/id = 1
 popup/item_2/text = "Fill"
 popup/item_2/id = 2
 
-[node name="PlaneContainer" type="GridContainer" parent="SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer"]
+[node name="PlaneContainer" type="GridContainer" parent="SidePanel/Container/Modes/MarginContainer/VBoxContainer"]
 auto_translate_mode = 1
 visible = false
 layout_mode = 2
@@ -136,14 +193,14 @@ theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4
 columns = 2
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/PlaneContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="SidePanel/Container/Modes/MarginContainer/VBoxContainer/PlaneContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/PlaneContainer/HBoxContainer2"]
+[node name="Label" type="Label" parent="SidePanel/Container/Modes/MarginContainer/VBoxContainer/PlaneContainer/HBoxContainer2"]
 layout_mode = 2
 text = "Plane"
 
-[node name="PlaneOption" type="OptionButton" parent="SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/PlaneContainer/HBoxContainer2"]
+[node name="PlaneOption" type="OptionButton" parent="SidePanel/Container/Modes/MarginContainer/VBoxContainer/PlaneContainer/HBoxContainer2"]
 layout_mode = 2
 selected = 0
 item_count = 3
@@ -153,57 +210,57 @@ popup/item_1/id = 1
 popup/item_2/text = "ZY"
 popup/item_2/id = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/PlaneContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="SidePanel/Container/Modes/MarginContainer/VBoxContainer/PlaneContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/PlaneContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="SidePanel/Container/Modes/MarginContainer/VBoxContainer/PlaneContainer/HBoxContainer"]
 layout_mode = 2
 text = "Level"
 
-[node name="PlaneLevel" type="LineEdit" parent="SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/PlaneContainer/HBoxContainer"]
+[node name="PlaneLevel" type="LineEdit" parent="SidePanel/Container/Modes/MarginContainer/VBoxContainer/PlaneContainer/HBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_d1c51")
 text = "0"
 max_length = 5
 
-[node name="SurfaceContainer" type="CheckBox" parent="SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer"]
+[node name="SurfaceContainer" type="CheckBox" parent="SidePanel/Container/Modes/MarginContainer/VBoxContainer"]
 auto_translate_mode = 1
 visible = false
 layout_mode = 2
 text = "Align to surface"
 flat = true
 
-[node name="ChanceToSpawnContainer" type="HBoxContainer" parent="SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer"]
+[node name="ChanceToSpawnContainer" type="HBoxContainer" parent="SidePanel/Container/Modes/MarginContainer/VBoxContainer"]
 visible = false
 layout_mode = 2
 
-[node name="Label" type="Label" parent="SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/ChanceToSpawnContainer"]
+[node name="Label" type="Label" parent="SidePanel/Container/Modes/MarginContainer/VBoxContainer/ChanceToSpawnContainer"]
 layout_mode = 2
 text = "Chance to spawn"
 
-[node name="ChanceToSpawn" type="LineEdit" parent="SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/ChanceToSpawnContainer"]
+[node name="ChanceToSpawn" type="LineEdit" parent="SidePanel/Container/Modes/MarginContainer/VBoxContainer/ChanceToSpawnContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_d1c51")
 text = "100"
 max_length = 3
 
-[node name="Label2" type="Label" parent="SidePanel/LeftPanel/Modes/MarginContainer/VBoxContainer/ChanceToSpawnContainer"]
+[node name="Label2" type="Label" parent="SidePanel/Container/Modes/MarginContainer/VBoxContainer/ChanceToSpawnContainer"]
 layout_mode = 2
 text = "%"
 
-[node name="Scale" type="PanelContainer" parent="SidePanel/LeftPanel"]
+[node name="Scale" type="PanelContainer" parent="SidePanel/Container"]
 auto_translate_mode = 1
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_cmt0l")
 
-[node name="Background" type="Panel" parent="SidePanel/LeftPanel/Scale"]
+[node name="Background" type="Panel" parent="SidePanel/Container/Scale"]
 auto_translate_mode = 1
 clip_contents = true
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="SidePanel/LeftPanel/Scale"]
+[node name="MarginContainer" type="MarginContainer" parent="SidePanel/Container/Scale"]
 auto_translate_mode = 1
 layout_mode = 2
 theme_override_constants/margin_left = 4
@@ -211,104 +268,104 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="SidePanel/LeftPanel/Scale/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="SidePanel/Container/Scale/MarginContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 
-[node name="GridContainer" type="GridContainer" parent="SidePanel/LeftPanel/Scale/MarginContainer/VBoxContainer"]
+[node name="GridContainer" type="GridContainer" parent="SidePanel/Container/Scale/MarginContainer/VBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4
 columns = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="SidePanel/LeftPanel/Scale/MarginContainer/VBoxContainer/GridContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="SidePanel/Container/Scale/MarginContainer/VBoxContainer/GridContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 
-[node name="Label" type="Label" parent="SidePanel/LeftPanel/Scale/MarginContainer/VBoxContainer/GridContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="SidePanel/Container/Scale/MarginContainer/VBoxContainer/GridContainer/HBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Base scale"
 
-[node name="BaseScale" type="LineEdit" parent="SidePanel/LeftPanel/Scale/MarginContainer/VBoxContainer/GridContainer/HBoxContainer"]
+[node name="BaseScale" type="LineEdit" parent="SidePanel/Container/Scale/MarginContainer/VBoxContainer/GridContainer/HBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_d1c51")
 text = "1"
 max_length = 5
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="SidePanel/LeftPanel/Scale/MarginContainer/VBoxContainer/GridContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="SidePanel/Container/Scale/MarginContainer/VBoxContainer/GridContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 
-[node name="Label" type="Label" parent="SidePanel/LeftPanel/Scale/MarginContainer/VBoxContainer/GridContainer/HBoxContainer2"]
+[node name="Label" type="Label" parent="SidePanel/Container/Scale/MarginContainer/VBoxContainer/GridContainer/HBoxContainer2"]
 auto_translate_mode = 1
 layout_mode = 2
 size_flags_horizontal = 3
 text = "±"
 
-[node name="RandomScale" type="LineEdit" parent="SidePanel/LeftPanel/Scale/MarginContainer/VBoxContainer/GridContainer/HBoxContainer2"]
+[node name="RandomScale" type="LineEdit" parent="SidePanel/Container/Scale/MarginContainer/VBoxContainer/GridContainer/HBoxContainer2"]
 auto_translate_mode = 1
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_d1c51")
 text = "0"
 max_length = 5
 
-[node name="Snapping" type="PanelContainer" parent="SidePanel/LeftPanel"]
+[node name="Snapping" type="PanelContainer" parent="SidePanel/Container"]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_cmt0l")
 
-[node name="Background" type="Panel" parent="SidePanel/LeftPanel/Snapping"]
+[node name="Background" type="Panel" parent="SidePanel/Container/Snapping"]
 clip_contents = true
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="SidePanel/LeftPanel/Snapping"]
+[node name="MarginContainer" type="MarginContainer" parent="SidePanel/Container/Snapping"]
 layout_mode = 2
 theme_override_constants/margin_left = 4
 theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 8
 
-[node name="VBoxContainer" type="VBoxContainer" parent="SidePanel/LeftPanel/Snapping/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="SidePanel/Container/Snapping/MarginContainer"]
 layout_mode = 2
 
-[node name="SnappingCheckBox" type="CheckBox" parent="SidePanel/LeftPanel/Snapping/MarginContainer/VBoxContainer"]
+[node name="SnappingCheckBox" type="CheckBox" parent="SidePanel/Container/Snapping/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Snapping"
 flat = true
 
-[node name="GridContainer" type="GridContainer" parent="SidePanel/LeftPanel/Snapping/MarginContainer/VBoxContainer"]
+[node name="GridContainer" type="GridContainer" parent="SidePanel/Container/Snapping/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4
 columns = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="SidePanel/LeftPanel/Snapping/MarginContainer/VBoxContainer/GridContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="SidePanel/Container/Snapping/MarginContainer/VBoxContainer/GridContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="SidePanel/LeftPanel/Snapping/MarginContainer/VBoxContainer/GridContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="SidePanel/Container/Snapping/MarginContainer/VBoxContainer/GridContainer/HBoxContainer"]
 layout_mode = 2
 text = "Step"
 
-[node name="SnappingStep" type="LineEdit" parent="SidePanel/LeftPanel/Snapping/MarginContainer/VBoxContainer/GridContainer/HBoxContainer"]
+[node name="SnappingStep" type="LineEdit" parent="SidePanel/Container/Snapping/MarginContainer/VBoxContainer/GridContainer/HBoxContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_d1c51")
 text = "0"
 max_length = 5
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="SidePanel/LeftPanel/Snapping/MarginContainer/VBoxContainer/GridContainer"]
+[node name="HBoxContainer3" type="HBoxContainer" parent="SidePanel/Container/Snapping/MarginContainer/VBoxContainer/GridContainer"]
 auto_translate_mode = 1
 layout_mode = 2
 
-[node name="Label" type="Label" parent="SidePanel/LeftPanel/Snapping/MarginContainer/VBoxContainer/GridContainer/HBoxContainer3"]
+[node name="Label" type="Label" parent="SidePanel/Container/Snapping/MarginContainer/VBoxContainer/GridContainer/HBoxContainer3"]
 auto_translate_mode = 1
 layout_mode = 2
 text = "Offset"
 
-[node name="SnappingOffset" type="LineEdit" parent="SidePanel/LeftPanel/Snapping/MarginContainer/VBoxContainer/GridContainer/HBoxContainer3"]
+[node name="SnappingOffset" type="LineEdit" parent="SidePanel/Container/Snapping/MarginContainer/VBoxContainer/GridContainer/HBoxContainer3"]
 auto_translate_mode = 1
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_d1c51")
@@ -367,58 +424,3 @@ text = "Import"
 [node name="TabContainer" type="TabContainer" parent="Collections/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-
-[node name="HelpDialog" type="AcceptDialog" parent="."]
-title = "About"
-initial_position = 4
-size = Vector2i(304, 348)
-
-[node name="VBoxContainer" type="VBoxContainer" parent="HelpDialog"]
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 296.0
-offset_bottom = 306.0
-
-[node name="VersionLabel" type="Label" parent="HelpDialog/VBoxContainer"]
-layout_mode = 2
-horizontal_alignment = 1
-
-[node name="Controls" type="Label" parent="HelpDialog/VBoxContainer"]
-layout_mode = 2
-text = "
-Controls:
-LMB - Place
-RMB - Erase
-R - Rotate
-Ctrl + Mouse Wheel - Raise/lower grid"
-horizontal_alignment = 1
-
-[node name="Label" type="Label" parent="HelpDialog/VBoxContainer"]
-layout_mode = 2
-text = "
-Additional settings:"
-horizontal_alignment = 1
-
-[node name="IconSize" type="HBoxContainer" parent="HelpDialog/VBoxContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="HelpDialog/VBoxContainer/IconSize"]
-layout_mode = 2
-text = "Icon size"
-horizontal_alignment = 1
-
-[node name="IconSizeSlider" type="HSlider" parent="HelpDialog/VBoxContainer/IconSize"]
-layout_mode = 2
-size_flags_horizontal = 3
-min_value = 1.0
-max_value = 4.0
-value = 4.0
-rounded = true
-scrollable = false
-tick_count = 4
-ticks_on_borders = true
-
-[node name="DisplayGrid" type="CheckBox" parent="HelpDialog/VBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 4
-text = "Display grid"

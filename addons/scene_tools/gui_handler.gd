@@ -1,5 +1,5 @@
 @tool
-extends Button
+extends Control
 
 const SceneTools = preload("res://addons/scene_tools/plugin.gd")
 const Collection := preload("res://addons/scene_tools/collection.gd")
@@ -10,7 +10,6 @@ var plugin_instance: SceneTools
 var preview_viewport: SubViewport
 var preview_camera: Camera3D
 
-@export var enable_plugin_button: CheckButton
 @export var snapping_button: CheckBox
 @export var snapping_step: LineEdit
 @export var snapping_offset: LineEdit
@@ -18,13 +17,11 @@ var preview_camera: Camera3D
 @export var new_collection_button: Button
 @export var import_button: Button
 @export var align_to_surface_button: CheckBox
-@export var help_button: Button
 @export var help_dialog: AcceptDialog
 @export var version_label: Label
 @export var icon_size_slider: HSlider
 @export var base_scale: LineEdit
 @export var random_scale: LineEdit
-@export var warning_icon: CompressedTexture2D
 @export var plane_option: OptionButton
 @export var display_grid_checkbox: CheckBox
 @export var mode_option: OptionButton
@@ -37,9 +34,10 @@ var preview_camera: Camera3D
 @export var side_panel: Control
 @export var collections_container: Control
 @export var collection_tabs: TabContainer
+@export var scene_tools_button: Button
+@export var scene_tools_menu_button: MenuButton
 
 func _ready() -> void:
-    enable_plugin_button.toggled.connect(_on_enable_plugin_button_toggled)
     snapping_button.toggled.connect(_on_snapping_toggled)
     plane_level.text_changed.connect(_on_plane_level_text_changed)
     snapping_step.text_changed.connect(_on_snapping_step_text_changed)
@@ -47,7 +45,6 @@ func _ready() -> void:
     new_collection_button.pressed.connect(_on_new_collection_button_pressed)
     import_button.pressed.connect(_on_import_button_pressed)
     align_to_surface_button.toggled.connect(_on_align_to_surface_toggled)
-    help_button.pressed.connect(_on_help_button_pressed)
     icon_size_slider.value_changed.connect(_on_icon_size_slider_value_changed)
     base_scale.text_changed.connect(_on_base_scale_text_changed)
     random_scale.text_changed.connect(_on_random_scale_text_changed)
@@ -55,6 +52,7 @@ func _ready() -> void:
     display_grid_checkbox.toggled.connect(_on_display_grid_checkbox_toggled)
     mode_option.item_selected.connect(_on_mode_option_button_item_selected)
     chance_to_spawn.text_changed.connect(_on_chance_to_spawn_text_changed)
+    scene_tools_menu_button.get_popup().id_pressed.connect(_on_scene_tools_menu_pressed)
 
     collection_tabs.get_tab_bar().tab_close_display_policy = TabBar.CLOSE_BUTTON_SHOW_ACTIVE_ONLY
     collection_tabs.get_tab_bar().tab_close_pressed.connect(remove_collection_tab)
@@ -85,8 +83,6 @@ func setup_preview_viewport() -> void:
     preview_viewport.add_child(preview_camera)
     add_child(preview_viewport)
 
-func _on_enable_plugin_button_toggled(toggled: bool) -> void:
-    plugin_instance.set_plugin_enabled(toggled)
 
 func _on_mode_option_button_item_selected(index: int) -> void:
     plugin_instance.change_mode(index)
@@ -115,8 +111,10 @@ func _on_icon_size_slider_value_changed(_value: float) -> void:
     plugin_instance.icon_size = value
     set_collection_icon_size()
 
-func _on_help_button_pressed() -> void:
-    help_dialog.visible = true
+func _on_scene_tools_menu_pressed(id: int) -> void:
+    match id:
+        0:
+            help_dialog.visible = true
 
 func _on_align_to_surface_toggled(toggled: bool) -> void:
     plugin_instance.set_align_to_surface(toggled)
