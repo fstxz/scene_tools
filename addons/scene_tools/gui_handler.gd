@@ -1,5 +1,5 @@
 @tool
-extends Control
+extends Button
 
 const SceneTools = preload("res://addons/scene_tools/plugin.gd")
 const Collection := preload("res://addons/scene_tools/collection.gd")
@@ -34,6 +34,8 @@ var preview_camera: Camera3D
 @export var chance_to_spawn: LineEdit
 @export var plane_level: LineEdit
 
+@export var side_panel: Control
+@export var collections_container: Control
 @export var collection_tabs: TabContainer
 
 func _ready() -> void:
@@ -63,6 +65,7 @@ func _ready() -> void:
     surface_container.hide()
     plane_container.hide()
     chance_to_spawn_container.hide()
+    side_panel.hide()
 
 func setup_preview_viewport() -> void:
     preview_viewport = SubViewport.new()

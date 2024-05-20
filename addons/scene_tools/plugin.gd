@@ -50,6 +50,8 @@ var grid_display_enabled := true
 
 var fill_mesh: MeshInstance3D
 
+var side_panel_visible := true
+
 func _enter_tree() -> void:
 	scene_changed.connect(_on_scene_changed)
 	scene_closed.connect(_on_scene_closed)
@@ -58,7 +60,15 @@ func _enter_tree() -> void:
 	gui_instance.plugin_instance = self
 	
 	gui_instance.version_label.text = plugin_name + " v" + get_plugin_version()
-	add_control_to_bottom_panel(gui_instance, plugin_name)
+	add_control_to_container(CustomControlContainer.CONTAINER_SPATIAL_EDITOR_MENU, gui_instance)
+
+	gui_instance.side_panel.get_parent().remove_child(gui_instance.side_panel)
+	add_control_to_container(CustomControlContainer.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT, gui_instance.side_panel)
+
+	gui_instance.collections_container.get_parent().remove_child(gui_instance.collections_container)
+	add_control_to_bottom_panel(gui_instance.collections_container, "Collections")
+
+	gui_instance.pressed.connect(_scene_tools_button_pressed)
 
 	undo_redo = get_undo_redo()
 
@@ -84,12 +94,28 @@ func setup_fill_mesh() -> void:
 	add_child(fill_mesh)
 
 func _exit_tree() -> void:
-	remove_control_from_bottom_panel(gui_instance)
+	remove_control_from_bottom_panel(gui_instance.collections_container)
+	remove_control_from_container(CustomControlContainer.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT, gui_instance.side_panel)
+	remove_control_from_container(CustomControlContainer.CONTAINER_SPATIAL_EDITOR_MENU, gui_instance)
+	gui_instance.side_panel.free()
+	gui_instance.collections_container.free()
 	gui_instance.free()
 	if brush:
 		brush.free()
 	grid_mesh.free()
 	fill_mesh.free()
+
+func _make_visible(visible: bool) -> void:
+	if visible:
+		gui_instance.show()
+		gui_instance.side_panel.set_visible(side_panel_visible)
+	else:
+		gui_instance.hide()
+		gui_instance.side_panel.hide()
+
+func _scene_tools_button_pressed() -> void:
+	gui_instance.side_panel.set_visible(!gui_instance.side_panel.visible)
+	side_panel_visible = !side_panel_visible
 
 func _get_plugin_name() -> String:
 	return plugin_name
@@ -387,6 +413,7 @@ func _get_window_layout(configuration: ConfigFile) -> void:
 	configuration.set_value(plugin_name, "grid_display_enabled", grid_display_enabled)
 	configuration.set_value(plugin_name, "current_mode", current_mode)
 	configuration.set_value(plugin_name, "chance_to_spawn", chance_to_spawn)
+	configuration.set_value(plugin_name, "side_panel_visible", side_panel_visible)
 
 func _set_window_layout(configuration: ConfigFile) -> void:
 	var collection_ids: Array[String] = configuration.get_value(plugin_name, "collections", [])
@@ -438,6 +465,8 @@ func _set_window_layout(configuration: ConfigFile) -> void:
 
 	chance_to_spawn = configuration.get_value(plugin_name, "chance_to_spawn", chance_to_spawn)
 	gui_instance.chance_to_spawn.text = str(chance_to_spawn)
+
+	side_panel_visible = configuration.get_value(plugin_name, "side_panel_visible", side_panel_visible)
 
 func generate_preview(node: Node) -> Texture2D:
 	gui_instance.preview_viewport.add_child(node)

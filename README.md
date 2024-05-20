@@ -22,14 +22,14 @@ Follow [Godot documentation](https://docs.godotengine.org/en/stable/tutorials/pl
 If you are using Godot 4.2, make sure to restart the editor after installing the plugin.
 
 ## How to use
-1. After enabling the plugin, open the "Scene Tools" tab at the bottom of the window.
+1. After enabling the plugin, open the "Collections" tab at the bottom of the window.
 2. First, you will have to create a collection. Enter its name and click the + button in the top right corner.
 3. Save the file somewhere in your project.
 4. Drag and drop your assets into empty space on the right. 
 5. Select the asset you want to place from the list. Right click if you want to remove it from the collection.
 6. Select any node in the scene tree. Objects will be spawned as children of this node.
 
-You should now be able to place the asset.
+You should now be able to place the asset. Left side panel can be hidden by clicking "Scene Tools" button at the top of viewport (below "2D", "3D", "Script" buttons).
 
 > [!TIP]
 > Click the ? button to view keybindings and additional settings.
