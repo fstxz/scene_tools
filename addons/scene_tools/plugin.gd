@@ -21,7 +21,7 @@ var undo_redo: EditorUndoRedoManager
 var plugin_enabled := true
 var icon_size : int = 4
 
-# String (uid), Collection
+# Key: String (uid), Value: Collection
 var collections: Dictionary
 
 var selected_asset_uids: Array[String]
@@ -29,6 +29,9 @@ var selected_asset_uids: Array[String]
 var side_panel_folded := true
 
 var place_tool := PlaceTool.new(self)
+var tools: Array[Tool] = [
+	place_tool
+]
 var current_tool: Tool = place_tool
 
 func _enter_tree() -> void:
@@ -68,7 +71,8 @@ func _exit_tree() -> void:
 	gui_instance.collections_container.free()
 	gui_instance.free()
 
-	place_tool.exit()
+	for tool in tools:
+		tool.exit()
 
 func _make_visible(visible: bool) -> void:
 	if visible:
@@ -115,7 +119,8 @@ func _get_window_layout(configuration: ConfigFile) -> void:
 	configuration.set_value(plugin_name, "icon_size", icon_size)
 	configuration.set_value(plugin_name, "plugin_enabled", plugin_enabled)
 	
-	place_tool.save_state(configuration)
+	for tool in tools:
+		tool.save_state(configuration)
 
 func _set_window_layout(configuration: ConfigFile) -> void:
 	var collection_ids: Array[String] = configuration.get_value(plugin_name, "collections", [])
@@ -134,7 +139,8 @@ func _set_window_layout(configuration: ConfigFile) -> void:
 	gui_instance.icon_size_slider.set_value_no_signal(float(icon_size))
 	gui_instance.set_collection_icon_size()
 
-	place_tool.load_state(configuration)
+	for tool in tools:
+		tool.load_state(configuration)
 
 func generate_preview(node: Node) -> Texture2D:
 	gui_instance.preview_viewport.add_child(node)
