@@ -89,10 +89,10 @@ func _edit(object: Object) -> void:
 	current_tool.edit(object)
 
 func _on_scene_changed(_scene_root: Node) -> void:
-	current_tool.on_scene_changed(_scene_root)
+	current_tool._on_scene_changed(_scene_root)
 
 func _on_scene_closed(path: String) -> void:
-	current_tool.on_scene_closed(path)
+	current_tool._on_scene_closed(path)
 
 func _handles(object: Object) -> bool:
 	return current_tool.handles(object)
@@ -197,5 +197,4 @@ func set_selected_assets(asset_uids: Array[String]) -> void:
 
 func set_plugin_enabled(enabled: bool) -> void:
 	plugin_enabled = enabled
-	# TODO: remove
-	place_tool.set_root_node(root_node)
+	current_tool._on_plugin_enabled(enabled)

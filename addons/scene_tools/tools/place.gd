@@ -496,3 +496,6 @@ func on_scene_closed(path: String) -> void:
             plugin.scene_root.remove_child(brush)
         if is_instance_valid(grid_mesh):
             plugin.scene_root.remove_child(grid_mesh)
+
+func _on_plugin_enabled(_enabled: bool) -> void:
+    set_root_node(plugin.root_node)

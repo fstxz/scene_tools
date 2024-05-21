@@ -16,5 +16,7 @@ func handles(object: Object) -> bool: return false
 func load_state(configuration: ConfigFile) -> void: pass
 func save_state(configuration: ConfigFile) -> void: pass
 
-func on_scene_changed(scene_root: Node) -> void: pass
-func on_scene_closed(path: String) -> void: pass
+func _on_scene_changed(scene_root: Node) -> void: pass
+func _on_scene_closed(path: String) -> void: pass
+
+func _on_plugin_enabled(_enabled: bool) -> void: pass
