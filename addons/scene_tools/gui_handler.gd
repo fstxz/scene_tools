@@ -85,19 +85,19 @@ func setup_preview_viewport() -> void:
 
 
 func _on_mode_option_button_item_selected(index: int) -> void:
-    plugin_instance.change_mode(index)
+    plugin_instance.place_tool.change_mode(index)
 
 func _on_display_grid_checkbox_toggled(toggled: bool) -> void:
-    plugin_instance.set_grid_display_enabled(toggled)
+    plugin_instance.place_tool.set_grid_display_enabled(toggled)
 
 func _on_plane_option_button_item_selected(index: int) -> void:
-    plugin_instance.set_plane_normal(index)
+    plugin_instance.place_tool.set_plane_normal(index)
 
 func _on_random_scale_text_changed(text: String) -> void:
-    plugin_instance.set_random_scale(float(text))
+    plugin_instance.place_tool.set_random_scale(float(text))
 
 func _on_base_scale_text_changed(text: String) -> void:
-    plugin_instance.set_base_scale(float(text))
+    plugin_instance.place_tool.set_base_scale(float(text))
 
 func remove_collection_tab(index: int) -> void:
     var current_tab := collection_tabs.get_child(index)
@@ -117,7 +117,7 @@ func _on_scene_tools_menu_pressed(id: int) -> void:
             help_dialog.visible = true
 
 func _on_align_to_surface_toggled(toggled: bool) -> void:
-    plugin_instance.set_align_to_surface(toggled)
+    plugin_instance.place_tool.set_align_to_surface(toggled)
 
 func _on_new_collection_button_pressed() -> void:
     var collection_name := new_collection_name.text
@@ -154,19 +154,19 @@ func import_dialog_callback(paths: PackedStringArray) -> void:
                 spawn_collection_tab(uid, collection)
 
 func _on_snapping_toggled(toggled: bool) -> void:
-    plugin_instance.set_snapping_enabled(toggled)
+    plugin_instance.place_tool.set_snapping_enabled(toggled)
 
 func _on_plane_level_text_changed(text: String) -> void:
-    plugin_instance.set_plane_level(float(text))
+    plugin_instance.place_tool.set_plane_level(float(text))
 
 func _on_snapping_step_text_changed(text: String) -> void:
-    plugin_instance.set_snapping_step(float(text))
+    plugin_instance.place_tool.set_snapping_step(float(text))
 
 func _on_snapping_offset_text_changed(text: String) -> void:
-    plugin_instance.set_snapping_offset(float(text))
+    plugin_instance.place_tool.set_snapping_offset(float(text))
 
 func _on_chance_to_spawn_text_changed(text: String) -> void:
-    plugin_instance.set_chance_to_spawn(int(text))
+    plugin_instance.place_tool.set_chance_to_spawn(int(text))
 
 func file_callback(path: String, collection_name: String) -> void:
     var collection := Collection.new(collection_name)
