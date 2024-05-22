@@ -1,7 +1,5 @@
 extends "res://addons/scene_tools/tool.gd"
 
-# TODO: move some stuff like raycast to separate utils class
-
 var snapping_enabled := false
 
 var brush: Node3D
@@ -77,7 +75,7 @@ func forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 
     match current_mode:
         Mode.FREE:
-            var result := raycast(viewport_camera)
+            var result := Utils.raycast(viewport_camera)
             if not result.is_empty():
                 if snapping_enabled:
                     result.position = result.position.snapped(Vector3(snapping_step, snapping_step, snapping_step))
@@ -87,7 +85,7 @@ func forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
                 brush.position = result.position
         
         Mode.PLANE, Mode.FILL:
-            var result: Variant = raycast_plane(viewport_camera)
+            var result: Variant = Utils.raycast_plane(viewport_camera, plane)
             if result != null:
                 result = result as Vector3
 
@@ -168,20 +166,6 @@ func forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
                     return EditorPlugin.AFTER_GUI_INPUT_STOP
 
     return EditorPlugin.AFTER_GUI_INPUT_PASS
-
-func raycast_plane(camera: Camera3D) -> Variant:
-    var mousepos := EditorInterface.get_editor_viewport_3d().get_mouse_position()
-    return plane.intersects_ray(camera.project_ray_origin(mousepos), camera.project_ray_normal(mousepos) * 1000.0)
-
-func raycast(camera: Camera3D) -> Dictionary:
-    var space_state := camera.get_world_3d().direct_space_state
-    var mousepos := EditorInterface.get_editor_viewport_3d().get_mouse_position()
-
-    var origin := camera.project_ray_origin(mousepos)
-    var end := origin + camera.project_ray_normal(mousepos) * 1000.0
-    var query := PhysicsRayQueryParameters3D.create(origin, end)
-
-    return space_state.intersect_ray(query)
 
 func visual_raycast(camera: Camera3D) -> Node:
     var mousepos := EditorInterface.get_editor_viewport_3d().get_mouse_position()

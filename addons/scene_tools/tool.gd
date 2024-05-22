@@ -1,6 +1,8 @@
 extends RefCounted
 
-const SceneTools = preload("res://addons/scene_tools/plugin.gd")
+const SceneTools := preload("res://addons/scene_tools/plugin.gd")
+const Utils := preload("res://addons/scene_tools/utils.gd")
+
 var plugin: SceneTools
 
 func _init(_plugin: SceneTools = null) -> void:
