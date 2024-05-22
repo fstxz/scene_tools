@@ -1,5 +1,3 @@
-extends Object
-
 static func raycast(camera: Camera3D) -> Dictionary:
     var space_state := camera.get_world_3d().direct_space_state
     var mousepos := EditorInterface.get_editor_viewport_3d().get_mouse_position()
