@@ -10,7 +10,7 @@ The plugin supports any PackedScene files (.tscn, .gltf, .blend, etc).
   * Snapping support
   * Align to surface
   * Multiple assets selection (by holding Ctrl or Shift). When placing, random asset will be picked from the selection
-  * Scale randomization
+  * Scale, rotation randomization
   * Area fill
 
 ## Installation
