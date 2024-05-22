@@ -20,7 +20,17 @@ var preview_camera: Camera3D
 @export var help_dialog: AcceptDialog
 @export var version_label: Label
 @export var icon_size_slider: HSlider
-@export var base_scale: LineEdit
+@export var random_rotation_button: CheckBox
+@export var random_scale_button: CheckBox
+@export var random_rotation_axis: OptionButton
+@export var random_rotation: LineEdit
+@export var scale_x: LineEdit
+@export var scale_y: LineEdit
+@export var scale_z: LineEdit
+@export var rotation_x: LineEdit
+@export var rotation_y: LineEdit
+@export var rotation_z: LineEdit
+@export var scale_link_button: Button
 @export var random_scale: LineEdit
 @export var plane_option: OptionButton
 @export var display_grid_checkbox: CheckBox
@@ -46,13 +56,25 @@ func _ready() -> void:
     import_button.pressed.connect(_on_import_button_pressed)
     align_to_surface_button.toggled.connect(_on_align_to_surface_toggled)
     icon_size_slider.value_changed.connect(_on_icon_size_slider_value_changed)
-    base_scale.text_changed.connect(_on_base_scale_text_changed)
     random_scale.text_changed.connect(_on_random_scale_text_changed)
     plane_option.item_selected.connect(_on_plane_option_button_item_selected)
     display_grid_checkbox.toggled.connect(_on_display_grid_checkbox_toggled)
     mode_option.item_selected.connect(_on_mode_option_button_item_selected)
     chance_to_spawn.text_changed.connect(_on_chance_to_spawn_text_changed)
     scene_tools_menu_button.get_popup().id_pressed.connect(_on_scene_tools_menu_pressed)
+    scale_link_button.toggled.connect(_on_scale_link_toggled)
+    random_rotation_button.toggled.connect(_on_random_rotation_button_toggled)
+    random_scale_button.toggled.connect(_on_random_scale_button_toggled)
+    random_rotation_axis.item_selected.connect(_on_random_rotation_axis_item_selected)
+    random_rotation.text_changed.connect(_on_random_rotation_text_changed)
+
+    rotation_x.text_changed.connect(_on_rotation_x_text_changed)
+    rotation_y.text_changed.connect(_on_rotation_y_text_changed)
+    rotation_z.text_changed.connect(_on_rotation_z_text_changed)
+
+    scale_x.text_changed.connect(_on_scale_x_text_changed)
+    scale_y.text_changed.connect(_on_scale_y_text_changed)
+    scale_z.text_changed.connect(_on_scale_z_text_changed)
 
     collection_tabs.get_tab_bar().tab_close_display_policy = TabBar.CLOSE_BUTTON_SHOW_ACTIVE_ONLY
     collection_tabs.get_tab_bar().tab_close_pressed.connect(remove_collection_tab)
@@ -95,9 +117,6 @@ func _on_plane_option_button_item_selected(index: int) -> void:
 
 func _on_random_scale_text_changed(text: String) -> void:
     plugin_instance.place_tool.set_random_scale(float(text))
-
-func _on_base_scale_text_changed(text: String) -> void:
-    plugin_instance.place_tool.set_base_scale(float(text))
 
 func remove_collection_tab(index: int) -> void:
     var current_tab := collection_tabs.get_child(index)
@@ -257,3 +276,83 @@ func _on_data_dropped(data: Variant) -> void:
 
 func add_asset_to_tab(tab: CollectionList, asset: Dictionary) -> void:
     tab.add_item(asset.name, asset.thumbnail)
+
+# _ because it clashes with the base class
+func _set_rotation(rotation: Vector3) -> void:
+    rotation_x.text = str(rotation.x)
+    rotation_y.text = str(rotation.y)
+    rotation_z.text = str(rotation.z)
+
+func _set_scale(scale: Vector3) -> void:
+    scale_x.text = str(scale.x)
+    scale_y.text = str(scale.y)
+    scale_z.text = str(scale.z)
+
+func _on_scale_link_toggled(toggled: bool) -> void:
+    plugin_instance.place_tool.set_scale_link_toggled(toggled)
+
+func _on_random_rotation_button_toggled(toggled: bool) -> void:
+    plugin_instance.place_tool.set_random_rotation_enabled(toggled)
+
+func _on_random_scale_button_toggled(toggled: bool) -> void:
+    plugin_instance.place_tool.set_random_scale_enabled(toggled)
+
+func _on_random_rotation_axis_item_selected(index: int) -> void:
+    plugin_instance.place_tool.set_random_rotation_axis(index)
+
+func _on_rotation_x_text_changed(text: String) -> void:
+    plugin_instance.place_tool.set_rotation(Vector3(
+        deg_to_rad(float(text)),
+        plugin_instance.place_tool.rotation.y,
+        plugin_instance.place_tool.rotation.z
+        ))
+
+func _on_rotation_y_text_changed(text: String) -> void:
+    plugin_instance.place_tool.set_rotation(Vector3(
+        plugin_instance.place_tool.rotation.x,
+        deg_to_rad(float(text)),
+        plugin_instance.place_tool.rotation.z
+        ))
+
+func _on_rotation_z_text_changed(text: String) -> void:
+    plugin_instance.place_tool.set_rotation(Vector3(
+        plugin_instance.place_tool.rotation.x,
+        plugin_instance.place_tool.rotation.y,
+        deg_to_rad(float(text))
+        ))
+
+func _on_random_rotation_text_changed(text: String) -> void:
+    plugin_instance.place_tool.set_random_rotation(deg_to_rad(float(text)))
+
+func _on_scale_x_text_changed(text: String) -> void:
+    if plugin_instance.place_tool.scale_linked:
+        plugin_instance.place_tool.set_base_scale(Vector3(float(text), float(text), float(text)))
+        _set_scale(plugin_instance.place_tool.base_scale)
+    else:
+        plugin_instance.place_tool.set_base_scale(Vector3(
+            float(text),
+            plugin_instance.place_tool.base_scale.y,
+            plugin_instance.place_tool.base_scale.z
+            ))
+
+func _on_scale_y_text_changed(text: String) -> void:
+    if plugin_instance.place_tool.scale_linked:
+        plugin_instance.place_tool.set_base_scale(Vector3(float(text), float(text), float(text)))
+        _set_scale(plugin_instance.place_tool.base_scale)
+    else:
+        plugin_instance.place_tool.set_base_scale(Vector3(
+            plugin_instance.place_tool.base_scale.x,
+            float(text),
+            plugin_instance.place_tool.base_scale.z
+            ))
+
+func _on_scale_z_text_changed(text: String) -> void:
+    if plugin_instance.place_tool.scale_linked:
+        plugin_instance.place_tool.set_base_scale(Vector3(float(text), float(text), float(text)))
+        _set_scale(plugin_instance.place_tool.base_scale)
+    else:
+        plugin_instance.place_tool.set_base_scale(Vector3(
+            plugin_instance.place_tool.base_scale.x,
+            plugin_instance.place_tool.base_scale.y,
+            float(text)
+            ))

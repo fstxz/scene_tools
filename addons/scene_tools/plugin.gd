@@ -45,15 +45,15 @@ func _enter_tree() -> void:
 	gui_instance.version_label.text = plugin_name + " v" + get_plugin_version()
 
 	gui_instance.owner = null
-	gui_instance.get_parent().remove_child(gui_instance)
+	gui_root.remove_child(gui_instance)
 	add_control_to_container(CustomControlContainer.CONTAINER_SPATIAL_EDITOR_MENU, gui_instance)
 
 	gui_instance.side_panel.owner = null
-	gui_instance.side_panel.get_parent().remove_child(gui_instance.side_panel)
+	gui_root.remove_child(gui_instance.side_panel)
 	add_control_to_container(CustomControlContainer.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT, gui_instance.side_panel)
 
 	gui_instance.collections_container.owner = null
-	gui_instance.collections_container.get_parent().remove_child(gui_instance.collections_container)
+	gui_root.remove_child(gui_instance.collections_container)
 	add_control_to_bottom_panel(gui_instance.collections_container, "Collections")
 
 	gui_instance.scene_tools_button.pressed.connect(_scene_tools_button_pressed)

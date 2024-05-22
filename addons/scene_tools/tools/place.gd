@@ -23,9 +23,14 @@ var snapping_offset := 0.0
 var plane := Plane(Vector3.UP, 0.0)
 var plane_normal: int = 0
 var align_to_surface := false
-var base_scale := 1.0
+var base_scale := Vector3.ONE
 var random_scale := 0.0
 var chance_to_spawn: int = 100
+var random_scale_enabled := false
+var random_rotation_enabled := false
+var random_rotation := 0.0
+var random_rotation_axis: int = 1 # Y
+var scale_linked := true
 
 var fill_mesh: MeshInstance3D
 
@@ -116,6 +121,7 @@ func forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
     if event is InputEventKey:
         if event.keycode == KEY_R and event.is_pressed():
             rotation.y = wrapf(rotation.y + (PI / 4.0), 0.0, TAU)
+            plugin.gui_instance.rotation_y.text = str(roundf(rad_to_deg(rotation.y)))
             return EditorPlugin.AFTER_GUI_INPUT_STOP
 
     if event is InputEventMouseButton:
@@ -247,7 +253,6 @@ func fill(bounding_box: AABB) -> void:
                     
                     var asset_instance := instantiate_asset(asset_uid)
                     asset_instance.position = instance_position
-                    asset_instance.rotation = brush.rotation
                     asset_instances.append(asset_instance)
 
     if not asset_instances.is_empty():
@@ -265,7 +270,7 @@ func fill(bounding_box: AABB) -> void:
         for asset_instance in asset_instances:
             if asset_instance:
                 asset_instance.global_position = asset_instance.position
-                asset_instance.global_rotation = asset_instance.rotation
+                set_global_basis(asset_instance)
 
 func erase(node: Node) -> void:
     var parent := node.get_parent()
@@ -288,7 +293,8 @@ func place_asset(asset_uid: String, position: Vector3) -> void:
         plugin.undo_redo.commit_action()
 
         asset_instance.global_position = position
-        asset_instance.global_rotation = brush.rotation
+        set_global_basis(asset_instance)
+
 
 func instantiate_asset(asset_uid: String) -> Node3D:
     var packedscene := ResourceLoader.load(asset_uid) as PackedScene
@@ -298,11 +304,6 @@ func instantiate_asset(asset_uid: String) -> Node3D:
 
         if not instance:
             return null
-
-        var scale_range := 0.0
-        if not is_zero_approx(random_scale):
-            scale_range = randf_range(-random_scale, random_scale)
-        instance.scale = Vector3(base_scale + scale_range, base_scale + scale_range, base_scale + scale_range)
 
         return instance
     return null
@@ -360,8 +361,8 @@ func load_state(configuration: ConfigFile) -> void:
     align_to_surface = configuration.get_value(plugin.plugin_name, "align_to_surface", false)
     plugin.gui_instance.align_to_surface_button.set_pressed_no_signal(align_to_surface)
 
-    base_scale = configuration.get_value(plugin.plugin_name, "base_scale", 1.0)
-    plugin.gui_instance.base_scale.text = str(base_scale)
+    base_scale = configuration.get_value(plugin.plugin_name, "base_scale", base_scale)
+    plugin.gui_instance._set_scale(base_scale)
 
     random_scale = configuration.get_value(plugin.plugin_name, "random_scale", 0.0)
     plugin.gui_instance.random_scale.text = str(random_scale)
@@ -376,6 +377,22 @@ func load_state(configuration: ConfigFile) -> void:
     chance_to_spawn = configuration.get_value(plugin.plugin_name, "chance_to_spawn", chance_to_spawn)
     plugin.gui_instance.chance_to_spawn.text = str(chance_to_spawn)
 
+    random_scale_enabled = configuration.get_value(plugin.plugin_name, "random_scale_enabled", random_scale_enabled)
+    plugin.gui_instance.random_scale_button.set_pressed_no_signal(random_scale_enabled)
+
+    random_rotation_enabled = configuration.get_value(plugin.plugin_name, "random_rotation_enabled", random_rotation_enabled)
+    plugin.gui_instance.random_rotation_button.set_pressed_no_signal(random_rotation_enabled)
+
+    random_rotation_axis = configuration.get_value(plugin.plugin_name, "random_rotation_axis", random_rotation_axis)
+    plugin.gui_instance.random_rotation_axis.selected = random_rotation_axis
+
+    scale_linked = configuration.get_value(plugin.plugin_name, "scale_linked", scale_linked)
+    plugin.gui_instance.scale_link_button.set_pressed_no_signal(scale_linked)
+
+    random_rotation = configuration.get_value(plugin.plugin_name, "random_rotation", random_rotation)
+    plugin.gui_instance.random_rotation.text = str(roundf(rad_to_deg(random_rotation)))
+
+
 func save_state(configuration: ConfigFile) -> void:
     configuration.set_value(plugin.plugin_name, "snapping_enabled", snapping_enabled)
     configuration.set_value(plugin.plugin_name, "plane_level", plane.d)
@@ -388,6 +405,11 @@ func save_state(configuration: ConfigFile) -> void:
     configuration.set_value(plugin.plugin_name, "grid_display_enabled", grid_display_enabled)
     configuration.set_value(plugin.plugin_name, "chance_to_spawn", chance_to_spawn)
     configuration.set_value(plugin.plugin_name, "current_mode", current_mode)
+    configuration.set_value(plugin.plugin_name, "random_scale_enabled", random_scale_enabled)
+    configuration.set_value(plugin.plugin_name, "random_rotation_enabled", random_rotation_enabled)
+    configuration.set_value(plugin.plugin_name, "random_rotation_axis", random_rotation_axis)
+    configuration.set_value(plugin.plugin_name, "scale_linked", scale_linked)
+    configuration.set_value(plugin.plugin_name, "random_rotation", random_rotation)
 
 func set_snapping_enabled(enabled: bool) -> void:
     snapping_enabled = enabled
@@ -405,10 +427,10 @@ func set_plane_level(value: float) -> void:
 func set_snapping_offset(value: float) -> void:
     snapping_offset = value
 
-func set_base_scale(value: float) -> void:
+func set_base_scale(value: Vector3) -> void:
     base_scale = value
     if brush:
-        brush.scale = Vector3(base_scale, base_scale, base_scale)
+        brush.scale = base_scale
 
 func set_random_scale(value: float) -> void:
     random_scale = value
@@ -427,7 +449,7 @@ func change_brush(asset_uid: String) -> void:
     if packedscene:
         var new_brush := packedscene.instantiate()
         brush = new_brush
-        brush.scale = Vector3(base_scale, base_scale, base_scale)
+        brush.scale = base_scale
 
         var brush_children := [brush]
 
@@ -478,9 +500,9 @@ func change_mode(new_mode: Mode) -> void:
 func _on_scene_changed(scene_root: Node) -> void:
     if is_instance_valid(plugin.scene_root):
         if is_instance_valid(brush):
-            self.scene_root.remove_child(brush)
+            plugin.scene_root.remove_child(brush)
         if is_instance_valid(grid_mesh):
-            self.scene_root.remove_child(grid_mesh)
+            plugin.scene_root.remove_child(grid_mesh)
 
     plugin.scene_root = scene_root
 
@@ -499,3 +521,45 @@ func on_scene_closed(path: String) -> void:
 
 func _on_plugin_enabled(_enabled: bool) -> void:
     set_root_node(plugin.root_node)
+
+func set_scale_link_toggled(toggled: bool) -> void:
+    scale_linked = toggled
+
+func set_random_rotation_enabled(toggled: bool) -> void:
+    random_rotation_enabled = toggled
+
+func set_random_scale_enabled(toggled: bool) -> void:
+    random_scale_enabled = toggled
+
+func set_random_rotation_axis(index: int) -> void:
+    random_rotation_axis = index
+
+func set_rotation(rot: Vector3) -> void:
+    rotation = rot
+
+func set_global_basis(node: Node3D) -> void:
+    var basis := brush.basis.orthonormalized()
+
+    var rotation_range := 0.0
+    if random_rotation_enabled:
+        rotation_range = randf_range(-random_rotation, random_rotation)
+        match random_rotation_axis:
+            0:
+                basis = basis.rotated(basis.x, rotation_range)
+            1:
+                basis = basis.rotated(basis.y, rotation_range)
+            2:
+                basis = basis.rotated(basis.z, rotation_range)
+    
+    var scale_range := 0.0
+    if random_scale_enabled:
+        scale_range = randf_range(-random_scale, random_scale)
+    
+    basis.x *= base_scale.x + scale_range
+    basis.y *= base_scale.y + scale_range
+    basis.z *= base_scale.z + scale_range
+
+    node.global_basis = basis
+
+func set_random_rotation(value: float) -> void:
+    random_rotation = value
