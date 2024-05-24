@@ -23,7 +23,7 @@ If you are using Godot 4.2, make sure to restart the editor after installing the
 
 ## How to use
 1. After enabling the plugin, open the "Collections" tab at the bottom of the window.
-2. First, you will have to create a collection. Enter its name and click the + button in the top left corner.
+2. First, you will have to create a collection. Click "File", select "New collection", enter its name and click "Create"
 3. Save the file somewhere in your project.
 4. Drag and drop your assets into empty space. 
 5. Select the asset you want to place from the list. Right click if you want to remove it from the collection.
