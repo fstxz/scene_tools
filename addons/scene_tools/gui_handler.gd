@@ -127,7 +127,8 @@ func remove_selected_collection() -> void:
     plugin_instance.collections.erase(uid)
 
     if collections_list.item_count > 0:
-        collections_list.select(collections_list.item_count-1)
+        collections_list.select(0)
+        _on_collections_list_item_selected(0)
 
 func _on_icon_size_slider_value_changed(_value: float) -> void:
     var value := int(_value)
