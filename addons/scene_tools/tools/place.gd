@@ -496,7 +496,7 @@ func _on_scene_changed(scene_root: Node) -> void:
         if is_instance_valid(grid_mesh):
             plugin.scene_root.add_child(grid_mesh)
 
-func on_scene_closed(path: String) -> void:
+func _on_scene_closed(path: String) -> void:
     if plugin.scene_root and plugin.scene_root.scene_file_path == path:
         if is_instance_valid(brush):
             plugin.scene_root.remove_child(brush)
