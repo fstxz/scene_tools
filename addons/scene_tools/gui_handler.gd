@@ -223,6 +223,7 @@ func spawn_collection_tab(uid: String, collection: Collection) -> void:
 
     collections_list.add_item(collection.name)
     collections_list.set_item_metadata(collections_list.item_count-1, uid)
+    collections_list.set_item_tooltip(collections_list.item_count-1, collection.name + "\nFile: " + collection.resource_path)
     collections_list.select(collections_list.item_count-1)
 
     collection_list.set_meta("uid", uid)
@@ -300,6 +301,7 @@ func _on_data_dropped(data: Variant) -> void:
 
 func add_asset_to_tab(tab: CollectionList, asset: Dictionary) -> void:
     tab.add_item(asset.name, asset.thumbnail)
+    tab.set_item_tooltip(tab.item_count-1, asset.name + "\nFile: " + ResourceUID.get_id_path(ResourceUID.text_to_id(asset.uid)))
 
 # _ because it clashes with the base class
 func _set_rotation(rotation: Vector3) -> void:
