@@ -14,7 +14,6 @@ var gui := preload("res://addons/scene_tools/gui.tscn")
 var gui_instance: GuiHandler
 
 signal collection_removed(uid: String)
-signal asset_removed(collection_uid: String, asset_index: int)
 
 var root_node: Node
 var scene_root: Node
@@ -38,7 +37,7 @@ var tools: Array[Tool] = [
 var current_tool: Tool = place_tool
 
 func _enter_tree() -> void:
-	EditorInterface.get_file_system_dock().file_removed.connect(_on_file_removed)
+	EditorInterface.get_file_system_dock().resource_removed.connect(_on_resource_removed)
 
 	scene_changed.connect(_on_scene_changed)
 	scene_closed.connect(_on_scene_closed)
@@ -210,22 +209,9 @@ func set_plugin_enabled(enabled: bool) -> void:
 	plugin_enabled = enabled
 	current_tool._on_plugin_enabled(enabled)
 
-func _on_file_removed(path: String) -> void:
-	var id := ResourceLoader.get_resource_uid(path)
+func _on_resource_removed(resource: Resource) -> void:
+	var uid := ResourceUID.id_to_text(ResourceLoader.get_resource_uid(resource.resource_path))
 
-	if id != -1:
-		var uid := ResourceUID.id_to_text(id)
-
-		if collections.has(uid):
-			collections.erase(uid)
-			collection_removed.emit(uid)
-			return
-
-	for collection: Collection in collections.values():
-		for asset_index in collection.assets.size():
-			var asset := collection.assets[asset_index]
-			if ResourceUID.get_id_path(ResourceUID.text_to_id(asset.uid)) == path:
-				collection.assets.remove_at(asset_index)
-				asset_removed.emit(ResourceUID.id_to_text(ResourceLoader.get_resource_uid(collection.resource_path)), asset_index)
-				return
-
+	if collections.has(uid):
+		collections.erase(uid)
+		collection_removed.emit(uid)

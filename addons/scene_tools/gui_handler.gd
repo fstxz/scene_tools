@@ -52,7 +52,6 @@ var preview_camera: Camera3D
 
 func _ready() -> void:
     plugin_instance.collection_removed.connect(_on_collection_removed)
-    plugin_instance.asset_removed.connect(_on_asset_removed)
 
     snapping_button.toggled.connect(_on_snapping_toggled)
     plane_level.text_changed.connect(_on_plane_level_text_changed)
@@ -415,14 +414,6 @@ func _on_collection_removed(uid: String) -> void:
             if collections_list.item_count > 0:
                 collections_list.select(0)
                 _on_collections_list_item_selected(0)
-
-func _on_asset_removed(collection_uid: String, asset_index: int) -> void:
-    for collection in collections_list.item_count:
-        var meta_uid := collections_list.get_item_metadata(collection) as String
-        if meta_uid == collection_uid:
-            var assets := collections_items_container.get_child(collection) as CollectionList
-            assets.remove_item(asset_index)
-            return
 
 func _on_asset_popup_menu_id_pressed(id: int) -> void:
     match id:
