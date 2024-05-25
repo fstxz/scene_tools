@@ -133,10 +133,7 @@ func _set_window_layout(configuration: ConfigFile) -> void:
 		if ResourceUID.has_id(ResourceUID.text_to_id(uid)):
 			var res := ResourceLoader.load(uid) as Collection
 			if res:
-				remove_orphan_assets(res)
-				collections[uid] = res
-
-				gui_instance.spawn_collection_tab(uid, res)
+				add_collection(uid, res)
 
 	plugin_enabled = configuration.get_value(plugin_name, "plugin_enabled", plugin_enabled)
 
@@ -223,3 +220,9 @@ func remove_orphan_assets(from: Collection) -> void:
 	from.assets = from.assets.filter(func(asset: Dictionary) -> bool:
 		return ResourceUID.has_id(ResourceUID.text_to_id(asset.uid))
 	)
+
+func add_collection(uid: String, collection: Collection) -> void:
+	if not collections.has(uid):
+		remove_orphan_assets(collection)
+		collections[uid] = collection
+		gui_instance.spawn_collection_tab(uid, collection)

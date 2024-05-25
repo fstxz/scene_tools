@@ -189,9 +189,7 @@ func load_collection_dialog_callback(paths: PackedStringArray) -> void:
         if collection:
             var uid := ResourceUID.id_to_text(ResourceLoader.get_resource_uid(path))
 
-            if not plugin_instance.collections.has(uid):
-                plugin_instance.collections[uid] = collection
-                spawn_collection_tab(uid, collection)
+            plugin_instance.add_collection(uid, collection)
 
 func _on_snapping_toggled(toggled: bool) -> void:
     plugin_instance.place_tool.set_snapping_enabled(toggled)
