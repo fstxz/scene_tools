@@ -50,6 +50,8 @@ var preview_camera: Camera3D
 @export var scene_tools_menu_button: MenuButton
 
 func _ready() -> void:
+    plugin_instance.collection_removed.connect(_on_collection_removed)
+
     snapping_button.toggled.connect(_on_snapping_toggled)
     plane_level.text_changed.connect(_on_plane_level_text_changed)
     snapping_step.text_changed.connect(_on_snapping_step_text_changed)
@@ -404,3 +406,14 @@ func _on_collection_popup_menu_id_pressed(id: int) -> void:
             EditorInterface.get_file_system_dock().navigate_to_path(
                 ResourceUID.get_id_path(ResourceUID.text_to_id(get_selected_collection().get_meta("uid")))
             )
+
+func _on_collection_removed(uid: String) -> void:
+    for item_index in collections_list.item_count:
+        var meta_uid := collections_list.get_item_metadata(item_index) as String
+        if meta_uid == uid:
+            collections_list.remove_item(item_index)
+            collections_items_container.get_child(item_index).free()
+            
+            if collections_list.item_count > 0:
+                collections_list.select(0)
+                _on_collections_list_item_selected(0)

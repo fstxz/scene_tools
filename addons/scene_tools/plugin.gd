@@ -13,6 +13,8 @@ var gui := preload("res://addons/scene_tools/gui.tscn")
 
 var gui_instance: GuiHandler
 
+signal collection_removed(uid: String)
+
 var root_node: Node
 var scene_root: Node
 
@@ -35,6 +37,8 @@ var tools: Array[Tool] = [
 var current_tool: Tool = place_tool
 
 func _enter_tree() -> void:
+	EditorInterface.get_file_system_dock().resource_removed.connect(_on_resource_removed)
+
 	scene_changed.connect(_on_scene_changed)
 	scene_closed.connect(_on_scene_closed)
 
@@ -204,3 +208,10 @@ func set_selected_assets(asset_uids: Array[String]) -> void:
 func set_plugin_enabled(enabled: bool) -> void:
 	plugin_enabled = enabled
 	current_tool._on_plugin_enabled(enabled)
+
+func _on_resource_removed(resource: Resource) -> void:
+	var uid := ResourceUID.id_to_text(ResourceLoader.get_resource_uid(resource.resource_path))
+
+	if collections.has(uid):
+		collections.erase(uid)
+		collection_removed.emit(uid)
