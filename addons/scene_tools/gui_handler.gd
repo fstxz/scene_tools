@@ -43,6 +43,7 @@ var preview_camera: Camera3D
 @export var collections_list: ItemList
 @export var collections_items_container: Control
 @export var collection_popup_menu: PopupMenu
+@export var asset_popup_menu: PopupMenu
 
 @export var side_panel: Control
 @export var collections_container: Control
@@ -74,6 +75,7 @@ func _ready() -> void:
     collections_list.item_clicked.connect(_on_collection_clicked)
     collections_list.item_selected.connect(_on_collections_list_item_selected)
     collection_popup_menu.id_pressed.connect(_on_collection_popup_menu_id_pressed)
+    asset_popup_menu.id_pressed.connect(_on_asset_popup_menu_id_pressed)
 
     rotation_x.text_changed.connect(_on_rotation_x_text_changed)
     rotation_y.text_changed.connect(_on_rotation_y_text_changed)
@@ -237,6 +239,7 @@ func spawn_collection_tab(uid: String, collection: Collection) -> void:
     collection_list.icon_mode = ItemList.ICON_MODE_TOP
     collection_list.same_column_width = true
     collection_list.select_mode = ItemList.SELECT_MULTI
+    collection_list.allow_rmb_select = true
 
     for asset: Dictionary in collection.assets:
         add_asset_to_tab(collection_list, asset)
@@ -251,22 +254,16 @@ func spawn_collection_tab(uid: String, collection: Collection) -> void:
 func _on_item_selected(_index: int, _selected: bool) -> void:
     plugin_instance.set_selected_assets(get_selected_asset_uids())
 
-func _on_asset_clicked(index: int, _at_position: Vector2, mouse_button_index: int) -> void:
-    var current_tab := get_selected_collection()
-
+func _on_asset_clicked(index: int, at_position: Vector2, mouse_button_index: int) -> void:
     match mouse_button_index:
         2:
-            current_tab.remove_item(index)
-            # TODO: don't rely on index
-            plugin_instance.collections[current_tab.get_meta("uid")].assets.remove_at(index)
-            plugin_instance.set_selected_assets(get_selected_asset_uids())
-        _:
-            return
+            asset_popup_menu.position = collections_items_container.global_position + at_position
+            asset_popup_menu.visible = true
 
-func _on_collection_clicked(index: int, _at_position: Vector2, mouse_button_index: int) -> void:
+func _on_collection_clicked(index: int, at_position: Vector2, mouse_button_index: int) -> void:
     match mouse_button_index:
         2:
-            collection_popup_menu.position = collections_list.global_position + _at_position
+            collection_popup_menu.position = collections_list.global_position + at_position
             collection_popup_menu.visible = true
 
 func get_selected_asset_uids() -> Array[String]:
@@ -417,3 +414,28 @@ func _on_collection_removed(uid: String) -> void:
             if collections_list.item_count > 0:
                 collections_list.select(0)
                 _on_collections_list_item_selected(0)
+
+func _on_asset_popup_menu_id_pressed(id: int) -> void:
+    match id:
+        # Remove
+        0:
+            remove_selected_assets()
+        # Show in FileSystem
+        1:
+            EditorInterface.get_file_system_dock().navigate_to_path(
+                ResourceUID.get_id_path(ResourceUID.text_to_id(get_selected_asset_uids()[0]))
+            )
+
+func remove_selected_assets() -> void:
+    var current_collection := get_selected_collection()
+    var uid := current_collection.get_meta("uid") as String
+
+    var item_list := current_collection.get_selected_items()
+    # If we remove items from the front, then the indicies of other items are shifted, so we delete from the back first
+    item_list.reverse()
+
+    for item in item_list:
+        current_collection.remove_item(item)
+        plugin_instance.collections[uid].assets.remove_at(item)
+    
+    plugin_instance.set_selected_assets(get_selected_asset_uids())
