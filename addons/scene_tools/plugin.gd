@@ -133,6 +133,7 @@ func _set_window_layout(configuration: ConfigFile) -> void:
 		if ResourceUID.has_id(ResourceUID.text_to_id(uid)):
 			var res := ResourceLoader.load(uid) as Collection
 			if res:
+				remove_orphan_assets(res)
 				collections[uid] = res
 
 				gui_instance.spawn_collection_tab(uid, res)
@@ -215,3 +216,10 @@ func _on_resource_removed(resource: Resource) -> void:
 	if collections.has(uid):
 		collections.erase(uid)
 		collection_removed.emit(uid)
+
+# This removes assets from a collection if the UID is invalid 
+# (asset deleted from filesystem or UID has changed for whatever reason)
+func remove_orphan_assets(from: Collection) -> void:
+	from.assets = from.assets.filter(func(asset: Dictionary) -> bool:
+		return ResourceUID.has_id(ResourceUID.text_to_id(asset.uid))
+	)
