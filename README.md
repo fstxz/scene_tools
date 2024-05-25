@@ -31,5 +31,8 @@ If you are using Godot 4.2, make sure to restart the editor after installing the
 
 You should now be able to place the asset.
 
+> [!WARNING]
+If you want to delete an asset from filesystem, restart the editor immediately afterwards or do it when the editor is closed. Deleting collection's .tres file is safe, however.
+
 ## License
 This plugin is licensed under the [MIT License](https://github.com/fstxz/scene_tools/blob/master/LICENSE.txt).
