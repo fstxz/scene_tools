@@ -33,7 +33,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="SceneTools" type="HBoxContainer" parent="." node_paths=PackedStringArray("snapping_button", "snapping_step", "snapping_offset", "new_collection_name", "align_to_surface_button", "help_dialog", "version_label", "icon_size_slider", "random_rotation_button", "random_scale_button", "random_rotation_axis", "random_rotation", "scale_x", "scale_y", "scale_z", "rotation_x", "rotation_y", "rotation_z", "scale_link_button", "random_scale", "plane_option", "display_grid_checkbox", "mode_option", "surface_container", "plane_container", "chance_to_spawn_container", "chance_to_spawn", "plane_level", "file_menu", "new_collection_dialog", "collections_list", "collections_items_container", "side_panel", "collections_container", "scene_tools_button", "scene_tools_menu_button")]
+[node name="SceneTools" type="HBoxContainer" parent="." node_paths=PackedStringArray("snapping_button", "snapping_step", "snapping_offset", "new_collection_name", "align_to_surface_button", "help_dialog", "version_label", "icon_size_slider", "random_rotation_button", "random_scale_button", "random_rotation_axis", "random_rotation", "scale_x", "scale_y", "scale_z", "rotation_x", "rotation_y", "rotation_z", "scale_link_button", "random_scale", "plane_option", "display_grid_checkbox", "mode_option", "surface_container", "plane_container", "chance_to_spawn_container", "chance_to_spawn", "plane_level", "file_menu", "new_collection_dialog", "collections_list", "collections_items_container", "collection_popup_menu", "side_panel", "collections_container", "scene_tools_button", "scene_tools_menu_button")]
 visible = false
 layout_mode = 1
 offset_right = 114.0
@@ -71,6 +71,7 @@ file_menu = NodePath("../Collections/Menu/FileMenu")
 new_collection_dialog = NodePath("../Collections/Menu/NewCollectionDialog")
 collections_list = NodePath("../Collections/CollectionsSplitContainer/CollectionsList")
 collections_items_container = NodePath("../Collections/CollectionsSplitContainer/CollectionsItemsContainer")
+collection_popup_menu = NodePath("../Collections/CollectionPopupMenu")
 side_panel = NodePath("../SidePanel")
 collections_container = NodePath("../Collections")
 scene_tools_button = NodePath("SceneToolsButton")
@@ -552,6 +553,14 @@ size_flags_vertical = 3
 [node name="CollectionsList" type="ItemList" parent="Collections/CollectionsSplitContainer"]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
+allow_rmb_select = true
 
 [node name="CollectionsItemsContainer" type="MarginContainer" parent="Collections/CollectionsSplitContainer"]
 layout_mode = 2
+
+[node name="CollectionPopupMenu" type="PopupMenu" parent="Collections"]
+size = Vector2i(170, 64)
+item_count = 2
+item_0/text = "Close"
+item_1/text = "Show in FileSystem"
+item_1/id = 1

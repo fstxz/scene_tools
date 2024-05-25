@@ -42,6 +42,7 @@ var preview_camera: Camera3D
 @export var new_collection_dialog: AcceptDialog
 @export var collections_list: ItemList
 @export var collections_items_container: Control
+@export var collection_popup_menu: PopupMenu
 
 @export var side_panel: Control
 @export var collections_container: Control
@@ -70,6 +71,7 @@ func _ready() -> void:
     file_menu.get_popup().id_pressed.connect(_on_file_menu_pressed)
     collections_list.item_clicked.connect(_on_collection_clicked)
     collections_list.item_selected.connect(_on_collections_list_item_selected)
+    collection_popup_menu.id_pressed.connect(_on_collection_popup_menu_id_pressed)
 
     rotation_x.text_changed.connect(_on_rotation_x_text_changed)
     rotation_y.text_changed.connect(_on_rotation_y_text_changed)
@@ -262,8 +264,8 @@ func _on_asset_clicked(index: int, _at_position: Vector2, mouse_button_index: in
 func _on_collection_clicked(index: int, _at_position: Vector2, mouse_button_index: int) -> void:
     match mouse_button_index:
         2:
-            collections_list.select(index)
-            remove_selected_collection()
+            collection_popup_menu.position = collections_list.global_position + _at_position
+            collection_popup_menu.visible = true
 
 func get_selected_asset_uids() -> Array[String]:
     var current_tab := get_selected_collection()
@@ -391,3 +393,14 @@ func _on_collections_list_item_selected(index: int) -> void:
         for child: Control in collections_items_container.get_children():
             child.visible = false
         collections_items_container.get_child(index).visible = true
+
+func _on_collection_popup_menu_id_pressed(id: int) -> void:
+    match id:
+        # Close
+        0:
+            remove_selected_collection()
+        # Show in FileSystem
+        1:
+            EditorInterface.get_file_system_dock().navigate_to_path(
+                ResourceUID.get_id_path(ResourceUID.text_to_id(get_selected_collection().get_meta("uid")))
+            )
