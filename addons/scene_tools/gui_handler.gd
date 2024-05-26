@@ -214,7 +214,7 @@ func new_collection_dialog_callback(path: String, collection_name: String) -> vo
         plugin_instance.collections[uid] = collection
         collection.take_over_path(path)
 
-        spawn_collection_tab(uid, collection)
+        spawn_collection_list(uid, collection)
 
     new_collection_name.text = ""
 
@@ -222,7 +222,7 @@ func set_collection_icon_size() -> void:
     for collection_list: CollectionList in collections_items_container.get_children():
         collection_list.icon_scale = plugin_instance.icon_size / 4.0
 
-func spawn_collection_tab(uid: String, collection: Collection) -> void:
+func spawn_collection_list(uid: String, collection: Collection) -> void:
     var collection_list := CollectionList.new()
 
     collections_list.add_item(collection.name)
@@ -240,7 +240,7 @@ func spawn_collection_tab(uid: String, collection: Collection) -> void:
     collection_list.allow_rmb_select = true
 
     for asset: Dictionary in collection.assets:
-        add_asset_to_tab(collection_list, asset)
+        add_asset_to_collection_list(collection_list, asset)
 
     collection_list.data_dropped.connect(_on_data_dropped)
     collection_list.item_clicked.connect(_on_asset_clicked)
@@ -265,12 +265,12 @@ func _on_collection_clicked(index: int, at_position: Vector2, mouse_button_index
             collection_popup_menu.visible = true
 
 func get_selected_asset_uids() -> Array[String]:
-    var current_tab := get_selected_collection()
+    var current_collection := get_selected_collection()
 
-    var selected_items := current_tab.get_selected_items()
+    var selected_items := current_collection.get_selected_items()
     var asset_uids: Array[String] = []
-    for i: int in selected_items:
-        asset_uids.append(plugin_instance.collections[current_tab.get_meta("uid")].assets[i].uid)
+    for i in selected_items:
+        asset_uids.append(current_collection.get_item_metadata(i) as String)
     
     return asset_uids
 
@@ -295,12 +295,13 @@ func _on_data_dropped(data: Variant) -> void:
             asset.uid = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(filepath))
 
             plugin_instance.collections[tab.get_meta("uid")].assets.append(asset)
-            add_asset_to_tab(tab, asset)
+            add_asset_to_collection_list(tab, asset)
 
 
-func add_asset_to_tab(tab: CollectionList, asset: Dictionary) -> void:
-    tab.add_item(asset.name, asset.thumbnail)
-    tab.set_item_tooltip(tab.item_count-1, asset.name + "\nFile: " + ResourceUID.get_id_path(ResourceUID.text_to_id(asset.uid)))
+func add_asset_to_collection_list(to: CollectionList, asset: Dictionary) -> void:
+    to.add_item(asset.name, asset.thumbnail)
+    to.set_item_metadata(to.item_count-1, asset.uid)
+    to.set_item_tooltip(to.item_count-1, asset.name + "\nFile: " + ResourceUID.get_id_path(ResourceUID.text_to_id(asset.uid)))
 
 # _ because it clashes with the base class
 func _set_rotation(rotation: Vector3) -> void:

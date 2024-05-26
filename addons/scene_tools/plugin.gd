@@ -225,4 +225,4 @@ func add_collection(uid: String, collection: Collection) -> void:
 	if not collections.has(uid):
 		remove_orphan_assets(collection)
 		collections[uid] = collection
-		gui_instance.spawn_collection_tab(uid, collection)
+		gui_instance.spawn_collection_list(uid, collection)
