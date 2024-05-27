@@ -20,7 +20,7 @@ var scene_root: Node
 
 var undo_redo: EditorUndoRedoManager
 
-var plugin_enabled := true
+var plugin_enabled := false
 var icon_size : int = 4
 
 # Key: String (uid), Value: Collection
@@ -121,7 +121,6 @@ func _get_window_layout(configuration: ConfigFile) -> void:
 	configuration.set_value(plugin_name, "collections", collection_ids)
 
 	configuration.set_value(plugin_name, "icon_size", icon_size)
-	configuration.set_value(plugin_name, "plugin_enabled", plugin_enabled)
 	
 	for tool in tools:
 		tool.save_state(configuration)
@@ -134,8 +133,6 @@ func _set_window_layout(configuration: ConfigFile) -> void:
 			var res := ResourceLoader.load(uid) as Collection
 			if res:
 				add_collection(uid, res)
-
-	plugin_enabled = configuration.get_value(plugin_name, "plugin_enabled", plugin_enabled)
 
 	icon_size = configuration.get_value(plugin_name, "icon_size", 4)
 	gui_instance.icon_size_slider.set_value_no_signal(float(icon_size))
