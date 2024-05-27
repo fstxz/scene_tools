@@ -252,13 +252,13 @@ func spawn_collection_list(uid: String, collection: Collection) -> void:
 func _on_item_selected(_index: int, _selected: bool) -> void:
     plugin_instance.set_selected_assets(get_selected_asset_uids())
 
-func _on_asset_clicked(index: int, at_position: Vector2, mouse_button_index: int) -> void:
+func _on_asset_clicked(_index: int, at_position: Vector2, mouse_button_index: int) -> void:
     match mouse_button_index:
         2:
             asset_popup_menu.position = collections_items_container.global_position + at_position
             asset_popup_menu.visible = true
 
-func _on_collection_clicked(index: int, at_position: Vector2, mouse_button_index: int) -> void:
+func _on_collection_clicked(_index: int, at_position: Vector2, mouse_button_index: int) -> void:
     match mouse_button_index:
         2:
             collection_popup_menu.position = collections_list.global_position + at_position
@@ -304,15 +304,15 @@ func add_asset_to_collection_list(to: CollectionList, asset: Dictionary) -> void
     to.set_item_tooltip(to.item_count-1, asset.name + "\nFile: " + ResourceUID.get_id_path(ResourceUID.text_to_id(asset.uid)))
 
 # _ because it clashes with the base class
-func _set_rotation(rotation: Vector3) -> void:
-    rotation_x.text = str(rotation.x)
-    rotation_y.text = str(rotation.y)
-    rotation_z.text = str(rotation.z)
+func _set_rotation(value: Vector3) -> void:
+    rotation_x.text = str(value.x)
+    rotation_y.text = str(value.y)
+    rotation_z.text = str(value.z)
 
-func _set_scale(scale: Vector3) -> void:
-    scale_x.text = str(scale.x)
-    scale_y.text = str(scale.y)
-    scale_z.text = str(scale.z)
+func _set_scale(value: Vector3) -> void:
+    scale_x.text = str(value.x)
+    scale_y.text = str(value.y)
+    scale_z.text = str(value.z)
 
 func _on_scale_link_toggled(toggled: bool) -> void:
     plugin_instance.place_tool.set_scale_link_toggled(toggled)
