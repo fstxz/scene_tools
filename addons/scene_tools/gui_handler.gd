@@ -44,6 +44,7 @@ var preview_camera: Camera3D
 @export var collections_items_container: Control
 @export var collection_popup_menu: PopupMenu
 @export var asset_popup_menu: PopupMenu
+@export var rotation_step: LineEdit
 
 @export var side_panel: Control
 @export var collections_container: Control
@@ -80,6 +81,7 @@ func _ready() -> void:
     rotation_x.text_changed.connect(_on_rotation_x_text_changed)
     rotation_y.text_changed.connect(_on_rotation_y_text_changed)
     rotation_z.text_changed.connect(_on_rotation_z_text_changed)
+    rotation_step.text_changed.connect(_on_rotation_step_text_changed)
 
     scale_x.text_changed.connect(_on_scale_x_text_changed)
     scale_y.text_changed.connect(_on_scale_y_text_changed)
@@ -438,3 +440,6 @@ func remove_selected_assets() -> void:
         plugin_instance.collections[uid].assets.remove_at(item)
     
     plugin_instance.set_selected_assets(get_selected_asset_uids())
+
+func _on_rotation_step_text_changed(text: String) -> void:
+    plugin_instance.place_tool.set_rotation_step(deg_to_rad(float(text)))

@@ -4,16 +4,6 @@
 [ext_resource type="Texture2D" uid="uid://kw0yfcs32f2v" path="res://addons/scene_tools/icons/GuiOptionArrow.svg" id="2_55bu5"]
 [ext_resource type="Texture2D" uid="uid://b2byjk3m64ir0" path="res://addons/scene_tools/icons/Instance.svg" id="3_8k1my"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q0501"]
-content_margin_left = 4.0
-content_margin_top = 4.0
-content_margin_right = 4.0
-content_margin_bottom = 4.0
-bg_color = Color(0.6, 0.6, 0.6, 0)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cmt0l"]
-bg_color = Color(0.6, 0.6, 0.6, 0)
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d1c51"]
 content_margin_left = 6.0
 content_margin_top = 4.0
@@ -25,6 +15,16 @@ corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q0501"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cmt0l"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
 [node name="Control" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -33,7 +33,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="SceneTools" type="HBoxContainer" parent="." node_paths=PackedStringArray("snapping_button", "snapping_step", "snapping_offset", "new_collection_name", "align_to_surface_button", "help_dialog", "version_label", "icon_size_slider", "random_rotation_button", "random_scale_button", "random_rotation_axis", "random_rotation", "scale_x", "scale_y", "scale_z", "rotation_x", "rotation_y", "rotation_z", "scale_link_button", "random_scale", "plane_option", "display_grid_checkbox", "mode_option", "surface_container", "plane_container", "chance_to_spawn_container", "chance_to_spawn", "plane_level", "file_menu", "new_collection_dialog", "collections_list", "collections_items_container", "collection_popup_menu", "asset_popup_menu", "side_panel", "collections_container", "scene_tools_button", "scene_tools_menu_button")]
+[node name="SceneTools" type="HBoxContainer" parent="." node_paths=PackedStringArray("snapping_button", "snapping_step", "snapping_offset", "new_collection_name", "align_to_surface_button", "help_dialog", "version_label", "icon_size_slider", "random_rotation_button", "random_scale_button", "random_rotation_axis", "random_rotation", "scale_x", "scale_y", "scale_z", "rotation_x", "rotation_y", "rotation_z", "scale_link_button", "random_scale", "plane_option", "display_grid_checkbox", "mode_option", "surface_container", "plane_container", "chance_to_spawn_container", "chance_to_spawn", "plane_level", "file_menu", "new_collection_dialog", "collections_list", "collections_items_container", "collection_popup_menu", "asset_popup_menu", "rotation_step", "side_panel", "collections_container", "scene_tools_button", "scene_tools_menu_button")]
 visible = false
 layout_mode = 1
 offset_right = 114.0
@@ -73,6 +73,7 @@ collections_list = NodePath("../Collections/CollectionsSplitContainer/Collection
 collections_items_container = NodePath("../Collections/CollectionsSplitContainer/CollectionsItemsContainer")
 collection_popup_menu = NodePath("../Collections/CollectionPopupMenu")
 asset_popup_menu = NodePath("../Collections/AssetPopupMenu")
+rotation_step = NodePath("HelpDialog/VBoxContainer/RotationStep/RotationStep")
 side_panel = NodePath("../SidePanel")
 collections_container = NodePath("../Collections")
 scene_tools_button = NodePath("SceneToolsButton")
@@ -92,13 +93,13 @@ popup/item_0/text = "Settings"
 [node name="HelpDialog" type="AcceptDialog" parent="SceneTools"]
 title = "About"
 initial_position = 4
-size = Vector2i(304, 348)
+size = Vector2i(304, 400)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="SceneTools/HelpDialog"]
 offset_left = 8.0
 offset_top = 8.0
 offset_right = 296.0
-offset_bottom = 306.0
+offset_bottom = 350.0
 
 [node name="VersionLabel" type="Label" parent="SceneTools/HelpDialog/VBoxContainer"]
 layout_mode = 2
@@ -119,6 +120,22 @@ layout_mode = 2
 text = "
 Additional settings:"
 horizontal_alignment = 1
+
+[node name="RotationStep" type="HBoxContainer" parent="SceneTools/HelpDialog/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="SceneTools/HelpDialog/VBoxContainer/RotationStep"]
+layout_mode = 2
+text = "Rotation step"
+horizontal_alignment = 1
+
+[node name="RotationStep" type="LineEdit" parent="SceneTools/HelpDialog/VBoxContainer/RotationStep"]
+auto_translate_mode = 1
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_d1c51")
+text = "45"
+max_length = 5
 
 [node name="IconSize" type="HBoxContainer" parent="SceneTools/HelpDialog/VBoxContainer"]
 layout_mode = 2
@@ -142,6 +159,7 @@ ticks_on_borders = true
 [node name="DisplayGrid" type="CheckBox" parent="SceneTools/HelpDialog/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
+button_pressed = true
 text = "Display grid"
 
 [node name="SidePanel" type="ScrollContainer" parent="."]

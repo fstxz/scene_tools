@@ -29,6 +29,7 @@ var random_rotation_enabled := false
 var random_rotation := 0.0
 var random_rotation_axis: int = 1 # Y
 var scale_linked := true
+var rotation_step := PI / 4.0
 
 var fill_mesh: MeshInstance3D
 
@@ -118,7 +119,7 @@ func forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 
     if event is InputEventKey:
         if event.keycode == KEY_R and event.is_pressed():
-            rotation.y = wrapf(rotation.y + (PI / 4.0), 0.0, TAU)
+            rotation.y = wrapf(rotation.y + rotation_step, 0.0, TAU)
             plugin.gui_instance.rotation_y.text = str(roundf(rad_to_deg(rotation.y)))
             return EditorPlugin.AFTER_GUI_INPUT_STOP
 
@@ -376,6 +377,9 @@ func load_state(configuration: ConfigFile) -> void:
     random_rotation = configuration.get_value(plugin.plugin_name, "random_rotation", random_rotation)
     plugin.gui_instance.random_rotation.text = str(roundf(rad_to_deg(random_rotation)))
 
+    rotation_step = configuration.get_value(plugin.plugin_name, "rotation_step", rotation_step)
+    plugin.gui_instance.rotation_step.text = str(roundf(rad_to_deg(rotation_step)))
+
 
 func save_state(configuration: ConfigFile) -> void:
     configuration.set_value(plugin.plugin_name, "snapping_enabled", snapping_enabled)
@@ -394,6 +398,7 @@ func save_state(configuration: ConfigFile) -> void:
     configuration.set_value(plugin.plugin_name, "random_rotation_axis", random_rotation_axis)
     configuration.set_value(plugin.plugin_name, "scale_linked", scale_linked)
     configuration.set_value(plugin.plugin_name, "random_rotation", random_rotation)
+    configuration.set_value(plugin.plugin_name, "rotation_step", rotation_step)
 
 func set_snapping_enabled(enabled: bool) -> void:
     snapping_enabled = enabled
@@ -547,3 +552,6 @@ func set_global_basis(node: Node3D) -> void:
 
 func set_random_rotation(value: float) -> void:
     random_rotation = value
+
+func set_rotation_step(value: float) -> void:
+    rotation_step = value
