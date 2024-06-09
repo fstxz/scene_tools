@@ -28,11 +28,9 @@ If you are using Godot 4.2, make sure to restart the editor after installing the
 4. Drag and drop your assets into empty space on the right.
 5. Select the asset you want to place from the list. Right click if you want to remove it from the collection.
 6. Select any node in the scene tree. Objects will be spawned as children of this node.
+7. Click "Scene Tools" button at the top (below 2D, 3D, etc) to open side panel. Plugin will be active only when the panel is visible.
 
 You should now be able to place the asset.
-
-> [!WARNING]
-If you want to delete an asset from filesystem, restart the editor immediately afterwards or do it when the editor is closed. Deleting collection's .tres file is safe, however.
 
 ## License
 This plugin is licensed under the [MIT License](https://github.com/fstxz/scene_tools/blob/master/LICENSE.txt).
