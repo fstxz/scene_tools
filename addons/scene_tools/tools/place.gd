@@ -118,9 +118,15 @@ func forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
                     fill_mesh.mesh.size = fill_bounding_box.size.abs() + Vector3.ONE * snapping_step
 
     if event is InputEventKey:
-        if event.keycode == KEY_R and event.is_pressed():
+        if event.keycode == KEY_Q and event.is_pressed():
             rotation.y = wrapf(rotation.y + rotation_step, 0.0, TAU)
             plugin.gui_instance.rotation_y.text = str(roundf(rad_to_deg(rotation.y)))
+            EditorInterface.get_editor_viewport_3d().set_input_as_handled()
+            return EditorPlugin.AFTER_GUI_INPUT_STOP
+        elif  event.keycode == KEY_E and event.is_pressed():
+            rotation.y = wrapf(rotation.y - rotation_step, 0.0, TAU)
+            plugin.gui_instance.rotation_y.text = str(roundf(rad_to_deg(rotation.y)))
+            EditorInterface.get_editor_viewport_3d().set_input_as_handled()
             return EditorPlugin.AFTER_GUI_INPUT_STOP
 
     if event is InputEventMouseButton:
