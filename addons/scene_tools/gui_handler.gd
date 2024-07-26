@@ -13,11 +13,9 @@ var preview_camera: Camera3D
 @export var snapping_button: CheckBox
 @export var snapping_step: LineEdit
 @export var snapping_offset: LineEdit
-@export var new_collection_name: LineEdit
 @export var align_to_surface_button: CheckBox
 @export var help_dialog: AcceptDialog
 @export var version_label: Label
-@export var icon_size_slider: HSlider
 @export var random_rotation_button: CheckBox
 @export var random_scale_button: CheckBox
 @export var random_rotation_axis: OptionButton
@@ -38,28 +36,18 @@ var preview_camera: Camera3D
 @export var chance_to_spawn_container: Control
 @export var chance_to_spawn: LineEdit
 @export var plane_level: LineEdit
-@export var file_menu: MenuButton
-@export var new_collection_dialog: AcceptDialog
-@export var collections_list: ItemList
-@export var collections_items_container: Control
-@export var collection_popup_menu: PopupMenu
-@export var asset_popup_menu: PopupMenu
 @export var rotation_step: LineEdit
 
 @export var side_panel: Control
-@export var collections_container: Control
 @export var scene_tools_button: Button
 @export var scene_tools_menu_button: MenuButton
 
 func _ready() -> void:
-    plugin_instance.collection_removed.connect(_on_collection_removed)
-
     snapping_button.toggled.connect(_on_snapping_toggled)
     plane_level.text_changed.connect(_on_plane_level_text_changed)
     snapping_step.text_changed.connect(_on_snapping_step_text_changed)
     snapping_offset.text_changed.connect(_on_snapping_offset_text_changed)
     align_to_surface_button.toggled.connect(_on_align_to_surface_toggled)
-    icon_size_slider.value_changed.connect(_on_icon_size_slider_value_changed)
     random_scale.text_changed.connect(_on_random_scale_text_changed)
     plane_option.item_selected.connect(_on_plane_option_button_item_selected)
     display_grid_checkbox.toggled.connect(_on_display_grid_checkbox_toggled)
@@ -71,12 +59,6 @@ func _ready() -> void:
     random_scale_button.toggled.connect(_on_random_scale_button_toggled)
     random_rotation_axis.item_selected.connect(_on_random_rotation_axis_item_selected)
     random_rotation.text_changed.connect(_on_random_rotation_text_changed)
-    new_collection_dialog.confirmed.connect(_new_collection_dialog_confirmed)
-    file_menu.get_popup().id_pressed.connect(_on_file_menu_pressed)
-    collections_list.item_clicked.connect(_on_collection_clicked)
-    collections_list.item_selected.connect(_on_collections_list_item_selected)
-    collection_popup_menu.id_pressed.connect(_on_collection_popup_menu_id_pressed)
-    asset_popup_menu.id_pressed.connect(_on_asset_popup_menu_id_pressed)
 
     rotation_x.text_changed.connect(_on_rotation_x_text_changed)
     rotation_y.text_changed.connect(_on_rotation_y_text_changed)
@@ -126,54 +108,13 @@ func _on_plane_option_button_item_selected(index: int) -> void:
 func _on_random_scale_text_changed(text: String) -> void:
     plugin_instance.place_tool.set_random_scale(float(text))
 
-func remove_selected_collection() -> void:
-    var collection := get_selected_collection()
-    var uid: String = collection.get_meta("uid")
-    collections_list.remove_item(collections_list.get_selected_items()[0])
-    collection.free()
-    ResourceSaver.save(plugin_instance.collections[uid])
-    plugin_instance.collections.erase(uid)
-
-    if collections_list.item_count > 0:
-        collections_list.select(0)
-        _on_collections_list_item_selected(0)
-
-func _on_icon_size_slider_value_changed(_value: float) -> void:
-    var value := int(_value)
-    plugin_instance.icon_size = value
-    set_collection_icon_size()
-
 func _on_scene_tools_menu_pressed(id: int) -> void:
     match id:
         0:
             help_dialog.visible = true
 
-func _on_file_menu_pressed(id: int) -> void:
-    match id:
-        # New collection
-        0:
-            new_collection_dialog.visible = true
-        # Load Collection
-        1:
-            load_collection_dialog()
-
 func _on_align_to_surface_toggled(toggled: bool) -> void:
     plugin_instance.place_tool.set_align_to_surface(toggled)
-
-func _new_collection_dialog_confirmed() -> void:
-    var collection_name := new_collection_name.text
-
-    if collection_name.is_empty():
-        collection_name = "[No Name]"
-
-    var save_dialog := EditorFileDialog.new()
-    save_dialog.file_mode = EditorFileDialog.FILE_MODE_SAVE_FILE
-    save_dialog.add_filter("*.tres", "Collection")
-    save_dialog.size = Vector2(800, 700)
-    EditorInterface.popup_dialog_centered(save_dialog)
-
-    save_dialog.file_selected.connect(new_collection_dialog_callback.bind(collection_name))
-    new_collection_dialog.visible = false
 
 func load_collection_dialog() -> void:
     var load_dialog := EditorFileDialog.new()
@@ -207,98 +148,6 @@ func _on_snapping_offset_text_changed(text: String) -> void:
 
 func _on_chance_to_spawn_text_changed(text: String) -> void:
     plugin_instance.place_tool.set_chance_to_spawn(int(text))
-
-func new_collection_dialog_callback(path: String, collection_name: String) -> void:
-    var collection := Collection.new(collection_name)
-    
-    if ResourceSaver.save(collection, path) == OK:
-        var uid := ResourceUID.id_to_text(ResourceLoader.get_resource_uid(path))
-        plugin_instance.collections[uid] = collection
-        collection.take_over_path(path)
-
-        spawn_collection_list(uid, collection)
-
-    new_collection_name.text = ""
-
-func set_collection_icon_size() -> void:
-    for collection_list: CollectionList in collections_items_container.get_children():
-        collection_list.icon_scale = plugin_instance.icon_size / 4.0
-
-func spawn_collection_list(uid: String, collection: Collection) -> void:
-    var collection_list := CollectionList.new()
-
-    collections_list.add_item(collection.name)
-    collections_list.set_item_metadata(collections_list.item_count-1, uid)
-    collections_list.set_item_tooltip(collections_list.item_count-1, collection.name + "\nFile: " + collection.resource_path)
-    collections_list.select(collections_list.item_count-1)
-
-    collection_list.set_meta("uid", uid)
-    collection_list.max_columns = 0
-    collection_list.fixed_icon_size = Vector2i(plugin_instance.preview_size, plugin_instance.preview_size)
-    collection_list.icon_scale = plugin_instance.icon_size / 4.0
-    collection_list.icon_mode = ItemList.ICON_MODE_TOP
-    collection_list.same_column_width = true
-    collection_list.select_mode = ItemList.SELECT_MULTI
-    collection_list.allow_rmb_select = true
-
-    for asset: Dictionary in collection.assets:
-        add_asset_to_collection_list(collection_list, asset)
-
-    collection_list.data_dropped.connect(_on_data_dropped)
-    collection_list.item_clicked.connect(_on_asset_clicked)
-    collection_list.multi_selected.connect(_on_item_selected)
-
-    collections_items_container.add_child(collection_list)
-    _on_collections_list_item_selected(collections_list.item_count-1)
-
-func _on_item_selected(_index: int, _selected: bool) -> void:
-    plugin_instance.set_selected_assets(get_selected_asset_uids())
-
-func _on_asset_clicked(_index: int, at_position: Vector2, mouse_button_index: int) -> void:
-    match mouse_button_index:
-        2:
-            asset_popup_menu.position = collections_items_container.global_position + at_position
-            asset_popup_menu.visible = true
-
-func _on_collection_clicked(_index: int, at_position: Vector2, mouse_button_index: int) -> void:
-    match mouse_button_index:
-        2:
-            collection_popup_menu.position = collections_list.global_position + at_position
-            collection_popup_menu.visible = true
-
-func get_selected_asset_uids() -> Array[String]:
-    var current_collection := get_selected_collection()
-
-    var selected_items := current_collection.get_selected_items()
-    var asset_uids: Array[String] = []
-    for i in selected_items:
-        asset_uids.append(current_collection.get_item_metadata(i) as String)
-    
-    return asset_uids
-
-func _on_data_dropped(data: Variant) -> void:
-    for filepath: String in data["files"]:
-        var packedscene := ResourceLoader.load(filepath) as PackedScene
-
-        if packedscene:
-            if packedscene.get_state().get_node_count() == 0:
-                return
-            
-            var root_node_name := packedscene.get_state().get_node_name(0)
-            var node := packedscene.instantiate()
-
-            var preview := await plugin_instance.generate_preview(node)
-
-            var tab := get_selected_collection()
-
-            var asset := Dictionary()
-            asset.thumbnail = preview
-            asset.name = root_node_name
-            asset.uid = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(filepath))
-
-            plugin_instance.collections[tab.get_meta("uid")].assets.append(asset)
-            add_asset_to_collection_list(tab, asset)
-
 
 func add_asset_to_collection_list(to: CollectionList, asset: Dictionary) -> void:
     to.add_item(asset.name, asset.thumbnail)
@@ -384,62 +233,6 @@ func _on_scale_z_text_changed(text: String) -> void:
             plugin_instance.place_tool.base_scale.y,
             float(text)
             ))
-
-func get_selected_collection() -> CollectionList:
-    return collections_items_container.get_child(collections_list.get_selected_items()[0])
-
-func _on_collections_list_item_selected(index: int) -> void:
-    if collections_list.item_count > 0:
-        for child: Control in collections_items_container.get_children():
-            child.visible = false
-        collections_items_container.get_child(index).visible = true
-
-func _on_collection_popup_menu_id_pressed(id: int) -> void:
-    match id:
-        # Close
-        0:
-            remove_selected_collection()
-        # Show in FileSystem
-        1:
-            EditorInterface.get_file_system_dock().navigate_to_path(
-                ResourceUID.get_id_path(ResourceUID.text_to_id(get_selected_collection().get_meta("uid")))
-            )
-
-func _on_collection_removed(uid: String) -> void:
-    for item_index in collections_list.item_count:
-        var meta_uid := collections_list.get_item_metadata(item_index) as String
-        if meta_uid == uid:
-            collections_list.remove_item(item_index)
-            collections_items_container.get_child(item_index).free()
-            
-            if collections_list.item_count > 0:
-                collections_list.select(0)
-                _on_collections_list_item_selected(0)
-
-func _on_asset_popup_menu_id_pressed(id: int) -> void:
-    match id:
-        # Remove
-        0:
-            remove_selected_assets()
-        # Show in FileSystem
-        1:
-            EditorInterface.get_file_system_dock().navigate_to_path(
-                ResourceUID.get_id_path(ResourceUID.text_to_id(get_selected_asset_uids()[0]))
-            )
-
-func remove_selected_assets() -> void:
-    var current_collection := get_selected_collection()
-    var uid := current_collection.get_meta("uid") as String
-
-    var item_list := current_collection.get_selected_items()
-    # If we remove items from the front, then the indicies of other items are shifted, so we delete from the back first
-    item_list.reverse()
-
-    for item in item_list:
-        current_collection.remove_item(item)
-        plugin_instance.collections[uid].assets.remove_at(item)
-    
-    plugin_instance.set_selected_assets(get_selected_asset_uids())
 
 func _on_rotation_step_text_changed(text: String) -> void:
     plugin_instance.place_tool.set_rotation_step(deg_to_rad(float(text)))

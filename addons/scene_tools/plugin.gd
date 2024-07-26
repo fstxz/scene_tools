@@ -6,14 +6,11 @@ const plugin_name := "Scene Tools"
 const preview_size: int = 128
 
 const GuiHandler := preload("res://addons/scene_tools/gui_handler.gd")
-const Collection := preload("res://addons/scene_tools/collection.gd")
 const Tool := preload("res://addons/scene_tools/tool.gd")
 const PlaceTool := preload("res://addons/scene_tools/tools/place.gd")
 var gui := preload("res://addons/scene_tools/gui.tscn")
 
 var gui_instance: GuiHandler
-
-signal collection_removed(uid: String)
 
 var root_node: Node
 var scene_root: Node
@@ -23,10 +20,7 @@ var undo_redo: EditorUndoRedoManager
 var plugin_enabled := false
 var icon_size : int = 4
 
-# Key: String (uid), Value: Collection
-var collections: Dictionary
-
-var selected_asset_uids: Array[String]
+var selected_assets: Array
 
 var side_panel_folded := true
 
@@ -37,15 +31,13 @@ var tools: Array[Tool] = [
 var current_tool: Tool = place_tool
 
 func _enter_tree() -> void:
-	EditorInterface.get_file_system_dock().resource_removed.connect(_on_resource_removed)
-
 	scene_changed.connect(_on_scene_changed)
 	scene_closed.connect(_on_scene_closed)
 
 	var gui_root := gui.instantiate()
 	gui_instance = gui_root.get_node("SceneTools") as GuiHandler
 	gui_instance.plugin_instance = self
-	
+
 	gui_instance.version_label.text = plugin_name + " v" + get_plugin_version()
 
 	gui_instance.owner = null
@@ -56,10 +48,6 @@ func _enter_tree() -> void:
 	gui_root.remove_child(gui_instance.side_panel)
 	add_control_to_container(CustomControlContainer.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT, gui_instance.side_panel)
 
-	gui_instance.collections_container.owner = null
-	gui_root.remove_child(gui_instance.collections_container)
-	add_control_to_bottom_panel(gui_instance.collections_container, "Collections")
-
 	gui_instance.scene_tools_button.pressed.connect(_scene_tools_button_pressed)
 
 	undo_redo = get_undo_redo()
@@ -68,11 +56,9 @@ func _enter_tree() -> void:
 	current_tool.enter()
 
 func _exit_tree() -> void:
-	remove_control_from_bottom_panel(gui_instance.collections_container)
 	remove_control_from_container(CustomControlContainer.CONTAINER_SPATIAL_EDITOR_SIDE_LEFT, gui_instance.side_panel)
 	remove_control_from_container(CustomControlContainer.CONTAINER_SPATIAL_EDITOR_MENU, gui_instance)
 	gui_instance.side_panel.free()
-	gui_instance.collections_container.free()
 	gui_instance.free()
 
 	for tool in tools:
@@ -105,39 +91,23 @@ func _on_scene_closed(path: String) -> void:
 func _handles(object: Object) -> bool:
 	return current_tool.handles(object)
 
+func _process(_delta: float) -> void:
+	update_selected_assets()
+
 func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 	if not plugin_enabled:
 		return EditorPlugin.AFTER_GUI_INPUT_PASS
-	if selected_asset_uids.is_empty() or not root_node:
+
+	if selected_assets.is_empty() or not root_node:
 		return EditorPlugin.AFTER_GUI_INPUT_PASS
 
 	return current_tool.forward_3d_gui_input(viewport_camera, event)
 
 func _get_window_layout(configuration: ConfigFile) -> void:
-	var collection_ids: Array[String] = []
-	for uid: String in collections.keys():
-		collection_ids.append(uid)
-	
-	configuration.set_value(plugin_name, "collections", collection_ids)
-
-	configuration.set_value(plugin_name, "icon_size", icon_size)
-	
 	for tool in tools:
 		tool.save_state(configuration)
 
 func _set_window_layout(configuration: ConfigFile) -> void:
-	var collection_ids: Array[String] = configuration.get_value(plugin_name, "collections", [])
-
-	for uid: String in collection_ids:
-		if ResourceUID.has_id(ResourceUID.text_to_id(uid)):
-			var res := ResourceLoader.load(uid) as Collection
-			if res:
-				add_collection(uid, res)
-
-	icon_size = configuration.get_value(plugin_name, "icon_size", 4)
-	gui_instance.icon_size_slider.set_value_no_signal(float(icon_size))
-	gui_instance.set_collection_icon_size()
-
 	for tool in tools:
 		tool.load_state(configuration)
 
@@ -160,7 +130,7 @@ func generate_preview(node: Node) -> Texture2D:
 	var viewport_image := gui_instance.preview_viewport.get_texture().get_image()
 	var preview := PortableCompressedTexture2D.new()
 	preview.create_from_image(viewport_image, PortableCompressedTexture2D.COMPRESSION_MODE_LOSSY)
-	
+
 	gui_instance.preview_viewport.remove_child(node)
 	node.queue_free()
 
@@ -179,47 +149,67 @@ func get_aabb(node: Node) -> AABB:
 			var child_aabb := child.get_aabb().abs() as AABB
 			var transformed_aabb := AABB(child_aabb.position + child.global_position, child_aabb.size)
 			aabb = aabb.merge(transformed_aabb)
-		
+
 		children.append_array(child.get_children())
 
 	return aabb
 
-func _save_external_data() -> void:
-	for collection: Collection in collections.values():
-		ResourceSaver.save(collection)
+# func set_selected_assets(asset_uids: Array[String]) -> void:
+# 	selected_asset_uids = asset_uids
 
-func set_selected_assets(asset_uids: Array[String]) -> void:
-	selected_asset_uids = asset_uids
-
-	if not selected_asset_uids.is_empty():
-		place_tool.change_brush(selected_asset_uids[0])
-		if place_tool.snapping_enabled:
-			place_tool.set_grid_visible(place_tool.grid_display_enabled)
-	else:
-		place_tool.grid_mesh.hide()
-		if place_tool.brush:
-			place_tool.brush.free()
+# 	if not selected_asset_uids.is_empty():
+# 		place_tool.change_brush(selected_asset_uids[0])
+# 		if place_tool.snapping_enabled:
+# 			place_tool.set_grid_visible(place_tool.grid_display_enabled)
+# 	else:
+# 		place_tool.grid_mesh.hide()
+# 		if place_tool.brush:
+# 			place_tool.brush.free()
 
 func set_plugin_enabled(enabled: bool) -> void:
 	plugin_enabled = enabled
 	current_tool._on_plugin_enabled(enabled)
 
-func _on_resource_removed(resource: Resource) -> void:
-	var uid := ResourceUID.id_to_text(ResourceLoader.get_resource_uid(resource.resource_path))
+func update_selected_assets() -> void:
+	var selected_paths := Array(EditorInterface.get_selected_paths())
+	var previous_size := selected_assets.size()
 
-	if collections.has(uid):
-		collections.erase(uid)
-		collection_removed.emit(uid)
+	var previously_first_selected: String
+	if not selected_assets.is_empty():
+		previously_first_selected = selected_assets[0] as String
 
-# This removes assets from a collection if the UID is invalid 
-# (asset deleted from filesystem or UID has changed for whatever reason)
-func remove_orphan_assets(from: Collection) -> void:
-	from.assets = from.assets.filter(func(asset: Dictionary) -> bool:
-		return ResourceUID.has_id(ResourceUID.text_to_id(asset.uid))
+	selected_paths = selected_paths.filter(func(path: String) -> bool:
+		return not path.ends_with("/")
 	)
 
-func add_collection(uid: String, collection: Collection) -> void:
-	if not collections.has(uid):
-		remove_orphan_assets(collection)
-		collections[uid] = collection
-		gui_instance.spawn_collection_list(uid, collection)
+	# Check if a path is a valid PackedScene
+	selected_assets = selected_paths
+
+	var remove_brush := false
+	if selected_paths.size() != previous_size:
+		if not selected_assets.is_empty():
+			var scene := ResourceLoader.load(selected_assets[0]) as PackedScene
+
+			if scene:
+				place_tool.change_brush(scene)
+				if place_tool.snapping_enabled:
+					place_tool.set_grid_visible(place_tool.grid_display_enabled)
+			else:
+				remove_brush = true
+		else:
+			remove_brush = true
+	elif selected_paths.size() == 1 and previous_size == 1:
+		if selected_paths[0] != previously_first_selected:
+			var scene := ResourceLoader.load(selected_assets[0]) as PackedScene
+
+			if scene:
+				place_tool.change_brush(scene)
+				if place_tool.snapping_enabled:
+					place_tool.set_grid_visible(place_tool.grid_display_enabled)
+			else:
+				remove_brush = true
+
+	if remove_brush:
+		place_tool.grid_mesh.hide()
+		if place_tool.brush != null:
+			place_tool.brush.free()
