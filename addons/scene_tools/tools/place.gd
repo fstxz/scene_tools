@@ -426,7 +426,7 @@ func set_snapping_offset(value: float) -> void:
 
 func set_base_scale(value: Vector3) -> void:
     base_scale = value
-    if brush:
+    if brush != null:
         brush.scale = base_scale
 
 func set_random_scale(value: float) -> void:
