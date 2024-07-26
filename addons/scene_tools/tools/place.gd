@@ -38,7 +38,7 @@ func enter() -> void:
     setup_fill_mesh()
 
 func exit() -> void:
-    if brush:
+    if brush != null:
         brush.free()
     grid_mesh.free()
     fill_mesh.free()
