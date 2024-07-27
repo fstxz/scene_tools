@@ -40,8 +40,10 @@ func enter() -> void:
 func exit() -> void:
     if brush != null:
         brush.free()
-    grid_mesh.free()
-    fill_mesh.free()
+    if grid_mesh != null:
+        grid_mesh.free()
+    if fill_mesh != null:
+        fill_mesh.free()
 
 func edit(object: Object) -> void:
     set_root_node(object)
