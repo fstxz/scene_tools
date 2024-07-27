@@ -91,13 +91,11 @@ func _on_scene_closed(path: String) -> void:
 func _handles(object: Object) -> bool:
 	return current_tool.handles(object)
 
-func _process(_delta: float) -> void:
-	update_selected_assets()
-
 func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 	if not plugin_enabled or not root_node:
 		return EditorPlugin.AFTER_GUI_INPUT_PASS
 
+	update_selected_assets()
 
 	return current_tool.forward_3d_gui_input(viewport_camera, event)
 
@@ -169,24 +167,20 @@ func set_plugin_enabled(enabled: bool) -> void:
 	current_tool._on_plugin_enabled(enabled)
 
 func update_selected_assets() -> void:
-	var selected_paths := Array(EditorInterface.get_selected_paths())
-	var previous_size := selected_assets.size()
+	var new_selected := Array(EditorInterface.get_selected_paths())
 
-	var previously_first_selected: String
-	if not selected_assets.is_empty():
-		previously_first_selected = selected_assets[0] as String
-
-	selected_paths = selected_paths.filter(func(path: String) -> bool:
+	# Remove directories
+	new_selected = new_selected.filter(func(path: String) -> bool:
 		return not path.ends_with("/")
 	)
 
-	# Check if a path is a valid PackedScene
-	selected_assets = selected_paths
-
 	var remove_brush := false
-	if selected_paths.size() != previous_size:
-		if not selected_assets.is_empty():
-			var scene := ResourceLoader.load(selected_assets[0]) as PackedScene
+
+	# if the amount of selected files changed
+	if new_selected.size() != selected_assets.size():
+		# if new_selected is not empty then try instantiating the first asset
+		if not new_selected.is_empty():
+			var scene := ResourceLoader.load(new_selected[0]) as PackedScene
 
 			if scene:
 				place_tool.change_brush(scene)
@@ -196,9 +190,11 @@ func update_selected_assets() -> void:
 				remove_brush = true
 		else:
 			remove_brush = true
-	elif selected_paths.size() == 1 and previous_size == 1:
-		if selected_paths[0] != previously_first_selected:
-			var scene := ResourceLoader.load(selected_assets[0]) as PackedScene
+	# if the amount hasn't changed and there is one selected,
+	# then compare newly selected with previously selected
+	elif new_selected.size() == 1 and selected_assets.size() == 1:
+		if new_selected[0] != selected_assets[0]:
+			var scene := ResourceLoader.load(new_selected[0]) as PackedScene
 
 			if scene:
 				place_tool.change_brush(scene)
@@ -211,3 +207,5 @@ func update_selected_assets() -> void:
 		place_tool.grid_mesh.hide()
 		if place_tool.brush != null:
 			place_tool.brush.free()
+
+	selected_assets = new_selected
