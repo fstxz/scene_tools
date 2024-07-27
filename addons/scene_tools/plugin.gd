@@ -95,11 +95,9 @@ func _process(_delta: float) -> void:
 	update_selected_assets()
 
 func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
-	if not plugin_enabled:
+	if not plugin_enabled or not root_node:
 		return EditorPlugin.AFTER_GUI_INPUT_PASS
 
-	if selected_assets.is_empty() or not root_node:
-		return EditorPlugin.AFTER_GUI_INPUT_PASS
 
 	return current_tool.forward_3d_gui_input(viewport_camera, event)
 
