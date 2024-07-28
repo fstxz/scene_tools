@@ -297,10 +297,15 @@ func instantiate_asset(asset_path: String) -> Node3D:
     var packedscene := ResourceLoader.load(asset_path) as PackedScene
 
     if packedscene == null:
-        push_error("Failed to load an asset at path %s", asset_path)
+        push_error("[%s] Error loading scene at path %s" % [plugin.plugin_name, asset_path])
         return null
 
-    return packedscene.instantiate() as Node3D
+    var instance := packedscene.instantiate() as Node3D
+
+    if instance == null:
+        push_error("[%s] Scene's root node must be a Node3D" % plugin.plugin_name)
+
+    return instance
 
 func setup_grid_mesh() -> void:
     grid_mesh = MeshInstance3D.new()
@@ -443,7 +448,12 @@ func change_brush(packed_scene: PackedScene) -> void:
     if is_instance_valid(brush):
         brush.free()
 
-    var new_brush := packed_scene.instantiate()
+    var new_brush := packed_scene.instantiate() as Node3D
+
+    if new_brush == null:
+        push_error("[%s] Scene's root node must be a Node3D" % plugin.plugin_name)
+        return
+
     brush = new_brush
     brush.scale = base_scale
 
