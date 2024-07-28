@@ -247,8 +247,10 @@ func fill(bounding_box: AABB) -> void:
                         )
 
                     var asset_instance := instantiate_asset(asset_path)
-                    asset_instance.position = instance_position
-                    asset_instances.append(asset_instance)
+
+                    if asset_instance:
+                        asset_instance.position = instance_position
+                        asset_instances.append(asset_instance)
 
     if not asset_instances.is_empty():
         plugin.undo_redo.create_action("Fill Assets", UndoRedo.MERGE_DISABLE, plugin.scene_root)
@@ -294,14 +296,11 @@ func place_asset(asset_path: String, position: Vector3) -> void:
 func instantiate_asset(asset_path: String) -> Node3D:
     var packedscene := ResourceLoader.load(asset_path) as PackedScene
 
-    if packedscene:
-        var instance := packedscene.instantiate() as Node3D
+    if packedscene == null:
+        push_error("Failed to load an asset at path %s", asset_path)
+        return null
 
-        if not instance:
-            return null
-
-        return instance
-    return null
+    return packedscene.instantiate() as Node3D
 
 func setup_grid_mesh() -> void:
     grid_mesh = MeshInstance3D.new()
