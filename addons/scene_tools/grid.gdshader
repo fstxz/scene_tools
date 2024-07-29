@@ -1,5 +1,5 @@
 shader_type spatial;
-render_mode cull_disabled;
+render_mode cull_disabled, unshaded;
 
 uniform float line_width = 0.01;
 uniform float grid_step = 1.0;
