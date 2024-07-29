@@ -2,8 +2,6 @@
 extends Control
 
 const SceneTools = preload("res://addons/scene_tools/plugin.gd")
-const Collection := preload("res://addons/scene_tools/collection.gd")
-const CollectionList := preload("res://addons/scene_tools/collection_list.gd")
 
 var plugin_instance: SceneTools
 
@@ -116,24 +114,6 @@ func _on_scene_tools_menu_pressed(id: int) -> void:
 func _on_align_to_surface_toggled(toggled: bool) -> void:
     plugin_instance.place_tool.set_align_to_surface(toggled)
 
-func load_collection_dialog() -> void:
-    var load_dialog := EditorFileDialog.new()
-    load_dialog.file_mode = EditorFileDialog.FILE_MODE_OPEN_FILES
-    load_dialog.add_filter("*.tres", "Collection")
-    load_dialog.size = Vector2(800, 700)
-    EditorInterface.popup_dialog_centered(load_dialog)
-
-    load_dialog.files_selected.connect(load_collection_dialog_callback)
-
-func load_collection_dialog_callback(paths: PackedStringArray) -> void:
-    for path in paths:
-        var collection := ResourceLoader.load(path) as Collection
-
-        if collection:
-            var uid := ResourceUID.id_to_text(ResourceLoader.get_resource_uid(path))
-
-            plugin_instance.add_collection(uid, collection)
-
 func _on_snapping_toggled(toggled: bool) -> void:
     plugin_instance.place_tool.set_snapping_enabled(toggled)
 
@@ -148,11 +128,6 @@ func _on_snapping_offset_text_changed(text: String) -> void:
 
 func _on_chance_to_spawn_text_changed(text: String) -> void:
     plugin_instance.place_tool.set_chance_to_spawn(int(text))
-
-func add_asset_to_collection_list(to: CollectionList, asset: Dictionary) -> void:
-    to.add_item(asset.name, asset.thumbnail)
-    to.set_item_metadata(to.item_count-1, asset.uid)
-    to.set_item_tooltip(to.item_count-1, asset.name + "\nFile: " + ResourceUID.get_id_path(ResourceUID.text_to_id(asset.uid)))
 
 # _ because it clashes with the base class
 func _set_rotation(value: Vector3) -> void:
