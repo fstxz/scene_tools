@@ -14,7 +14,7 @@ void vertex() {
 
 void fragment() {
     vec2 centered_uv = ((UV * 2.0) - 1.0) * grid_step * grid_size;
-	vec2 lineUV = abs(mod(centered_uv + grid_step, grid_step) / grid_step - 0.5) * 2.0;
+    vec2 lineUV = abs(mod(centered_uv + grid_step, grid_step) / grid_step - 0.5) * 2.0;
     vec2 line = smoothstep(line_width, line_width, lineUV);
     float grid = line.x * line.y;
 
