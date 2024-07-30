@@ -30,6 +30,9 @@ var tools: Array[Tool] = [
 ]
 var current_tool: Tool = place_tool
 
+var tree: Tree
+var files: ItemList
+
 func _enter_tree() -> void:
 	scene_changed.connect(_on_scene_changed)
 	scene_closed.connect(_on_scene_closed)
@@ -52,6 +55,8 @@ func _enter_tree() -> void:
 
 	undo_redo = get_undo_redo()
 
+	setup_filesystem_signals()
+
 	gui_root.free()
 	current_tool.enter()
 
@@ -60,6 +65,12 @@ func _exit_tree() -> void:
 	remove_control_from_container(CustomControlContainer.CONTAINER_SPATIAL_EDITOR_MENU, gui_instance)
 	gui_instance.side_panel.free()
 	gui_instance.free()
+
+	if tree != null:
+		tree.multi_selected.disconnect(tree_selected)
+
+	if files != null:
+		files.multi_selected.disconnect(file_list_selected)
 
 	for tool in tools:
 		tool.exit()
@@ -94,8 +105,6 @@ func _handles(object: Object) -> bool:
 func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 	if not plugin_enabled or not root_node:
 		return EditorPlugin.AFTER_GUI_INPUT_PASS
-
-	update_selected_assets()
 
 	return current_tool.forward_3d_gui_input(viewport_camera, event)
 
@@ -209,3 +218,25 @@ func update_selected_assets() -> void:
 			place_tool.brush.free()
 
 	selected_assets = new_selected
+
+func setup_filesystem_signals() -> void:
+	tree = EditorInterface.get_file_system_dock().find_child("@Tree*", true, false) as Tree
+	files = EditorInterface.get_file_system_dock().find_child("@FileSystemList*", true, false) as ItemList
+
+	if tree == null:
+		push_error("[%s] Couldn't get FileSystemDock's tree" % plugin_name)
+		return
+
+	tree.multi_selected.connect(tree_selected)
+
+	if files == null:
+		push_error("[%s] Couldn't get FileSystemDock's file list" % plugin_name)
+		return
+
+	files.multi_selected.connect(file_list_selected)
+
+func tree_selected(item: TreeItem, column: int, selected: bool) -> void:
+	update_selected_assets()
+
+func file_list_selected(index: int, selected: bool) -> void:
+	update_selected_assets()
