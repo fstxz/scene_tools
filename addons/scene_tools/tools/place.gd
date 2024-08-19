@@ -38,10 +38,12 @@ func enter() -> void:
     setup_fill_mesh()
 
 func exit() -> void:
-    if brush:
+    if is_instance_valid(brush):
         brush.free()
-    grid_mesh.free()
-    fill_mesh.free()
+    if is_instance_valid(grid_mesh):
+        grid_mesh.free()
+    if is_instance_valid(fill_mesh):
+        fill_mesh.free()
 
 func edit(object: Object) -> void:
     set_root_node(object)
@@ -53,13 +55,13 @@ func set_root_node(node: Node) -> void:
     if node == null or not plugin.plugin_enabled:
         if grid_mesh:
             grid_mesh.hide()
-        if brush:
+        if is_instance_valid(brush):
             brush.hide()
     else:
         if not plugin.selected_asset_uids.is_empty():
             if snapping_enabled:
                 set_grid_visible(grid_display_enabled)
-            if brush:
+            if is_instance_valid(brush):
                 brush.show()
     plugin.root_node = node
 
@@ -84,14 +86,14 @@ func forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
                     brush.transform = align_with_normal(brush.transform, result.normal)
 
                 brush.position = result.position
-        
+
         Mode.PLANE, Mode.FILL:
             var result: Variant = Utils.raycast_plane(viewport_camera, plane)
             if result != null:
                 result = result as Vector3
 
                 grid_mesh.mesh.surface_get_material(0).set_shader_parameter("mouse_world_position", result)
-                
+
                 if snapping_enabled:
                     result = result.snapped(Vector3(snapping_step, snapping_step, snapping_step))
                     result += Vector3(snapping_offset, snapping_offset, snapping_offset)
@@ -108,7 +110,7 @@ func forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
                     2:
                         result.x = plane.d
                         grid_mesh.position.x = plane.d + 0.01
-                
+
                 brush.position = result
 
                 if current_mode == Mode.FILL:
@@ -150,21 +152,21 @@ func forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
                         fill_bounding_box.size = brush.position - fill_bounding_box.position
                         fill(fill_bounding_box)
                     return EditorPlugin.AFTER_GUI_INPUT_STOP
-            
+
             MOUSE_BUTTON_RIGHT:
                 if event.is_pressed():
                     var node_to_erase := visual_raycast(viewport_camera)
                     if node_to_erase:
                         erase(node_to_erase)
                         return EditorPlugin.AFTER_GUI_INPUT_STOP
-            
+
             MOUSE_BUTTON_WHEEL_DOWN:
                 if Input.is_key_pressed(KEY_CTRL):
                     if event.is_pressed():
                         plane.d -= snapping_step
                         plugin.gui_instance.plane_level.text = str(plane.d)
                     return EditorPlugin.AFTER_GUI_INPUT_STOP
-            
+
             MOUSE_BUTTON_WHEEL_UP:
                 if Input.is_key_pressed(KEY_CTRL):
                     if event.is_pressed():
@@ -241,7 +243,7 @@ func fill(bounding_box: AABB) -> void:
                         bounding_box.position.y + y * snapping_step,
                         bounding_box.position.z + z * snapping_step
                         )
-                    
+
                     var asset_instance := instantiate_asset(asset_uid)
                     asset_instance.position = instance_position
                     asset_instances.append(asset_instance)
@@ -254,7 +256,7 @@ func fill(bounding_box: AABB) -> void:
                 plugin.undo_redo.add_do_property(asset_instance, "owner", plugin.scene_root)
                 plugin.undo_redo.add_do_reference(asset_instance)
                 plugin.undo_redo.add_undo_method(plugin.root_node, "remove_child", asset_instance)
-        
+
         plugin.undo_redo.commit_action()
 
         # We can't apply global position before committing action, so we do it here instead.
@@ -424,7 +426,7 @@ func set_snapping_offset(value: float) -> void:
 
 func set_base_scale(value: Vector3) -> void:
     base_scale = value
-    if brush:
+    if is_instance_valid(brush):
         brush.scale = base_scale
 
 func set_random_scale(value: float) -> void:
@@ -437,7 +439,7 @@ func set_align_to_surface(value: bool) -> void:
     align_to_surface = value
 
 func change_brush(asset_uid: String) -> void:
-    if brush:
+    if is_instance_valid(brush):
         brush.free()
     var packedscene := ResourceLoader.load(asset_uid) as PackedScene
 
@@ -545,11 +547,11 @@ func set_global_basis(node: Node3D) -> void:
                 basis = basis.rotated(basis.y, rotation_range)
             2:
                 basis = basis.rotated(basis.z, rotation_range)
-    
+
     var scale_range := 0.0
     if random_scale_enabled:
         scale_range = randf_range(-random_scale, random_scale)
-    
+
     basis.x *= base_scale.x + scale_range
     basis.y *= base_scale.y + scale_range
     basis.z *= base_scale.z + scale_range
