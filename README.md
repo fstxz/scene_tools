@@ -1,5 +1,5 @@
 # Scene Tools
-Scene Tools is an editor plugin for Godot 4.2+ to help you with editing your 3D levels and quick prototyping. It currently only supports asset placement.
+Scene Tools is an editor plugin for Godot 4.3+ to help you with editing your 3D levels and quick prototyping. It currently only supports asset placement.
 
 The plugin supports any PackedScene files (.tscn, .gltf, .blend, etc).
 
@@ -17,9 +17,6 @@ The plugin supports any PackedScene files (.tscn, .gltf, .blend, etc).
 The plugin is available in the [Asset Library](https://godotengine.org/asset-library/asset/2846).
 
 Follow [Godot documentation](https://docs.godotengine.org/en/stable/tutorials/plugins/editor/installing_plugins.html) on how to install and enable plugins.
-
-> [!WARNING]
-If you are using Godot 4.2, make sure to restart the editor after installing the plugin.
 
 ## How to use
 1. Select your asset in the filesystem dock.
