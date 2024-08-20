@@ -5,9 +5,6 @@ const SceneTools = preload("res://addons/scene_tools/plugin.gd")
 
 var plugin_instance: SceneTools
 
-var preview_viewport: SubViewport
-var preview_camera: Camera3D
-
 @export var snapping_button: CheckBox
 @export var snapping_step: LineEdit
 @export var snapping_offset: LineEdit
@@ -67,31 +64,11 @@ func _ready() -> void:
     scale_y.text_changed.connect(_on_scale_y_text_changed)
     scale_z.text_changed.connect(_on_scale_z_text_changed)
 
-    setup_preview_viewport()
-
     # Hide mode specific containers
     surface_container.hide()
     plane_container.hide()
     chance_to_spawn_container.hide()
     side_panel.hide()
-
-func setup_preview_viewport() -> void:
-    preview_viewport = SubViewport.new()
-    preview_viewport.size = Vector2i(plugin_instance.preview_size, plugin_instance.preview_size)
-    preview_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
-    preview_viewport.transparent_bg = true
-    preview_viewport.scaling_3d_mode = SubViewport.SCALING_3D_MODE_BILINEAR
-    preview_viewport.own_world_3d = true
-    preview_viewport.world_3d = World3D.new()
-    preview_viewport.world_3d.environment = Environment.new()
-    preview_viewport.world_3d.environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-    preview_viewport.world_3d.environment.ambient_light_color = Color(1.0, 1.0, 1.0, 1.0)
-
-    preview_camera = Camera3D.new()
-    preview_camera.projection = Camera3D.PROJECTION_ORTHOGONAL
-
-    preview_viewport.add_child(preview_camera)
-    add_child(preview_viewport)
 
 
 func _on_mode_option_button_item_selected(index: int) -> void:

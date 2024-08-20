@@ -3,8 +3,6 @@ extends EditorPlugin
 
 const plugin_name := "Scene Tools"
 
-const preview_size: int = 128
-
 const GuiHandler := preload("res://addons/scene_tools/gui_handler.gd")
 const Tool := preload("res://addons/scene_tools/tool.gd")
 const PlaceTool := preload("res://addons/scene_tools/tools/place.gd")
@@ -18,7 +16,6 @@ var scene_root: Node
 var undo_redo: EditorUndoRedoManager
 
 var plugin_enabled := false
-var icon_size : int = 4
 
 var selected_assets: Array
 
@@ -106,61 +103,6 @@ func _get_window_layout(configuration: ConfigFile) -> void:
 func _set_window_layout(configuration: ConfigFile) -> void:
     for tool in tools:
         tool.load_state(configuration)
-
-func generate_preview(node: Node) -> Texture2D:
-    gui_instance.preview_viewport.add_child(node)
-    gui_instance.preview_viewport.size = Vector2i(preview_size, preview_size)
-
-    var aabb := get_aabb(node)
-
-    if is_zero_approx(aabb.size.length()):
-        return
-
-    var max_size := max(aabb.size.x, aabb.size.y, aabb.size.z) as float
-
-    gui_instance.preview_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
-    gui_instance.preview_camera.size = max_size * 2.0
-    gui_instance.preview_camera.look_at_from_position(Vector3(max_size, max_size, max_size), aabb.get_center())
-
-    await RenderingServer.frame_post_draw
-    var viewport_image := gui_instance.preview_viewport.get_texture().get_image()
-    var preview := PortableCompressedTexture2D.new()
-    preview.create_from_image(viewport_image, PortableCompressedTexture2D.COMPRESSION_MODE_LOSSY)
-
-    gui_instance.preview_viewport.remove_child(node)
-    node.queue_free()
-
-    return preview
-
-func get_aabb(node: Node) -> AABB:
-    var aabb := AABB()
-
-    var children: Array[Node] = []
-    children.append(node)
-
-    while not children.is_empty():
-        var child := children.pop_back() as Node
-
-        if child is VisualInstance3D:
-            var child_aabb := child.get_aabb().abs() as AABB
-            var transformed_aabb := AABB(child_aabb.position + child.global_position, child_aabb.size)
-            aabb = aabb.merge(transformed_aabb)
-
-        children.append_array(child.get_children())
-
-    return aabb
-
-# func set_selected_assets(asset_uids: Array[String]) -> void:
-# 	selected_asset_uids = asset_uids
-
-# 	if not selected_asset_uids.is_empty():
-# 		place_tool.change_brush(selected_asset_uids[0])
-# 		if place_tool.snapping_enabled:
-# 			place_tool.set_grid_visible(place_tool.grid_display_enabled)
-# 	else:
-# 		place_tool.grid_mesh.hide()
-# 		if place_tool.brush:
-# 			place_tool.brush.free()
 
 func set_plugin_enabled(enabled: bool) -> void:
     plugin_enabled = enabled
