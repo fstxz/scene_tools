@@ -38,11 +38,11 @@ func enter() -> void:
     setup_fill_mesh()
 
 func exit() -> void:
-    if brush != null:
+    if is_instance_valid(brush):
         brush.free()
-    if grid_mesh != null:
+    if is_instance_valid(grid_mesh):
         grid_mesh.free()
-    if fill_mesh != null:
+    if is_instance_valid(fill_mesh):
         fill_mesh.free()
 
 func edit(object: Object) -> void:
@@ -55,10 +55,10 @@ func set_root_node(node: Node) -> void:
     if node == null or not plugin.plugin_enabled:
         if grid_mesh:
             grid_mesh.hide()
-        if brush != null:
+        if is_instance_valid(brush):
             brush.hide()
     else:
-        if brush != null:
+        if is_instance_valid(brush):
             if snapping_enabled:
                 set_grid_visible(grid_display_enabled)
             brush.show()
@@ -66,7 +66,7 @@ func set_root_node(node: Node) -> void:
 
 func set_grid_visible(visible: bool) -> void:
     if plugin.plugin_enabled:
-        if plugin.root_node and brush != null:
+        if plugin.root_node and is_instance_valid(brush):
             if current_mode == Mode.PLANE or current_mode == Mode.FILL:
                 grid_mesh.set_visible(visible)
 
@@ -432,7 +432,7 @@ func set_snapping_offset(value: float) -> void:
 
 func set_base_scale(value: Vector3) -> void:
     base_scale = value
-    if brush != null:
+    if is_instance_valid(brush):
         brush.scale = base_scale
 
 func set_random_scale(value: float) -> void:
