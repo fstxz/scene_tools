@@ -32,6 +32,7 @@ var plugin_instance: SceneTools
 @export var chance_to_spawn: LineEdit
 @export var plane_level: LineEdit
 @export var rotation_step: LineEdit
+@export var force_readable_name_checkbox: CheckBox
 
 @export var side_panel: Control
 @export var scene_tools_button: Button
@@ -54,6 +55,7 @@ func _ready() -> void:
     random_scale_button.toggled.connect(_on_random_scale_button_toggled)
     random_rotation_axis.item_selected.connect(_on_random_rotation_axis_item_selected)
     random_rotation.text_changed.connect(_on_random_rotation_text_changed)
+    force_readable_name_checkbox.toggled.connect(_on_force_readable_name_checkbox_toggled)
 
     rotation_x.text_changed.connect(_on_rotation_x_text_changed)
     rotation_y.text_changed.connect(_on_rotation_y_text_changed)
@@ -188,3 +190,6 @@ func _on_scale_z_text_changed(text: String) -> void:
 
 func _on_rotation_step_text_changed(text: String) -> void:
     plugin_instance.place_tool.set_rotation_step(deg_to_rad(float(text)))
+
+func _on_force_readable_name_checkbox_toggled(toggled: bool) -> void:
+    plugin_instance.place_tool.force_readable_name = toggled

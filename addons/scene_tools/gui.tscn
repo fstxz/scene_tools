@@ -33,7 +33,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="SceneTools" type="HBoxContainer" parent="." node_paths=PackedStringArray("snapping_button", "snapping_step", "snapping_offset", "align_to_surface_button", "help_dialog", "version_label", "random_rotation_button", "random_scale_button", "random_rotation_axis", "random_rotation", "scale_x", "scale_y", "scale_z", "rotation_x", "rotation_y", "rotation_z", "scale_link_button", "random_scale", "plane_option", "display_grid_checkbox", "mode_option", "surface_container", "plane_container", "chance_to_spawn_container", "chance_to_spawn", "plane_level", "rotation_step", "side_panel", "scene_tools_button", "scene_tools_menu_button")]
+[node name="SceneTools" type="HBoxContainer" parent="." node_paths=PackedStringArray("snapping_button", "snapping_step", "snapping_offset", "align_to_surface_button", "help_dialog", "version_label", "random_rotation_button", "random_scale_button", "random_rotation_axis", "random_rotation", "scale_x", "scale_y", "scale_z", "rotation_x", "rotation_y", "rotation_z", "scale_link_button", "random_scale", "plane_option", "display_grid_checkbox", "mode_option", "surface_container", "plane_container", "chance_to_spawn_container", "chance_to_spawn", "plane_level", "rotation_step", "force_readable_name_checkbox", "side_panel", "scene_tools_button", "scene_tools_menu_button")]
 visible = false
 layout_mode = 1
 offset_right = 114.0
@@ -66,6 +66,7 @@ chance_to_spawn_container = NodePath("../SidePanel/Container/Modes/MarginContain
 chance_to_spawn = NodePath("../SidePanel/Container/Modes/MarginContainer/VBoxContainer/ChanceToSpawnContainer/ChanceToSpawn")
 plane_level = NodePath("../SidePanel/Container/Modes/MarginContainer/VBoxContainer/PlaneContainer/HBoxContainer/PlaneLevel")
 rotation_step = NodePath("HelpDialog/VBoxContainer/RotationStep/RotationStep")
+force_readable_name_checkbox = NodePath("HelpDialog/VBoxContainer/ReadableNodeName")
 side_panel = NodePath("../SidePanel")
 scene_tools_button = NodePath("SceneToolsButton")
 scene_tools_menu_button = NodePath("MenuButton")
@@ -90,7 +91,7 @@ size = Vector2i(304, 400)
 offset_left = 8.0
 offset_top = 8.0
 offset_right = 296.0
-offset_bottom = 350.0
+offset_bottom = 358.0
 
 [node name="VersionLabel" type="Label" parent="SceneTools/HelpDialog/VBoxContainer"]
 layout_mode = 2
@@ -133,6 +134,12 @@ layout_mode = 2
 size_flags_horizontal = 4
 button_pressed = true
 text = "Display grid"
+
+[node name="ReadableNodeName" type="CheckBox" parent="SceneTools/HelpDialog/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+button_pressed = true
+text = "Readable node name"
 
 [node name="SidePanel" type="ScrollContainer" parent="."]
 visible = false

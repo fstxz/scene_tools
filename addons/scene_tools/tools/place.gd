@@ -30,6 +30,7 @@ var random_rotation := 0.0
 var random_rotation_axis: int = 1 # Y
 var scale_linked := true
 var rotation_step := PI / 4.0
+var force_readable_name := true
 
 var fill_mesh: MeshInstance3D
 
@@ -256,7 +257,7 @@ func fill(bounding_box: AABB) -> void:
         plugin.undo_redo.create_action("Fill Assets", UndoRedo.MERGE_DISABLE, plugin.scene_root)
         for asset_instance in asset_instances:
             if asset_instance:
-                plugin.undo_redo.add_do_method(plugin.root_node, "add_child", asset_instance)
+                plugin.undo_redo.add_do_method(plugin.root_node, "add_child", asset_instance, force_readable_name)
                 plugin.undo_redo.add_do_property(asset_instance, "owner", plugin.scene_root)
                 plugin.undo_redo.add_do_reference(asset_instance)
                 plugin.undo_redo.add_undo_method(plugin.root_node, "remove_child", asset_instance)
@@ -283,7 +284,7 @@ func place_asset(asset_path: String, position: Vector3) -> void:
 
     if asset_instance:
         plugin.undo_redo.create_action("Place Asset", UndoRedo.MERGE_DISABLE, plugin.scene_root)
-        plugin.undo_redo.add_do_method(plugin.root_node, "add_child", asset_instance)
+        plugin.undo_redo.add_do_method(plugin.root_node, "add_child", asset_instance, force_readable_name)
         plugin.undo_redo.add_do_property(asset_instance, "owner", plugin.scene_root)
         plugin.undo_redo.add_do_reference(asset_instance)
         plugin.undo_redo.add_undo_method(plugin.root_node, "remove_child", asset_instance)
@@ -394,6 +395,9 @@ func load_state(configuration: ConfigFile) -> void:
     rotation_step = configuration.get_value(plugin.plugin_name, "rotation_step", rotation_step)
     plugin.gui_instance.rotation_step.text = str(roundf(rad_to_deg(rotation_step)))
 
+    force_readable_name = configuration.get_value(plugin.plugin_name, "force_readable_name", force_readable_name)
+    plugin.gui_instance.force_readable_name_checkbox.set_pressed_no_signal(force_readable_name)
+
 
 func save_state(configuration: ConfigFile) -> void:
     configuration.set_value(plugin.plugin_name, "snapping_enabled", snapping_enabled)
@@ -413,6 +417,7 @@ func save_state(configuration: ConfigFile) -> void:
     configuration.set_value(plugin.plugin_name, "scale_linked", scale_linked)
     configuration.set_value(plugin.plugin_name, "random_rotation", random_rotation)
     configuration.set_value(plugin.plugin_name, "rotation_step", rotation_step)
+    configuration.set_value(plugin.plugin_name, "force_readable_name", force_readable_name)
 
 func set_snapping_enabled(enabled: bool) -> void:
     snapping_enabled = enabled
