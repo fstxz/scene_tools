@@ -116,7 +116,7 @@ func update_selected_assets() -> void:
         return not path.ends_with("/")
     )
 
-    var remove_brush := false
+    var remove_cursor := false
 
     # if the amount of selected files changed
     if new_selected.size() != selected_assets.size():
@@ -125,13 +125,13 @@ func update_selected_assets() -> void:
             var scene := ResourceLoader.load(new_selected[0]) as PackedScene
 
             if scene:
-                place_tool.change_brush(scene)
+                place_tool.change_cursor(scene)
                 if place_tool.snapping_enabled:
                     place_tool.set_grid_visible(place_tool.grid_display_enabled)
             else:
-                remove_brush = true
+                remove_cursor = true
         else:
-            remove_brush = true
+            remove_cursor = true
     # if the amount hasn't changed and there is one selected,
     # then compare newly selected with previously selected
     elif new_selected.size() == 1 and selected_assets.size() == 1:
@@ -139,15 +139,15 @@ func update_selected_assets() -> void:
             var scene := ResourceLoader.load(new_selected[0]) as PackedScene
 
             if scene:
-                place_tool.change_brush(scene)
+                place_tool.change_cursor(scene)
                 if place_tool.snapping_enabled:
                     place_tool.set_grid_visible(place_tool.grid_display_enabled)
             else:
-                remove_brush = true
+                remove_cursor = true
 
-    if remove_brush:
+    if remove_cursor:
         place_tool.grid_mesh.hide()
-        if place_tool.brush != null:
-            place_tool.brush.free()
+        if place_tool.cursor != null:
+            place_tool.cursor.free()
 
     selected_assets = new_selected

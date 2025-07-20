@@ -2,7 +2,7 @@ extends "res://addons/scene_tools/tool.gd"
 
 var snapping_enabled := false
 
-var brush: Node3D
+var cursor: Node3D
 
 var grid_mesh: MeshInstance3D
 var grid_display_enabled := true
@@ -39,8 +39,8 @@ func enter() -> void:
     setup_fill_mesh()
 
 func exit() -> void:
-    if is_instance_valid(brush):
-        brush.free()
+    if is_instance_valid(cursor):
+        cursor.free()
     if is_instance_valid(grid_mesh):
         grid_mesh.free()
     if is_instance_valid(fill_mesh):
@@ -56,28 +56,28 @@ func set_root_node(node: Node) -> void:
     if node == null or not plugin.plugin_enabled:
         if grid_mesh:
             grid_mesh.hide()
-        if is_instance_valid(brush):
-            brush.hide()
+        if is_instance_valid(cursor):
+            cursor.hide()
     else:
-        if is_instance_valid(brush):
+        if is_instance_valid(cursor):
             if snapping_enabled:
                 set_grid_visible(grid_display_enabled)
-            brush.show()
+            cursor.show()
     plugin.root_node = node
 
 func set_grid_visible(visible: bool) -> void:
     if plugin.plugin_enabled:
-        if plugin.root_node and is_instance_valid(brush):
+        if plugin.root_node and is_instance_valid(cursor):
             if current_mode == Mode.PLANE or current_mode == Mode.FILL:
                 grid_mesh.set_visible(visible)
 
 var fill_bounding_box: AABB
 
 func forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
-    if not brush:
+    if not cursor:
         return EditorPlugin.AFTER_GUI_INPUT_PASS
 
-    brush.rotation = rotation
+    cursor.rotation = rotation
 
     match current_mode:
         Mode.FREE:
@@ -86,9 +86,9 @@ func forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
                 if snapping_enabled:
                     result.position = result.position.snapped(Vector3(snapping_step, snapping_step, snapping_step))
                 if align_to_surface:
-                    brush.transform.basis = align_with_normal(brush.transform.basis, result.normal)
+                    cursor.transform.basis = align_with_normal(cursor.transform.basis, result.normal)
 
-                brush.position = result.position
+                cursor.position = result.position
 
         Mode.PLANE, Mode.FILL:
             var result: Variant = Utils.raycast_plane(viewport_camera, plane)
@@ -114,10 +114,10 @@ func forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
                         result.x = plane.d
                         grid_mesh.position.x = plane.d + 0.01
 
-                brush.position = result
+                cursor.position = result
 
                 if current_mode == Mode.FILL:
-                    fill_bounding_box.size = brush.position - fill_bounding_box.position
+                    fill_bounding_box.size = cursor.position - fill_bounding_box.position
                     fill_mesh.position = fill_bounding_box.get_center()
                     fill_mesh.position.y += snapping_step * 0.5
                     fill_mesh.mesh.size = fill_bounding_box.size.abs() + Vector3.ONE * snapping_step
@@ -140,19 +140,19 @@ func forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
                 if current_mode != Mode.FILL:
                     if event.is_pressed():
                         var asset_path: String = plugin.selected_assets.pick_random()
-                        place_asset(asset_path, brush.position)
+                        place_asset(asset_path, cursor.position)
                         return EditorPlugin.AFTER_GUI_INPUT_STOP
                 elif snapping_enabled:
                     if event.is_pressed():
-                        fill_bounding_box.position = brush.position
-                        fill_bounding_box.size = brush.position - fill_bounding_box.position
+                        fill_bounding_box.position = cursor.position
+                        fill_bounding_box.size = cursor.position - fill_bounding_box.position
                         fill_mesh.position = fill_bounding_box.get_center()
                         fill_mesh.position.y += snapping_step * 0.5
                         fill_mesh.mesh.size = fill_bounding_box.size.abs() + Vector3.ONE * snapping_step
                         fill_mesh.show()
                     else:
                         fill_mesh.hide()
-                        fill_bounding_box.size = brush.position - fill_bounding_box.position
+                        fill_bounding_box.size = cursor.position - fill_bounding_box.position
                         fill(fill_bounding_box)
                     return EditorPlugin.AFTER_GUI_INPUT_STOP
 
@@ -193,7 +193,7 @@ func visual_raycast(camera: Camera3D) -> Node:
         var closest_distance := 1000.0
         for id: int in result:
             var instance := instance_from_id(id)
-            if instance.owner and instance.owner != brush:
+            if instance.owner and instance.owner != cursor:
                 if (instance is MeshInstance3D
                 or instance is CSGShape3D
                 or instance is MultiMeshInstance3D
@@ -429,41 +429,41 @@ func set_plane_level(value: float) -> void:
 
 func set_base_scale(value: Vector3) -> void:
     base_scale = value
-    if is_instance_valid(brush):
-        brush.scale = base_scale
+    if is_instance_valid(cursor):
+        cursor.scale = base_scale
 
 func set_chance_to_spawn(value: int) -> void:
     chance_to_spawn = clampi(value, 0, 100)
 
-func change_brush(packed_scene: PackedScene) -> void:
-    if is_instance_valid(brush):
-        brush.free()
+func change_cursor(packed_scene: PackedScene) -> void:
+    if is_instance_valid(cursor):
+        cursor.free()
 
-    var new_brush := packed_scene.instantiate() as Node3D
+    var new_cursor := packed_scene.instantiate() as Node3D
 
-    if new_brush == null:
+    if new_cursor == null:
         push_error("[%s] Scene's root node must be a Node3D" % plugin.plugin_name)
         return
 
-    brush = new_brush
-    brush.scale = base_scale
+    cursor = new_cursor
+    cursor.scale = base_scale
 
-    var brush_children := [brush]
+    var cursor_children := [cursor]
 
     # Remove collision layers from child nodes to avoid hitting them with a raycast
-    while not brush_children.is_empty():
-        var child := brush_children.pop_back() as Node
+    while not cursor_children.is_empty():
+        var child := cursor_children.pop_back() as Node
         if child is CollisionObject3D or child is CSGShape3D:
             child.collision_layer = 0
-        brush_children.append_array(child.get_children())
+        cursor_children.append_array(child.get_children())
 
     if plugin.scene_root:
-        plugin.scene_root.add_child(brush)
+        plugin.scene_root.add_child(cursor)
     else:
         _on_scene_changed(EditorInterface.get_edited_scene_root())
 
     if not plugin.root_node or not plugin.plugin_enabled:
-        brush.hide()
+        cursor.hide()
 
 func change_mode(new_mode: Mode) -> void:
     # Mode exiting logic
@@ -497,23 +497,23 @@ func change_mode(new_mode: Mode) -> void:
 
 func _on_scene_changed(scene_root: Node) -> void:
     if is_instance_valid(plugin.scene_root):
-        if is_instance_valid(brush):
-            plugin.scene_root.remove_child(brush)
+        if is_instance_valid(cursor):
+            plugin.scene_root.remove_child(cursor)
         if is_instance_valid(grid_mesh):
             plugin.scene_root.remove_child(grid_mesh)
 
     plugin.scene_root = scene_root
 
     if is_instance_valid(plugin.scene_root):
-        if is_instance_valid(brush):
-            plugin.scene_root.add_child(brush)
+        if is_instance_valid(cursor):
+            plugin.scene_root.add_child(cursor)
         if is_instance_valid(grid_mesh):
             plugin.scene_root.add_child(grid_mesh)
 
 func _on_scene_closed(path: String) -> void:
     if plugin.scene_root and plugin.scene_root.scene_file_path == path:
-        if is_instance_valid(brush):
-            plugin.scene_root.remove_child(brush)
+        if is_instance_valid(cursor):
+            plugin.scene_root.remove_child(cursor)
         if is_instance_valid(grid_mesh):
             plugin.scene_root.remove_child(grid_mesh)
 
@@ -521,7 +521,7 @@ func _on_plugin_enabled(_enabled: bool) -> void:
     set_root_node(plugin.root_node)
 
 func set_global_basis(node: Node3D) -> void:
-    var basis := brush.basis.orthonormalized()
+    var basis := cursor.basis.orthonormalized()
 
     var rotation_range := 0.0
     if random_rotation_enabled:
