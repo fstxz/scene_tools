@@ -86,7 +86,7 @@ func forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
                 if snapping_enabled:
                     result.position = result.position.snapped(Vector3(snapping_step, snapping_step, snapping_step))
                 if align_to_surface:
-                    brush.transform = align_with_normal(brush.transform, result.normal)
+                    brush.transform.basis = align_with_normal(brush.transform.basis, result.normal)
 
                 brush.position = result.position
 
@@ -213,18 +213,13 @@ func visual_raycast(camera: Camera3D) -> Node:
         return closest_node
     return null
 
-# # TODO: rework
-# # taken from https://github.com/godotengine/godot/issues/85903#issuecomment-1846245217
-func align_with_normal(xform: Transform3D, n2: Vector3) -> Transform3D:
-    var n1 := xform.basis.y.normalized()
-    var cosa := n1.dot(n2)
-    if cosa >= 0.99:
-        return xform
-    var alpha := acos(cosa)
-    var axis := n1.cross(n2).normalized()
-    if axis == Vector3.ZERO:
-        axis = Vector3.FORWARD # normals are in opposite directions
-    return xform.rotated(axis, alpha)
+func align_with_normal(input_basis: Basis, normal_vector: Vector3) -> Basis:
+    var ret_basis := Basis(Quaternion(input_basis.y, normal_vector))
+    ret_basis *= input_basis
+# it would be prudent to also orthonormalize the basis
+# every number of executions (100 or 1000) to avoid scaling/skewing
+# due to floating point rounding errors
+    return ret_basis
 
 func fill(bounding_box: AABB) -> void:
     bounding_box = bounding_box.abs()
