@@ -427,22 +427,13 @@ func set_grid_display_enabled(enabled: bool) -> void:
 func set_plane_level(value: float) -> void:
     plane.d = value
 
-func set_snapping_offset(value: float) -> void:
-    snapping_offset = value
-
 func set_base_scale(value: Vector3) -> void:
     base_scale = value
     if is_instance_valid(brush):
         brush.scale = base_scale
 
-func set_random_scale(value: float) -> void:
-    random_scale = value
-
 func set_chance_to_spawn(value: int) -> void:
     chance_to_spawn = clampi(value, 0, 100)
-
-func set_align_to_surface(value: bool) -> void:
-    align_to_surface = value
 
 func change_brush(packed_scene: PackedScene) -> void:
     if is_instance_valid(brush):
@@ -529,21 +520,6 @@ func _on_scene_closed(path: String) -> void:
 func _on_plugin_enabled(_enabled: bool) -> void:
     set_root_node(plugin.root_node)
 
-func set_scale_link_toggled(toggled: bool) -> void:
-    scale_linked = toggled
-
-func set_random_rotation_enabled(toggled: bool) -> void:
-    random_rotation_enabled = toggled
-
-func set_random_scale_enabled(toggled: bool) -> void:
-    random_scale_enabled = toggled
-
-func set_random_rotation_axis(index: int) -> void:
-    random_rotation_axis = index
-
-func set_rotation(rot: Vector3) -> void:
-    rotation = rot
-
 func set_global_basis(node: Node3D) -> void:
     var basis := brush.basis.orthonormalized()
 
@@ -567,9 +543,3 @@ func set_global_basis(node: Node3D) -> void:
     basis.z *= base_scale.z + scale_range
 
     node.global_basis = basis
-
-func set_random_rotation(value: float) -> void:
-    random_rotation = value
-
-func set_rotation_step(value: float) -> void:
-    rotation_step = value

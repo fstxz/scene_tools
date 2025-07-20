@@ -111,7 +111,7 @@ func set_plugin_enabled(enabled: bool) -> void:
 func update_selected_assets() -> void:
     var new_selected := Array(EditorInterface.get_selected_paths())
 
-    # Remove directories
+    # filter out directories
     new_selected = new_selected.filter(func(path: String) -> bool:
         return not path.ends_with("/")
     )

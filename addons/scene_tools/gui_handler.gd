@@ -83,7 +83,7 @@ func _on_plane_option_button_item_selected(index: int) -> void:
     plugin_instance.place_tool.set_plane_normal(index)
 
 func _on_random_scale_text_changed(text: String) -> void:
-    plugin_instance.place_tool.set_random_scale(float(text))
+    plugin_instance.place_tool.random_scale = float(text)
 
 func _on_scene_tools_menu_pressed(id: int) -> void:
     match id:
@@ -91,7 +91,7 @@ func _on_scene_tools_menu_pressed(id: int) -> void:
             help_dialog.visible = true
 
 func _on_align_to_surface_toggled(toggled: bool) -> void:
-    plugin_instance.place_tool.set_align_to_surface(toggled)
+    plugin_instance.place_tool.align_to_surface = toggled
 
 func _on_snapping_toggled(toggled: bool) -> void:
     plugin_instance.place_tool.set_snapping_enabled(toggled)
@@ -103,11 +103,12 @@ func _on_snapping_step_text_changed(text: String) -> void:
     plugin_instance.place_tool.set_snapping_step(float(text))
 
 func _on_snapping_offset_text_changed(text: String) -> void:
-    plugin_instance.place_tool.set_snapping_offset(float(text))
+    plugin_instance.place_tool.snapping_offset = float(text)
 
 func _on_chance_to_spawn_text_changed(text: String) -> void:
     plugin_instance.place_tool.set_chance_to_spawn(int(text))
 
+# TODO: this function seems unused?
 # _ because it clashes with the base class
 func _set_rotation(value: Vector3) -> void:
     rotation_x.text = str(value.x)
@@ -120,40 +121,37 @@ func _set_scale(value: Vector3) -> void:
     scale_z.text = str(value.z)
 
 func _on_scale_link_toggled(toggled: bool) -> void:
-    plugin_instance.place_tool.set_scale_link_toggled(toggled)
+    plugin_instance.place_tool.scale_linked = toggled
 
 func _on_random_rotation_button_toggled(toggled: bool) -> void:
-    plugin_instance.place_tool.set_random_rotation_enabled(toggled)
+    plugin_instance.place_tool.random_rotation_enabled = toggled
 
 func _on_random_scale_button_toggled(toggled: bool) -> void:
-    plugin_instance.place_tool.set_random_scale_enabled(toggled)
+    plugin_instance.place_tool.random_scale_enabled = toggled
 
 func _on_random_rotation_axis_item_selected(index: int) -> void:
-    plugin_instance.place_tool.set_random_rotation_axis(index)
+    plugin_instance.place_tool.random_rotation_axis = index
 
 func _on_rotation_x_text_changed(text: String) -> void:
-    plugin_instance.place_tool.set_rotation(Vector3(
+    plugin_instance.place_tool.rotation = Vector3(
         deg_to_rad(float(text)),
         plugin_instance.place_tool.rotation.y,
-        plugin_instance.place_tool.rotation.z
-        ))
+        plugin_instance.place_tool.rotation.z)
 
 func _on_rotation_y_text_changed(text: String) -> void:
-    plugin_instance.place_tool.set_rotation(Vector3(
+    plugin_instance.place_tool.rotation = Vector3(
         plugin_instance.place_tool.rotation.x,
         deg_to_rad(float(text)),
-        plugin_instance.place_tool.rotation.z
-        ))
+        plugin_instance.place_tool.rotation.z)
 
 func _on_rotation_z_text_changed(text: String) -> void:
-    plugin_instance.place_tool.set_rotation(Vector3(
+    plugin_instance.place_tool.rotation = Vector3(
         plugin_instance.place_tool.rotation.x,
         plugin_instance.place_tool.rotation.y,
-        deg_to_rad(float(text))
-        ))
+        deg_to_rad(float(text)))
 
 func _on_random_rotation_text_changed(text: String) -> void:
-    plugin_instance.place_tool.set_random_rotation(deg_to_rad(float(text)))
+    plugin_instance.place_tool.random_rotation = deg_to_rad(float(text))
 
 func _on_scale_x_text_changed(text: String) -> void:
     if plugin_instance.place_tool.scale_linked:
@@ -189,7 +187,7 @@ func _on_scale_z_text_changed(text: String) -> void:
             ))
 
 func _on_rotation_step_text_changed(text: String) -> void:
-    plugin_instance.place_tool.set_rotation_step(deg_to_rad(float(text)))
+    plugin_instance.place_tool.rotation_step = deg_to_rad(float(text))
 
 func _on_force_readable_name_checkbox_toggled(toggled: bool) -> void:
     plugin_instance.place_tool.force_readable_name = toggled
