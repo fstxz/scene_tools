@@ -1,5 +1,8 @@
 extends "res://addons/scene_tools/tool.gd"
 
+# Max number of iterations before we orthonomalize the cursor's basis
+const MAX_ORTHONORM_ITERATIONS := 100
+
 var snapping_enabled := false
 
 var cursor: Node3D
@@ -14,6 +17,7 @@ enum Mode {
 }
 
 var current_mode := Mode.FREE
+var orthonorm_iterations := 0
 
 var rotation := Vector3.ZERO
 var snapping_step := 1.0
@@ -76,6 +80,12 @@ var fill_bounding_box: AABB
 func forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
     if not cursor:
         return EditorPlugin.AFTER_GUI_INPUT_PASS
+
+    orthonorm_iterations += 1
+
+    if orthonorm_iterations > MAX_ORTHONORM_ITERATIONS:
+        cursor.basis = cursor.basis.orthonormalized()
+        orthonorm_iterations = 0
 
     cursor.rotation = rotation
 
