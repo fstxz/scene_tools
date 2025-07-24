@@ -85,6 +85,7 @@ func forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> int:
 
     if orthonorm_iterations > MAX_ORTHONORM_ITERATIONS:
         cursor.basis = cursor.basis.orthonormalized()
+        cursor.scale = base_scale
         orthonorm_iterations = 0
 
     cursor.rotation = rotation
